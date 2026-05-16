@@ -1,59 +1,45 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
-import nextVitals from 'eslint-config-next/core-web-vitals'
+// eslint.config.mjs
+import { defineConfig, globalIgnores } from '@eslint/config-helpers'
+import stylexPlugin from '@stylexjs/eslint-plugin'
 import prettier from 'eslint-config-prettier/flat'
 import unicorn from 'eslint-plugin-unicorn'
 import globals from 'globals'
 
 const jsFiles = ['**/*.{js,mjs,cjs,jsx}']
-const nextConfig = nextVitals
-  .filter(({ name }) => name !== 'next/typescript')
-  .map((config) => {
-    if (config.name !== 'next') {
-      return config
-    }
-
-    return {
-      ...config,
-      files: jsFiles,
-      settings: {
-        react: {
-          ...config.settings?.react,
-          version: '19.2.4',
-        },
-        'import/resolver': {
-          node: {
-            extensions: ['.js', '.jsx', '.mjs', '.cjs'],
-          },
-        },
-      },
-      languageOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        parserOptions: {
-          ecmaFeatures: {
-            jsx: true,
-          },
-        },
-        globals: {
-          ...globals.browser,
-          ...globals.node,
-        },
-      },
-    }
-  })
 
 export default defineConfig([
   {
     files: jsFiles,
     languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
       },
     },
   },
-  ...nextConfig,
+
+  {
+    files: jsFiles,
+    plugins: {
+      '@stylexjs': stylexPlugin,
+    },
+    rules: {
+      '@stylexjs/valid-styles': 'error',
+      '@stylexjs/no-unused': 'error',
+      '@stylexjs/no-legacy-contextual-styles': 'error',
+      '@stylexjs/sort-keys': ['error', { order: 'recess' }],
+    },
+  },
+
   unicorn.configs['flat/recommended'],
+
   {
     files: jsFiles,
     rules: {
@@ -66,19 +52,24 @@ export default defineConfig([
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+
       'react/react-in-jsx-scope': 'off',
+
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/filename-case': 'off',
       'unicorn/no-null': 'off',
     },
   },
+
   {
     files: ['**/*.jsx'],
     rules: {
       'no-console': 'warn',
     },
   },
+
   prettier,
+
   globalIgnores([
     '.next/**',
     'out/**',
