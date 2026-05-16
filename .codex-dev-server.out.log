@@ -1,0 +1,29 @@
+
+> memory-map-web@0.1.0 dev D:\_work\AI\photo-mem
+> next dev
+
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.6s
+ ○ Compiling / ...
+ ✓ Compiled / in 7.3s (3297 modules)
+ GET / 200 in 7500ms
+ GET / 200 in 79ms
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 3s
+ ○ Compiling / ...
+ ✓ Compiled / in 11.7s (3297 modules)
+ GET / 200 in 11876ms
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1728ms

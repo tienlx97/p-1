@@ -1,0 +1,23 @@
+  ▲ Next.js 14.2.5
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1534ms
+ ○ Compiling / ...
+ ✓ Compiled / in 4s (3180 modules)
+ GET / 200 in 4238ms
+ GET / 200 in 56ms
+ ✓ Compiled in 1927ms (3194 modules)
+ ✓ Compiled in 1100ms (3194 modules)
+ ✓ Compiled in 1147ms (3194 modules)
+ GET / 200 in 228ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 618ms (3183 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 837ms
+ ✓ Compiled in 811ms (3183 modules)
+ ✓ Compiled in 482ms (3194 modules)
+ GET / 200 in 206ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 582ms (3183 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 785ms

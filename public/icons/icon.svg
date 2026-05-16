@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Our Memory Map</title>
+  <rect width="512" height="512" rx="112" fill="#f7f9f6"/>
+  <rect x="70" y="72" width="372" height="368" rx="86" fill="#2f7d6f"/>
+  <circle cx="256" cy="236" r="92" fill="#ffffff" opacity="0.95"/>
+  <path fill="#f7f9f6" d="M256 146c-49.7 0-90 40.3-90 90 0 73.1 90 145 90 145s90-71.9 90-145c0-49.7-40.3-90-90-90Zm0 132a42 42 0 1 1 0-84 42 42 0 0 1 0 84Z"/>
+  <circle cx="256" cy="236" r="30" fill="#2b8fb8"/>
+  <path fill="#ffffff" d="M186 344h140c9.9 0 18 8.1 18 18s-8.1 18-18 18H186c-9.9 0-18-8.1-18-18s8.1-18 18-18Z" opacity="0.9"/>
+</svg>

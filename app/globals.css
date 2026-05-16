@@ -1,0 +1,111 @@
+:root {
+  --bg: #f7f9f6;
+  --surface: #ffffff;
+  --surface-soft: #edf6f1;
+  --text: #1c2e2a;
+  --muted: #667873;
+  --line: #d7e4de;
+  --primary: #2f7d6f;
+  --primary-dark: #215f55;
+  --coral: #d9654f;
+  --sky: #2b8fb8;
+  --yellow: #c28b25;
+  --violet: #6e63b6;
+  --shadow: 0 10px 26px rgba(28, 46, 42, 0.08);
+  --map-blue: #0b84ff;
+  --map-blue-soft: rgba(11, 132, 255, 0.12);
+  --map-green: #18a957;
+  --map-panel: rgba(255, 255, 255, 0.86);
+  --map-panel-strong: rgba(255, 255, 255, 0.94);
+  --map-panel-border: rgba(213, 219, 229, 0.76);
+  --map-fill: rgba(245, 247, 250, 0.78);
+  --map-fill-strong: rgba(235, 240, 246, 0.92);
+  --map-text: #16202a;
+  --map-muted: #66717f;
+  --map-shadow: 0 24px 80px rgba(34, 43, 54, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background: #eef2f6;
+  color: var(--text);
+  font-family:
+    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+select,
+input,
+textarea {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  padding: 10px 12px;
+}
+
+textarea {
+  min-height: 136px;
+  resize: vertical;
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+  border-color: rgba(26, 115, 232, 0.38);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
+.leaflet-tooltip-pane {
+  pointer-events: auto;
+}
+
+.leaflet-container {
+  font-family:
+    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.os-theme-google-map.os-scrollbar {
+  --os-size: 8px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 2px;
+  --os-track-bg: transparent;
+  --os-track-bg-hover: transparent;
+  --os-track-bg-active: transparent;
+  --os-handle-border-radius: 999px;
+  --os-handle-bg: rgba(95, 99, 104, 0.58);
+  --os-handle-bg-hover: rgba(60, 64, 67, 0.76);
+  --os-handle-bg-active: rgba(60, 64, 67, 0.86);
+  --os-handle-min-size: 38px;
+}

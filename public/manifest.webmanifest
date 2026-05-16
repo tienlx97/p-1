@@ -1,0 +1,19 @@
+{
+  "name": "Our Memory Map",
+  "short_name": "Our Memory",
+  "description": "Không gian kỷ niệm riêng tư dành cho hai người.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#eef2f6",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
