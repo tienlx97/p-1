@@ -1,6 +1,6 @@
-import styles from "@/app/styles.module.css";
+import stylesModule from "@/shared/styles/styles.module.css";
 
-export { styles };
+export { default as styles } from "@/shared/styles/styles.module.css";
 
 export function cx(...values) {
   const tokens = [];
@@ -24,5 +24,5 @@ export function cx(...values) {
     }
   }
 
-  return tokens.map((token) => styles[token] ?? token).join(" ");
+  return tokens.map((token) => stylesModule[token] ?? token).join(" ");
 }

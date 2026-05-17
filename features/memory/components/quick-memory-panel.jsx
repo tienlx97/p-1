@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Button, Input, Link } from "react-aria-components";
-import { moods } from "@/lib/mock-data";
-import { Field, SelectField, SelectItem, TextAreaField } from "@/components/ui";
+import { moods } from "@/entities/memory";
+import { Field, SelectField, SelectItem, TextAreaField } from "@/shared/components/ui";
 
-import { cx } from "@/lib/styles";
+import { cx } from "@/shared/lib/styles";
 
 export function QuickMemoryPanel({ embedded = false }) {
   const [saved, setSaved] = useState(false);
@@ -41,7 +41,7 @@ export function QuickMemoryPanel({ embedded = false }) {
         setSaved(true);
       }}
     >
-      {!embedded ? (
+      {embedded ? null : (
         <div className={cx("panel-heading")}>
           <div>
             <p className={cx("eyebrow")}>Thêm nhanh</p>
@@ -51,7 +51,7 @@ export function QuickMemoryPanel({ embedded = false }) {
             Form đầy đủ
           </Link>
         </div>
-      ) : null}
+      )}
 
       <label className={cx("quick-upload")} htmlFor="quick-photos">
         <Input id="quick-photos" type="file" accept="image/*,video/*" multiple />

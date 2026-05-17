@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Link } from "react-aria-components";
 
-import { cx } from "@/lib/styles";
+import { cx } from "@/shared/lib/styles";
 
 const navItems = [
   { href: "/", label: "Bản đồ", icon: "⌖" },

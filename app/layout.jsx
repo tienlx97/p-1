@@ -5,8 +5,8 @@ import "swiper/css/free-mode";
 import "./globals.css";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
-import { AriaProviders } from "@/components/aria-providers";
-import { AppShell } from "@/components/app-shell";
+import { AriaProviders } from "@/shared/components/aria-providers";
+import { AppShell } from "@/shared/components/app-shell";
 
 export const metadata = {
   title: "Our Memory Map",

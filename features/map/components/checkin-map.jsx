@@ -1,0 +1,173 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-aria-components";
+import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
+import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/components/map.constants";
+import { createCheckinIcon } from "@/features/map/components/map.utils";
+import { MapControls } from "@/features/map/components/map-controls";
+import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from "@/features/memory";
+import { checkins } from "@/entities/memory";
+import { cx } from "@/shared/lib/styles";
+
+export function CheckinMap() {
+  const [activeId, setActiveId] = useState(null);
+  const [initialMediaIndex, setInitialMediaIndex] = useState(null);
+  const [drawerMode, setDrawerMode] = useState(null);
+  const [hoveredPreviewId, setHoveredPreviewId] = useState(null);
+  const hoverCloseTimerRef = useRef(null);
+  const mapPlaces = useMemo(() => {
+    const places = new Map();
+
+    for (const checkin of checkins) {
+      const current = places.get(checkin.locationName);
+
+      if (
+        !current ||
+        new Date(checkin.checkinTime).getTime() > new Date(current.checkinTime).getTime()
+      ) {
+        places.set(checkin.locationName, checkin);
+      }
+    }
+
+    return [...places.values()];
+  }, []);
+
+  const activeCheckin = activeId
+    ? checkins.find((checkin) => checkin.id === activeId) ?? null
+    : null;
+
+  useEffect(() => {
+    return () => {
+      if (hoverCloseTimerRef.current) {
+        globalThis.clearTimeout(hoverCloseTimerRef.current);
+      }
+    };
+  }, []);
+
+  function keepPreviewOpen() {
+    if (hoverCloseTimerRef.current) {
+      globalThis.clearTimeout(hoverCloseTimerRef.current);
+      hoverCloseTimerRef.current = null;
+    }
+  }
+
+  function showHoverPreview(checkinId) {
+    keepPreviewOpen();
+    setHoveredPreviewId(checkinId);
+  }
+
+  function scheduleCloseHoverPreview() {
+    keepPreviewOpen();
+    hoverCloseTimerRef.current = globalThis.setTimeout(() => {
+      setHoveredPreviewId(null);
+    }, 180);
+  }
+
+  function openAddMemoryDrawer() {
+    setActiveId(null);
+    setInitialMediaIndex(null);
+    setDrawerMode("add");
+  }
+
+  function openMemoryDetail(checkinId, mediaIndex = null) {
+    keepPreviewOpen();
+    setActiveId(checkinId);
+    setInitialMediaIndex(mediaIndex);
+    setHoveredPreviewId(null);
+    setDrawerMode("memory");
+  }
+
+  function closeDrawer() {
+    setDrawerMode(null);
+    setHoveredPreviewId(null);
+    setInitialMediaIndex(null);
+
+    if (drawerMode === "memory") {
+      setActiveId(null);
+    }
+  }
+
+  return (
+    <section className={cx("map-workspace")}>
+      <div className={cx("map-body")}>
+        <Link href="/checkins" className={cx("explory-back-button")} aria-label="Quay lại danh sách">
+          <span aria-hidden="true">‹</span>
+        </Link>
+
+        <div className={cx("leaflet-map-shell")}>
+          {mapPlaces.length > 0 ? (
+            <MapContainer
+              center={DEFAULT_CENTER}
+              zoom={DEFAULT_ZOOM}
+              minZoom={4}
+              maxZoom={18}
+              attributionControl={false}
+              zoomControl={false}
+              scrollWheelZoom
+              className={cx("checkin-leaflet-map")}
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <MapControls
+                activeCheckin={activeCheckin}
+                visibleCheckins={mapPlaces}
+                onAddMemory={openAddMemoryDrawer}
+              />
+
+              {mapPlaces.map((checkin) => {
+                const isActive =
+                  (drawerMode === "memory" && checkin.id === activeId) ||
+                  checkin.id === hoveredPreviewId;
+
+                return (
+                  <Marker
+                    key={checkin.id}
+                    position={[checkin.latitude, checkin.longitude]}
+                    icon={createCheckinIcon(checkin, isActive)}
+                    eventHandlers={{
+                      click: () => openMemoryDetail(checkin.id),
+                      mouseover: () => showHoverPreview(checkin.id),
+                      mouseout: scheduleCloseHoverPreview
+                    }}
+                  >
+                    {hoveredPreviewId === checkin.id ? (
+                      <Tooltip
+                        className={cx("memory-hover-tooltip")}
+                        direction="top"
+                        interactive
+                        offset={[0, 0]}
+                        opacity={1}
+                        permanent
+                      >
+                        <MemoryHoverPreview
+                          checkin={checkin}
+                          onMouseEnter={keepPreviewOpen}
+                          onMouseLeave={scheduleCloseHoverPreview}
+                          onPress={(mediaIndex) => openMemoryDetail(checkin.id, mediaIndex)}
+                        />
+                      </Tooltip>
+                    ) : null}
+                  </Marker>
+                );
+              })}
+            </MapContainer>
+          ) : (
+            <div className={cx("map-empty-state")}>
+              <h2>Chưa có kỷ niệm phù hợp</h2>
+              <p>Thử đổi bộ lọc nhóm hoặc cảm xúc.</p>
+            </div>
+          )}
+        </div>
+
+        {drawerMode === "add" ? <AddMemoryDrawer onClose={closeDrawer} /> : null}
+        {drawerMode === "memory" ? (
+          <MemoryDetailDrawer
+            checkin={activeCheckin}
+            initialMediaIndex={initialMediaIndex}
+            onClose={closeDrawer}
+          />
+        ) : null}
+      </div>
+    </section>
+  );
+}

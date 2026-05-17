@@ -75,6 +75,7 @@ export default defineConfig([
     'out/**',
     'build/**',
     'public/**',
+    'babel.config.js',
     'next.config.js',
     'next.config.mjs',
     'postcss.config.js',

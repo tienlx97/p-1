@@ -2,10 +2,10 @@
 
 import dynamic from "next/dynamic";
 
-import { cx } from "@/lib/styles";
+import { cx } from "@/shared/lib/styles";
 
 const CheckinMap = dynamic(
-  () => import("@/components/checkin-map").then((module) => module.CheckinMap),
+  () => import("@/features/map/components/checkin-map").then((module) => module.CheckinMap),
   {
     ssr: false,
     loading: () => (
@@ -17,5 +17,9 @@ const CheckinMap = dynamic(
 );
 
 export function MapSection() {
-  return <CheckinMap />;
+  return (
+    <div className={cx("overview-map-page")}>
+      <CheckinMap />
+    </div>
+  );
 }

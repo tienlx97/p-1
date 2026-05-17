@@ -13,7 +13,7 @@ import {
   TextArea,
   TextField
 } from "react-aria-components";
-import { cx } from "@/lib/styles";
+import { cx } from "@/shared/lib/styles";
 
 export function PageHeader({
   eyebrow,
