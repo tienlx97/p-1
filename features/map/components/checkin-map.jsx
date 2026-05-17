@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-aria-components";
 import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/components/map.constants";
 import { createCheckinIcon } from "@/features/map/components/map.utils";
@@ -14,7 +13,6 @@ import { cx } from "@/shared/lib/styles";
 export function CheckinMap() {
   const [activeId, setActiveId] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [moodFilter, setMoodFilter] = useState("all");
   const [initialMediaIndex, setInitialMediaIndex] = useState(null);
   const [drawerMode, setDrawerMode] = useState(null);
   const [hoveredPreviewId, setHoveredPreviewId] = useState(null);
@@ -24,11 +22,10 @@ export function CheckinMap() {
     () =>
       checkins.filter((checkin) => {
         const matchesCategory = categoryFilter === "all" || checkin.categoryId === categoryFilter;
-        const matchesMood = moodFilter === "all" || checkin.moodId === moodFilter;
 
-        return matchesCategory && matchesMood;
+        return matchesCategory;
       }),
-    [categoryFilter, moodFilter]
+    [categoryFilter]
   );
 
   const mapPlaces = useMemo(() => {
@@ -122,20 +119,14 @@ export function CheckinMap() {
   return (
     <section className={cx("map-workspace")}>
       <div className={cx("map-body")}>
-        <Link href="/checkins" className={cx("explory-back-button")} aria-label="Quay lại danh sách">
-          <span aria-hidden="true">‹</span>
-        </Link>
-
         <div className={cx("leaflet-map-shell")}>
           {checkins.length > 0 ? (
             <>
               <MapFilterPanel
                 categoryId={categoryFilter}
-                moodId={moodFilter}
                 totalCount={checkins.length}
                 visibleCount={filteredCheckins.length}
                 onCategoryChange={setCategoryFilter}
-                onMoodChange={setMoodFilter}
               />
               <MapContainer
                 center={DEFAULT_CENTER}
@@ -194,7 +185,7 @@ export function CheckinMap() {
               {mapPlaces.length === 0 ? (
                 <div className={cx("map-empty-state map-filter-empty-state")}>
                   <h2>Không có kỷ niệm phù hợp</h2>
-                  <p>Thử đổi nhóm hoặc cảm xúc để xem lại hành trình khác.</p>
+                  <p>Thử đổi nhóm để xem lại hành trình khác.</p>
                 </div>
               ) : null}
             </>

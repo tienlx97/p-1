@@ -98,12 +98,12 @@
 
 .map-filter-panel {
   top: max(14px, env(safe-area-inset-top));
-  left: calc(max(14px, env(safe-area-inset-left)) + 60px);
-  max-width: min(780px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)) - 74px));
+  left: max(14px, env(safe-area-inset-left));
+  max-width: min(880px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right))));
 }
 
 .map-filter-row {
-  max-width: min(680px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)) - 162px));
+  max-width: min(780px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)) - 88px));
 }
 
 .explory-map-controls {
@@ -354,7 +354,7 @@
   }
 
   .map-filter-panel {
-    top: calc(max(10px, env(safe-area-inset-top)) + 52px);
+    top: max(10px, env(safe-area-inset-top));
     right: max(10px, env(safe-area-inset-right));
     left: max(10px, env(safe-area-inset-left));
     display: flex;
@@ -599,9 +599,7 @@
     gap: 6px;
   }
 
-  .map-filter-count,
-  .map-filter-divider,
-  .map-filter-chip.mood {
+  .map-filter-count {
     display: none;
   }
 

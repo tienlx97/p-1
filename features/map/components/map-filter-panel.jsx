@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { Button } from "react-aria-components";
-import { categories, moods } from "@/entities/memory";
+import { categories } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
 
 const categoryIcons = {
@@ -16,27 +16,14 @@ const categoryIcons = {
   travel: "✈"
 };
 
-const moodIcons = {
-  all: "•",
-  chill: "~",
-  explore: "⌖",
-  happy: "+",
-  memorable: "★",
-  peaceful: "○",
-  romantic: "♡"
-};
-
 export function MapFilterPanel({
   categoryId,
-  moodId,
   onCategoryChange,
-  onMoodChange,
   totalCount,
   visibleCount
 }) {
   const railRef = useRef(null);
   const categoryOptions = [{ id: "all", name: "Tất cả địa điểm" }, ...categories];
-  const moodOptions = [{ id: "all", name: "Mọi cảm xúc" }, ...moods];
 
   function scrollRail(direction) {
     railRef.current?.scrollBy({
@@ -56,7 +43,7 @@ export function MapFilterPanel({
         ‹
       </Button>
 
-      <div ref={railRef} className={cx("map-filter-row")} aria-label="Lọc theo nhóm và cảm xúc">
+      <div ref={railRef} className={cx("map-filter-row")} aria-label="Lọc theo nhóm">
         <span className={cx("map-filter-count")} aria-label={`${visibleCount} trên ${totalCount} kỷ niệm`}>
           {visibleCount}/{totalCount}
         </span>
@@ -77,27 +64,6 @@ export function MapFilterPanel({
                 {categoryIcons[category.id] ?? "•"}
               </span>
               {category.name}
-            </Button>
-          );
-        })}
-
-        <span className={cx("map-filter-divider")} aria-hidden="true" />
-
-        {moodOptions.map((mood) => {
-          const isActive = moodId === mood.id;
-
-          return (
-            <Button
-              key={mood.id}
-              type="button"
-              className={cx("map-filter-chip", "mood", isActive && "active")}
-              aria-pressed={isActive}
-              onPress={() => onMoodChange(mood.id)}
-            >
-              <span className={cx("map-filter-icon")} aria-hidden="true">
-                {moodIcons[mood.id] ?? "•"}
-              </span>
-              {mood.name}
             </Button>
           );
         })}
