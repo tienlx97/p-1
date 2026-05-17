@@ -54,6 +54,7 @@ export function Field({
   "aria-label": ariaLabel,
   className = cx("field"),
   defaultValue,
+  description,
   inputClassName,
   isRequired,
   label,
@@ -77,6 +78,7 @@ export function Field({
         placeholder={placeholder}
         type={type}
       />
+      {description ? <p className={cx("field-hint")}>{description}</p> : null}
     </TextField>
   );
 }
@@ -85,6 +87,7 @@ export function TextAreaField({
   "aria-label": ariaLabel,
   className = cx("field"),
   defaultValue,
+  description,
   isRequired,
   label,
   onChange,
@@ -102,6 +105,7 @@ export function TextAreaField({
     >
       {label ? <Label>{label}</Label> : null}
       <TextArea aria-label={ariaLabel} placeholder={placeholder} rows={rows} />
+      {description ? <p className={cx("field-hint")}>{description}</p> : null}
     </TextField>
   );
 }
@@ -124,7 +128,7 @@ export function SelectField({
       {label ? <Label>{label}</Label> : null}
       <Button className={cx("aria-select-trigger")}>
         <SelectValue />
-        <span aria-hidden="true">⌄</span>
+        <span className={cx("aria-select-icon")} aria-hidden="true">⌄</span>
       </Button>
       <Popover className={cx("aria-popover")}>
         <ListBox className={cx("aria-listbox")}>{children}</ListBox>

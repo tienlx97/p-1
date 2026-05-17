@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef } from "react";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { FocusScope, mergeProps, useDialog, useModal, useOverlay, usePreventScroll } from "react-aria";
 import { Button } from "react-aria-components";
+import { DRAWER_SCROLL_OPTIONS } from "@/features/memory/components/memory-drawer-constants";
 import { QuickMemoryPanel } from "@/features/memory/components/quick-memory-panel";
 import { cx } from "@/shared/lib/styles";
 
@@ -48,7 +50,13 @@ export function AddMemoryDrawer({ onClose }) {
           </Button>
         </div>
 
-        <QuickMemoryPanel embedded />
+        <OverlayScrollbarsComponent
+          className={cx("add-drawer-scroll")}
+          defer
+          options={DRAWER_SCROLL_OPTIONS}
+        >
+          <QuickMemoryPanel embedded />
+        </OverlayScrollbarsComponent>
       </aside>
     </FocusScope>
   );

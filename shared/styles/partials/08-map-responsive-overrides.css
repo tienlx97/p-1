@@ -205,6 +205,20 @@
   text-align: left;
 }
 
+.aria-select-trigger [data-rac] {
+  min-width: 0;
+}
+
+.aria-select-icon {
+  display: grid;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  place-items: center;
+  font-size: 14px;
+  line-height: 1;
+}
+
 .aria-select-trigger[data-focus-visible],
 .aria-listbox-item[data-focus-visible] {
   outline: 3px solid rgba(26, 115, 232, 0.18);
@@ -349,6 +363,82 @@
     border-radius: 26px 26px 18px 18px;
   }
 
+  .map-drawer.add-drawer {
+    top: max(72px, env(safe-area-inset-top));
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1200;
+    width: auto;
+    max-height: none;
+    border-width: 1px 0 0;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -18px 48px rgba(31, 41, 55, 0.18);
+  }
+
+  .map-drawer.add-drawer .drawer-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-radius: 24px 24px 0 0;
+    padding: 16px 18px 12px;
+  }
+
+  .map-drawer.add-drawer .add-drawer-scroll {
+    min-height: 0;
+    height: 100%;
+    max-height: 100%;
+    overscroll-behavior: contain;
+  }
+
+  .map-drawer.add-drawer .quick-memory-panel {
+    gap: 14px;
+    padding: 14px 18px 16px;
+    padding-bottom: 112px;
+  }
+
+  .map-drawer.add-drawer .quick-upload {
+    min-height: 98px;
+    border-radius: 14px;
+  }
+
+  .map-drawer.add-drawer .quick-media-section {
+    margin-top: 2px;
+    border-radius: 18px;
+    padding: 12px;
+  }
+
+  .map-drawer.add-drawer .quick-media-section-head {
+    align-items: flex-start;
+  }
+
+  .map-drawer.add-drawer .quick-media-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .map-drawer.add-drawer .quick-media-item {
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .map-drawer.add-drawer .quick-media-item img,
+  .map-drawer.add-drawer .quick-media-item video {
+    height: 82px;
+  }
+
+  .map-drawer.add-drawer .quick-media-remove {
+    top: 8px;
+    right: 8px;
+  }
+
+  .map-drawer.add-drawer .quick-actions {
+    margin-right: -18px;
+    margin-bottom: -16px;
+    margin-left: -18px;
+    grid-template-columns: 1fr;
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom));
+  }
+
   .map-drawer.memory-drawer {
     top: max(72px, env(safe-area-inset-top));
     right: env(safe-area-inset-right);
@@ -453,6 +543,12 @@
     left: max(18px, env(safe-area-inset-left));
     height: auto;
     max-height: none;
+  }
+
+  .map-drawer.add-drawer {
+    top: max(58px, env(safe-area-inset-top));
+    right: 0;
+    left: 0;
   }
 
   .google-place-hero {

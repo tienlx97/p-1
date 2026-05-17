@@ -404,6 +404,125 @@
   font-size: 13px;
 }
 
+.quick-upload small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.quick-media-section {
+  display: grid;
+  gap: 10px;
+}
+
+.quick-media-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.quick-media-section-head div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.quick-media-section-head strong,
+.quick-media-section-head small {
+  display: block;
+}
+
+.quick-media-section-head strong {
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.quick-media-section-head small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.quick-media-section-head span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--primary-dark);
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.quick-media-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.quick-media-item {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.quick-media-item img,
+.quick-media-item video {
+  width: 100%;
+  height: 118px;
+  object-fit: cover;
+  background: #eef4f1;
+}
+
+.quick-media-item figcaption {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px;
+}
+
+.quick-media-item strong,
+.quick-media-item small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-media-item strong {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.quick-media-item small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.quick-media-remove {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.68);
+  color: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
 .field-grid.compact {
   gap: 8px;
 }
@@ -512,6 +631,12 @@
 
 .btn-primary:hover {
   background: var(--primary-dark);
+}
+
+.btn-primary[data-disabled] {
+  background: #c8d4df;
+  color: rgba(32, 33, 36, 0.58);
+  cursor: not-allowed;
 }
 
 .btn-secondary {

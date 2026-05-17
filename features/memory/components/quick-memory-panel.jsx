@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Input, Link } from "react-aria-components";
 import { moods } from "@/entities/memory";
 import { Field, SelectField, SelectItem, TextAreaField } from "@/shared/components/ui";
@@ -9,9 +9,57 @@ import { cx } from "@/shared/lib/styles";
 
 export function QuickMemoryPanel({ embedded = false }) {
   const [saved, setSaved] = useState(false);
-  const [locationName, setLocationName] = useState("Quán nhỏ tụi mình thích");
+  const [title, setTitle] = useState("");
+  const [memoryDate, setMemoryDate] = useState("");
+  const [locationName, setLocationName] = useState("");
   const [coordinates, setCoordinates] = useState("");
   const [googleMapsUrl, setGoogleMapsUrl] = useState("");
+  const [mediaItems, setMediaItems] = useState([]);
+  const mediaItemsRef = useRef([]);
+  const canSave = title.trim().length > 0 && memoryDate.length > 0 && locationName.trim().length > 0 && mediaItems.length > 0;
+
+  useEffect(() => {
+    mediaItemsRef.current = mediaItems;
+  }, [mediaItems]);
+
+  useEffect(() => {
+    return () => {
+      for (const item of mediaItemsRef.current) {
+        URL.revokeObjectURL(item.url);
+      }
+    };
+  }, []);
+
+  function addMediaItems(event) {
+    const files = [...(event.currentTarget.files ?? [])];
+
+    if (files.length === 0) {
+      return;
+    }
+
+    const nextItems = files.map((file) => ({
+      id: createMediaId(),
+      name: file.name,
+      size: file.size,
+      type: file.type.startsWith("video/") ? "video" : "image",
+      url: URL.createObjectURL(file)
+    }));
+
+    setMediaItems((currentItems) => [...currentItems, ...nextItems]);
+    event.currentTarget.value = "";
+  }
+
+  function removeMediaItem(id) {
+    setMediaItems((currentItems) => {
+      const itemToRemove = currentItems.find((item) => item.id === id);
+
+      if (itemToRemove) {
+        URL.revokeObjectURL(itemToRemove.url);
+      }
+
+      return currentItems.filter((item) => item.id !== id);
+    });
+  }
 
   function useCurrentLocation() {
     if (!navigator.geolocation) {
@@ -38,6 +86,9 @@ export function QuickMemoryPanel({ embedded = false }) {
       className={cx("quick-memory-panel")}
       onSubmit={(event) => {
         event.preventDefault();
+        if (!canSave) {
+          return;
+        }
         setSaved(true);
       }}
     >
@@ -53,16 +104,16 @@ export function QuickMemoryPanel({ embedded = false }) {
         </div>
       )}
 
-      <label className={cx("quick-upload")} htmlFor="quick-photos">
-        <Input id="quick-photos" type="file" accept="image/*,video/*" multiple />
-        <span aria-hidden="true">+</span>
-        <strong>Thêm ảnh hoặc video</strong>
-      </label>
-
-      <Field isRequired label="Tiêu đề *" defaultValue="Một buổi chiều đáng nhớ" />
+      <Field
+        isRequired
+        label="Tiêu đề *"
+        value={title}
+        onChange={setTitle}
+        placeholder="Ví dụ: Xem hoàng hôn ở cầu Mống"
+      />
 
       <div className={cx("field-grid compact")}>
-        <Field isRequired label="Ngày *" type="date" defaultValue="2026-05-15" />
+        <Field isRequired label="Ngày *" type="date" value={memoryDate} onChange={setMemoryDate} />
 
         <SelectField label="Cảm xúc" defaultSelectedKey="memorable">
           {moods.map((mood) => (
@@ -73,17 +124,82 @@ export function QuickMemoryPanel({ embedded = false }) {
         </SelectField>
       </div>
 
-      <Field label="Địa điểm" value={locationName} onChange={setLocationName} />
+      <Field
+        label="Địa điểm"
+        value={locationName}
+        onChange={setLocationName}
+        placeholder="Tên quán, cây cầu, công viên..."
+      />
 
-      <div className={cx("field-grid compact")}>
-        <Field label="Tọa độ" value={coordinates} onChange={setCoordinates} />
-        <Field label="URL Google Maps" type="url" value={googleMapsUrl} onChange={setGoogleMapsUrl} />
+      <div className={cx("field-grid compact location-detail-grid")}>
+        <Field
+          label="Tọa độ"
+          value={coordinates}
+          onChange={setCoordinates}
+          placeholder="10.77689, 106.70090"
+          description="Nhập theo dạng vĩ độ, kinh độ hoặc bấm Vị trí hiện tại."
+        />
+        <Field
+          label="URL Google Maps"
+          type="url"
+          value={googleMapsUrl}
+          onChange={setGoogleMapsUrl}
+          placeholder="https://maps.google.com/?q=10.77689,106.70090"
+          description="Dán link chia sẻ từ Google Maps nếu bạn đã có sẵn địa điểm."
+        />
       </div>
 
-      <TextAreaField label="Ghi chú" rows={4} defaultValue="Điều mình muốn nhớ nhất là..." />
+      <TextAreaField
+        label="Ghi chú"
+        rows={4}
+        placeholder="Viết vài dòng để sau này đọc lại vẫn nhớ cảm giác hôm đó."
+      />
+
+      <section className={cx("quick-media-section")} aria-label="Thêm ảnh hoặc video">
+        <div className={cx("quick-media-section-head")}>
+          <div>
+            <strong>Ảnh và video</strong>
+            <small>Thêm media sau khi đã nhập thông tin chính.</small>
+          </div>
+          {mediaItems.length > 0 ? <span>{mediaItems.length} file</span> : null}
+        </div>
+
+        <label className={cx("quick-upload")} htmlFor="quick-photos">
+          <Input id="quick-photos" type="file" accept="image/*,video/*" multiple onChange={addMediaItems} />
+          <span aria-hidden="true">+</span>
+          <strong>Thêm ảnh hoặc video</strong>
+          <small>Chọn một hoặc nhiều ảnh/video từ máy của bạn.</small>
+        </label>
+
+        {mediaItems.length > 0 ? (
+          <div className={cx("quick-media-preview")} aria-label="Ảnh và video đã chọn">
+            {mediaItems.map((item) => (
+              <figure className={cx("quick-media-item")} key={item.id}>
+                {item.type === "video" ? (
+                  <video src={item.url} muted playsInline preload="metadata" />
+                ) : (
+                  <img alt="" src={item.url} />
+                )}
+                <figcaption>
+                  <strong>{item.name}</strong>
+                  <small>{item.type === "video" ? "Video" : "Ảnh"} · {formatFileSize(item.size)}</small>
+                </figcaption>
+                <Button
+                  aria-label={`Xóa ${item.name}`}
+                  className={cx("quick-media-remove")}
+                  type="button"
+                  onPress={() => removeMediaItem(item.id)}
+                >
+                  ×
+                </Button>
+              </figure>
+            ))}
+          </div>
+        ) : null}
+      </section>
 
       <div className={cx("quick-actions")}>
-        <Button className={cx("btn btn-primary")} type="submit">
+        <Button className={cx("btn btn-primary")} type="submit" isDisabled={!canSave}>
           <span aria-hidden="true">+</span>
           Lưu kỷ niệm
         </Button>
@@ -96,4 +212,16 @@ export function QuickMemoryPanel({ embedded = false }) {
       {saved ? <p className={cx("save-state")}>Đã lưu bản nháp trên màn hình.</p> : null}
     </form>
   );
+}
+
+function createMediaId() {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function formatFileSize(size) {
+  if (size < 1024 * 1024) {
+    return `${Math.max(1, Math.round(size / 1024))} KB`;
+  }
+
+  return `${(size / 1024 / 1024).toFixed(1)} MB`;
 }
