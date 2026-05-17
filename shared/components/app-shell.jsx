@@ -8,8 +8,7 @@ import { cx } from "@/shared/lib/styles";
 
 const navItems = [
   { href: "/", label: "Bản đồ", icon: "⌖" },
-  { href: "/checkins", label: "Thư viện", icon: "▥" },
-  { href: "/checkins/new", label: "Thêm", icon: "+" },
+  { href: "/checkins", label: "Kỷ niệm", icon: "▥" },
   { href: "/profile", label: "Hồ sơ", icon: "♡" }
 ];
 
@@ -53,8 +52,8 @@ export function AppShell({ children }) {
                 }
               }}
             >
-              <span aria-hidden="true">{item.icon}</span>
-              <small>{item.label}</small>
+              <span className={cx("bottom-nav-icon")} aria-hidden="true">{item.icon}</span>
+              <small className={cx("bottom-nav-label")}>{item.label}</small>
             </Link>
           );
         })}

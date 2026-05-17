@@ -3,7 +3,6 @@ export { CheckinCard } from "./components/checkin-card";
 export { CheckinFormMock } from "./components/checkin-form-mock";
 export { CheckinLibrary } from "./components/checkin-library";
 export { DetailActions } from "./components/detail-actions";
-export { MemoryCreatePage } from "./components/memory-create-page";
 export { MemoryDetailDrawer } from "./components/memory-detail-drawer";
 export { MemoryDetailPage } from "./components/memory-detail-page";
 export { MemoryHoverPreview } from "./components/memory-hover-preview";

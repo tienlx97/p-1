@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Button, Input, Link } from "react-aria-components";
+import { Button, Input } from "react-aria-components";
 import { moods } from "@/entities/memory";
 import { Field, SelectField, SelectItem, TextAreaField } from "@/shared/components/ui";
 
@@ -98,9 +98,6 @@ export function QuickMemoryPanel({ embedded = false }) {
             <p className={cx("eyebrow")}>Thêm nhanh</p>
             <h2>Kỷ niệm mới</h2>
           </div>
-          <Link href="/checkins/new" className={cx("text-link")}>
-            Form đầy đủ
-          </Link>
         </div>
       )}
 
