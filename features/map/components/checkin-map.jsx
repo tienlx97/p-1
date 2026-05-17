@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/components/map.constants";
+import { MapContainer, Marker, TileLayer, Tooltip, useMapEvents } from "react-leaflet";
+import {
+  DEFAULT_CENTER,
+  DEFAULT_ZOOM,
+  PLACE_LABEL_MIN_ZOOM
+} from "@/features/map/components/map.constants";
 import { createCheckinIcon } from "@/features/map/components/map.utils";
 import { MapControls } from "@/features/map/components/map-controls";
 import { MapFilterPanel } from "@/features/map/components/map-filter-panel";
@@ -10,13 +14,29 @@ import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from "@/featu
 import { checkins } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
 
+function MapZoomWatcher({ onZoomChange }) {
+  const map = useMapEvents({
+    zoomend: () => {
+      onZoomChange(map.getZoom());
+    }
+  });
+
+  useEffect(() => {
+    onZoomChange(map.getZoom());
+  }, [map, onZoomChange]);
+
+  return null;
+}
+
 export function CheckinMap() {
   const [activeId, setActiveId] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [initialMediaIndex, setInitialMediaIndex] = useState(null);
   const [drawerMode, setDrawerMode] = useState(null);
   const [hoveredPreviewId, setHoveredPreviewId] = useState(null);
+  const [mapZoom, setMapZoom] = useState(DEFAULT_ZOOM);
   const hoverCloseTimerRef = useRef(null);
+  const showPlaceLabels = mapZoom >= PLACE_LABEL_MIN_ZOOM;
 
   const filteredCheckins = useMemo(
     () =>
@@ -139,6 +159,7 @@ export function CheckinMap() {
                 className={cx("checkin-leaflet-map")}
               >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <MapZoomWatcher onZoomChange={setMapZoom} />
                 <MapControls
                   activeCheckin={activeCheckin}
                   visibleCheckins={mapPlaces}
@@ -154,7 +175,7 @@ export function CheckinMap() {
                     <Marker
                       key={checkin.id}
                       position={[checkin.latitude, checkin.longitude]}
-                      icon={createCheckinIcon(checkin, isActive)}
+                      icon={createCheckinIcon(checkin, isActive, showPlaceLabels)}
                       eventHandlers={{
                         click: () => openMemoryDetail(checkin.id),
                         mouseover: () => showHoverPreview(checkin.id),
