@@ -1,6 +1,5 @@
 import L from "leaflet";
-import { getCategory, getCoverImage, getMood } from "@/entities/memory";
-import { MARKER_VISUAL_MODE } from "@/features/map/components/map.constants";
+import { getCategory, getMood } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
 
 const moodMarkerIcons = {
@@ -93,7 +92,6 @@ export function fitMapToCheckins(map, visibleCheckins, options = {}) {
 export function createCheckinIcon(checkin, isActive) {
   const category = getCategory(checkin.categoryId);
   const mood = getMood(checkin.moodId);
-  const coverImage = getCoverImage(checkin);
   const markerActiveColor = category.id === "home" ? "#b5164f" : category.color;
   const moodIcon = category.id === "home" ? homeMarkerIcon : moodMarkerIcons[mood.id] ?? moodMarkerIcons.happy;
   const width = 44;
@@ -101,13 +99,10 @@ export function createCheckinIcon(checkin, isActive) {
   const anchorY = 50;
   const markerClassName = cx(
     "explory-memory-marker",
+    "marker-mood",
     category.id === "home" && "home-marker",
     isActive && "active"
   );
-  const markerPhotoContent =
-    MARKER_VISUAL_MODE === "mood"
-      ? `<span class="${cx("explory-marker-photo")}"></span>`
-      : `<span class="${cx("explory-marker-photo")}" style="background-image: url('${coverImage}')"></span>`;
 
   return L.divIcon({
     className: cx("checkin-leaflet-icon"),
@@ -115,15 +110,10 @@ export function createCheckinIcon(checkin, isActive) {
       <span class="${markerClassName}" style="--marker-color: ${category.color}; --marker-active-color: ${markerActiveColor}">
         ${isActive ? `<span class="${cx("explory-marker-pulse")}"></span>` : ""}
         <span class="${cx("explory-marker-core")}">
-          ${markerPhotoContent}
+          <span class="${cx("explory-marker-photo")}"></span>
           <span class="${cx("explory-marker-glass")}"></span>
-          ${
-            MARKER_VISUAL_MODE === "mood"
-              ? `<span class="${cx("explory-marker-camera mood-camera")}" aria-hidden="true">${moodIcon}</span>`
-              : `<span class="${cx("explory-marker-camera")}" aria-hidden="true"></span>`
-          }
+          <span class="${cx("explory-marker-camera mood-camera")}" aria-hidden="true">${moodIcon}</span>
         </span>
-        ${MARKER_VISUAL_MODE === "photo" ? `<span class="${cx("explory-marker-mood")}" aria-hidden="true">${moodIcon}</span>` : ""}
         <span class="${cx("explory-marker-tip")}" aria-hidden="true"></span>
       </span>
     `,

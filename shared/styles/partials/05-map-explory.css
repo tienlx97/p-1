@@ -407,6 +407,13 @@
   opacity: 0.34;
 }
 
+.explory-memory-marker.marker-mood .explory-marker-photo {
+  inset: 6px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(60, 64, 67, 0.08);
+  opacity: 1;
+}
+
 .explory-marker-core {
   position: relative;
   z-index: 2;
@@ -431,6 +438,23 @@
   box-shadow:
     0 2px 5px rgba(26, 115, 232, 0.36),
     0 8px 18px rgba(26, 115, 232, 0.28);
+}
+
+.explory-memory-marker.marker-mood .explory-marker-core {
+  border-color: #1f6fca;
+  background: #2f83da;
+  box-shadow:
+    0 2px 5px rgba(47, 131, 218, 0.34),
+    0 8px 18px rgba(47, 131, 218, 0.26);
+}
+
+.explory-memory-marker.marker-mood:hover .explory-marker-core,
+.explory-memory-marker.marker-mood.active .explory-marker-core {
+  border-color: #165fae;
+  background: #1f75d1;
+  box-shadow:
+    0 2px 5px rgba(31, 117, 209, 0.38),
+    0 8px 18px rgba(31, 117, 209, 0.3);
 }
 
 .explory-memory-marker.home-marker .explory-marker-core,
@@ -466,6 +490,16 @@
 
 .explory-memory-marker.active .explory-marker-tip {
   border-top-color: #1a73e8;
+}
+
+.explory-memory-marker.marker-mood .explory-marker-tip,
+.explory-memory-marker.marker-mood.active .explory-marker-tip {
+  border-top-color: #2f83da;
+}
+
+.explory-memory-marker.marker-mood:hover .explory-marker-tip,
+.explory-memory-marker.marker-mood.active:hover .explory-marker-tip {
+  border-top-color: #1f75d1;
 }
 
 .explory-memory-marker.home-marker .explory-marker-tip,
@@ -525,8 +559,8 @@
   top: 50%;
   z-index: 3;
   display: grid;
-  width: 24px;
-  height: 24px;
+  width: 27px;
+  height: 27px;
   place-items: center;
   border: 0;
   border-radius: 0;
@@ -536,38 +570,13 @@
 
 .explory-marker-camera.mood-camera svg {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 27px;
+  height: 27px;
 }
 
 .explory-marker-camera.mood-camera::before,
 .explory-marker-camera.mood-camera::after {
   display: none;
-}
-
-.explory-marker-mood {
-  position: absolute;
-  right: -5px;
-  top: -5px;
-  z-index: 5;
-  display: grid;
-  width: 22px;
-  height: 22px;
-  place-items: center;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  line-height: 1;
-  transform: rotate(7deg);
-  transform-origin: center;
-}
-
-.explory-marker-mood svg {
-  display: block;
-  width: 22px;
-  height: 22px;
-  filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.9))
-    drop-shadow(0 2px 3px rgba(60, 64, 67, 0.26));
 }
 
 .home-heart-icon {
@@ -584,11 +593,6 @@
   animation: home-heart-beat 1.12s ease-in-out 120ms infinite;
   transform-box: fill-box;
   transform-origin: center;
-}
-
-.explory-memory-marker.active .explory-marker-mood,
-.explory-memory-marker:hover .explory-marker-mood {
-  transform: rotate(7deg) scale(1.08);
 }
 
 .drawer-backdrop {
