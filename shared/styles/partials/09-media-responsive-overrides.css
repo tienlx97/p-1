@@ -1,0 +1,141 @@
+@media (max-width: 820px) {
+.memory-media-viewer {
+    grid-template-rows: minmax(0, 1fr) 178px;
+    grid-template-columns: 1fr;
+  }
+
+.memory-media-viewer.drawer-stage-viewer {
+    inset: 0;
+    z-index: 1800;
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+.media-viewer-mini-nav {
+    display: none;
+  }
+
+.media-viewer-stage {
+    grid-row: 1;
+    height: 100%;
+    max-height: 100%;
+  }
+
+.media-viewer-rail {
+    grid-row: 2;
+    grid-template-rows: auto minmax(0, 1fr);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 0;
+  }
+
+.media-viewer-search {
+    display: none;
+  }
+
+.media-viewer-tabs {
+    gap: 22px;
+    padding: 0 14px;
+  }
+
+.media-viewer-tabs span {
+    padding: 10px 0 11px;
+    font-size: 13px;
+  }
+
+.media-viewer-thumbs {
+    overflow: hidden;
+    padding: 8px 10px 12px;
+  }
+
+.media-viewer-thumb-slide {
+    width: 132px;
+  }
+
+.media-viewer-thumbs button {
+    width: 132px;
+    border-radius: 8px;
+    aspect-ratio: 4 / 3;
+  }
+
+.media-viewer-main {
+    --media-viewer-padding-top: 72px;
+    --media-viewer-padding-bottom: 54px;
+
+    height: 100%;
+    max-height: 100%;
+    padding: var(--media-viewer-padding-top) 18px var(--media-viewer-padding-bottom);
+  }
+
+.media-viewer-main img,
+.media-viewer-main video {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+.media-viewer-topcard {
+    top: 12px;
+    left: 12px;
+    max-width: calc(100% - 128px);
+    min-width: 0;
+    padding: 11px 12px;
+  }
+
+.media-viewer-actions {
+    top: 12px;
+    right: 12px;
+  }
+
+.media-viewer-actions button:first-child {
+    display: none;
+  }
+
+.media-viewer-nav {
+    width: 42px;
+    height: 50px;
+    font-size: 36px;
+  }
+
+.media-viewer-nav.prev {
+    left: 8px;
+  }
+
+.media-viewer-nav.next {
+    right: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+.memory-media-viewer {
+    grid-template-rows: minmax(0, 1fr) 148px;
+  }
+
+.memory-media-viewer.drawer-stage-viewer {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+.media-viewer-thumb-slide,
+.media-viewer-thumbs button {
+    width: 108px;
+  }
+
+.media-viewer-main {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+.media-viewer-topcard {
+    max-width: calc(100% - 74px);
+  }
+}
+
+.drawer-scroll {
+  min-height: 0;
+  height: 100%;
+}
+
+.map-drawer.memory-drawer {
+  overflow: hidden;
+}
+
+.map-drawer.memory-drawer .drawer-memory {
+  overflow: visible;
+}
