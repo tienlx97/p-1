@@ -96,6 +96,16 @@
   color: #3c4043;
 }
 
+.map-filter-panel {
+  top: max(14px, env(safe-area-inset-top));
+  left: calc(max(14px, env(safe-area-inset-left)) + 60px);
+  max-width: min(780px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)) - 74px));
+}
+
+.map-filter-row {
+  max-width: min(680px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)) - 162px));
+}
+
 .explory-map-controls {
   right: max(16px, env(safe-area-inset-right));
   bottom: calc(max(16px, env(safe-area-inset-bottom)) + 86px);
@@ -343,6 +353,37 @@
     height: 44px;
   }
 
+  .map-filter-panel {
+    top: calc(max(10px, env(safe-area-inset-top)) + 52px);
+    right: max(10px, env(safe-area-inset-right));
+    left: max(10px, env(safe-area-inset-left));
+    display: flex;
+    max-width: none;
+    gap: 7px;
+  }
+
+  .map-filter-row {
+    max-width: calc(100vw - max(10px, env(safe-area-inset-left)) - max(10px, env(safe-area-inset-right)) - 86px);
+  }
+
+  .map-filter-scroll,
+  .map-filter-count,
+  .map-filter-chip {
+    min-height: 36px;
+    height: 36px;
+  }
+
+  .map-filter-scroll {
+    width: 36px;
+    font-size: 25px;
+  }
+
+  .map-filter-chip {
+    padding-right: 12px;
+    padding-left: 11px;
+    font-size: 13px;
+  }
+
   .explory-map-controls {
     right: max(10px, env(safe-area-inset-right));
     bottom: calc(max(92px, env(safe-area-inset-bottom)) + 8px);
@@ -552,6 +593,20 @@
     top: max(58px, env(safe-area-inset-top));
     right: 0;
     left: 0;
+  }
+
+  .map-filter-panel {
+    gap: 6px;
+  }
+
+  .map-filter-count,
+  .map-filter-divider,
+  .map-filter-chip.mood {
+    display: none;
+  }
+
+  .map-filter-row {
+    max-width: calc(100vw - max(18px, env(safe-area-inset-left)) - max(18px, env(safe-area-inset-right)) - 80px);
   }
 
   .google-place-hero {

@@ -6,20 +6,35 @@ import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/components/map.constants";
 import { createCheckinIcon } from "@/features/map/components/map.utils";
 import { MapControls } from "@/features/map/components/map-controls";
+import { MapFilterPanel } from "@/features/map/components/map-filter-panel";
 import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from "@/features/memory";
 import { checkins } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
 
 export function CheckinMap() {
   const [activeId, setActiveId] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [moodFilter, setMoodFilter] = useState("all");
   const [initialMediaIndex, setInitialMediaIndex] = useState(null);
   const [drawerMode, setDrawerMode] = useState(null);
   const [hoveredPreviewId, setHoveredPreviewId] = useState(null);
   const hoverCloseTimerRef = useRef(null);
+
+  const filteredCheckins = useMemo(
+    () =>
+      checkins.filter((checkin) => {
+        const matchesCategory = categoryFilter === "all" || checkin.categoryId === categoryFilter;
+        const matchesMood = moodFilter === "all" || checkin.moodId === moodFilter;
+
+        return matchesCategory && matchesMood;
+      }),
+    [categoryFilter, moodFilter]
+  );
+
   const mapPlaces = useMemo(() => {
     const places = new Map();
 
-    for (const checkin of checkins) {
+    for (const checkin of filteredCheckins) {
       const current = places.get(checkin.locationName);
 
       if (
@@ -31,10 +46,10 @@ export function CheckinMap() {
     }
 
     return [...places.values()];
-  }, []);
+  }, [filteredCheckins]);
 
   const activeCheckin = activeId
-    ? checkins.find((checkin) => checkin.id === activeId) ?? null
+    ? filteredCheckins.find((checkin) => checkin.id === activeId) ?? null
     : null;
 
   useEffect(() => {
@@ -44,6 +59,22 @@ export function CheckinMap() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const activeStillVisible = !activeId || filteredCheckins.some((checkin) => checkin.id === activeId);
+    const previewStillVisible =
+      !hoveredPreviewId || filteredCheckins.some((checkin) => checkin.id === hoveredPreviewId);
+
+    if (!activeStillVisible) {
+      setActiveId(null);
+      setInitialMediaIndex(null);
+      setDrawerMode(null);
+    }
+
+    if (!previewStillVisible) {
+      setHoveredPreviewId(null);
+    }
+  }, [activeId, filteredCheckins, hoveredPreviewId]);
 
   function keepPreviewOpen() {
     if (hoverCloseTimerRef.current) {
@@ -96,61 +127,77 @@ export function CheckinMap() {
         </Link>
 
         <div className={cx("leaflet-map-shell")}>
-          {mapPlaces.length > 0 ? (
-            <MapContainer
-              center={DEFAULT_CENTER}
-              zoom={DEFAULT_ZOOM}
-              minZoom={4}
-              maxZoom={18}
-              attributionControl={false}
-              zoomControl={false}
-              scrollWheelZoom
-              className={cx("checkin-leaflet-map")}
-            >
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <MapControls
-                activeCheckin={activeCheckin}
-                visibleCheckins={mapPlaces}
-                onAddMemory={openAddMemoryDrawer}
+          {checkins.length > 0 ? (
+            <>
+              <MapFilterPanel
+                categoryId={categoryFilter}
+                moodId={moodFilter}
+                totalCount={checkins.length}
+                visibleCount={filteredCheckins.length}
+                onCategoryChange={setCategoryFilter}
+                onMoodChange={setMoodFilter}
               />
+              <MapContainer
+                center={DEFAULT_CENTER}
+                zoom={DEFAULT_ZOOM}
+                minZoom={4}
+                maxZoom={18}
+                attributionControl={false}
+                zoomControl={false}
+                scrollWheelZoom
+                className={cx("checkin-leaflet-map")}
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <MapControls
+                  activeCheckin={activeCheckin}
+                  visibleCheckins={mapPlaces}
+                  onAddMemory={openAddMemoryDrawer}
+                />
 
-              {mapPlaces.map((checkin) => {
-                const isActive =
-                  (drawerMode === "memory" && checkin.id === activeId) ||
-                  checkin.id === hoveredPreviewId;
+                {mapPlaces.map((checkin) => {
+                  const isActive =
+                    (drawerMode === "memory" && checkin.id === activeId) ||
+                    checkin.id === hoveredPreviewId;
 
-                return (
-                  <Marker
-                    key={checkin.id}
-                    position={[checkin.latitude, checkin.longitude]}
-                    icon={createCheckinIcon(checkin, isActive)}
-                    eventHandlers={{
-                      click: () => openMemoryDetail(checkin.id),
-                      mouseover: () => showHoverPreview(checkin.id),
-                      mouseout: scheduleCloseHoverPreview
-                    }}
-                  >
-                    {hoveredPreviewId === checkin.id ? (
-                      <Tooltip
-                        className={cx("memory-hover-tooltip")}
-                        direction="top"
-                        interactive
-                        offset={[0, 0]}
-                        opacity={1}
-                        permanent
-                      >
-                        <MemoryHoverPreview
-                          checkin={checkin}
-                          onMouseEnter={keepPreviewOpen}
-                          onMouseLeave={scheduleCloseHoverPreview}
-                          onPress={(mediaIndex) => openMemoryDetail(checkin.id, mediaIndex)}
-                        />
-                      </Tooltip>
-                    ) : null}
-                  </Marker>
-                );
-              })}
-            </MapContainer>
+                  return (
+                    <Marker
+                      key={checkin.id}
+                      position={[checkin.latitude, checkin.longitude]}
+                      icon={createCheckinIcon(checkin, isActive)}
+                      eventHandlers={{
+                        click: () => openMemoryDetail(checkin.id),
+                        mouseover: () => showHoverPreview(checkin.id),
+                        mouseout: scheduleCloseHoverPreview
+                      }}
+                    >
+                      {hoveredPreviewId === checkin.id ? (
+                        <Tooltip
+                          className={cx("memory-hover-tooltip")}
+                          direction="top"
+                          interactive
+                          offset={[0, 0]}
+                          opacity={1}
+                          permanent
+                        >
+                          <MemoryHoverPreview
+                            checkin={checkin}
+                            onMouseEnter={keepPreviewOpen}
+                            onMouseLeave={scheduleCloseHoverPreview}
+                            onPress={(mediaIndex) => openMemoryDetail(checkin.id, mediaIndex)}
+                          />
+                        </Tooltip>
+                      ) : null}
+                    </Marker>
+                  );
+                })}
+              </MapContainer>
+              {mapPlaces.length === 0 ? (
+                <div className={cx("map-empty-state map-filter-empty-state")}>
+                  <h2>Không có kỷ niệm phù hợp</h2>
+                  <p>Thử đổi nhóm hoặc cảm xúc để xem lại hành trình khác.</p>
+                </div>
+              ) : null}
+            </>
           ) : (
             <div className={cx("map-empty-state")}>
               <h2>Chưa có kỷ niệm phù hợp</h2>
