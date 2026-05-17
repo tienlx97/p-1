@@ -172,6 +172,7 @@
 }
 
 .upload-zone {
+  position: relative;
   display: grid;
   min-height: 170px;
   place-items: center;
@@ -180,6 +181,14 @@
   background: var(--surface-soft);
   padding: 20px;
   text-align: center;
+}
+
+.upload-zone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
 }
 
 .upload-zone span {
@@ -230,6 +239,33 @@
   padding: 4px 8px;
   font-size: 12px;
   font-weight: 900;
+}
+
+.create-media-section {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(248, 250, 252, 0.82);
+  padding: 14px;
+}
+
+.create-upload-zone {
+  min-height: 150px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(11, 132, 255, 0.08), rgba(11, 132, 255, 0.03));
+  cursor: pointer;
+}
+
+.create-upload-zone span {
+  border-radius: 50%;
+  background: #1a73e8;
+}
+
+.create-media-preview {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.location-detail-grid {
+  grid-template-columns: 1fr;
 }
 
 .prompt-list {

@@ -574,6 +574,10 @@
   .quick-actions {
     grid-template-columns: 1fr;
   }
+
+  .create-media-preview {
+    grid-template-columns: 1fr;
+  }
 }
 
 .nav-item.active,

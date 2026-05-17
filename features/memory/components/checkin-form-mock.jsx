@@ -1,57 +1,92 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-import { Button, Radio, RadioGroup } from "react-aria-components";
+import { useEffect, useRef, useState } from "react";
+import { Button, Input, Radio, RadioGroup } from "react-aria-components";
 import { categories, journalPrompts, moods } from "@/entities/memory";
 import { Field, SelectField, SelectItem, TextAreaField } from "@/shared/components/ui";
 
 import { cx } from "@/shared/lib/styles";
 
-const previewImages = [
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80"
-];
-
 export function CheckinFormMock() {
   const [activePrompt, setActivePrompt] = useState(journalPrompts[1]);
   const [locationMode, setLocationMode] = useState("search");
+  const [title, setTitle] = useState("");
+  const [memoryDate, setMemoryDate] = useState("");
+  const [placeName, setPlaceName] = useState("");
+  const [address, setAddress] = useState("");
+  const [coordinates, setCoordinates] = useState("");
+  const [googleMapsUrl, setGoogleMapsUrl] = useState("");
+  const [mediaItems, setMediaItems] = useState([]);
+  const mediaItemsRef = useRef([]);
+  const canSave = title.trim().length > 0 && memoryDate.length > 0 && placeName.trim().length > 0 && mediaItems.length > 0;
+
+  useEffect(() => {
+    mediaItemsRef.current = mediaItems;
+  }, [mediaItems]);
+
+  useEffect(() => {
+    return () => {
+      for (const item of mediaItemsRef.current) {
+        URL.revokeObjectURL(item.url);
+      }
+    };
+  }, []);
+
+  function addMediaItems(event) {
+    const files = [...(event.currentTarget.files ?? [])];
+
+    if (files.length === 0) {
+      return;
+    }
+
+    const nextItems = files.map((file) => ({
+      id: createMediaId(),
+      name: file.name,
+      size: file.size,
+      type: file.type.startsWith("video/") ? "video" : "image",
+      url: URL.createObjectURL(file)
+    }));
+
+    setMediaItems((currentItems) => [...currentItems, ...nextItems]);
+    event.currentTarget.value = "";
+  }
+
+  function removeMediaItem(id) {
+    setMediaItems((currentItems) => {
+      const itemToRemove = currentItems.find((item) => item.id === id);
+
+      if (itemToRemove) {
+        URL.revokeObjectURL(itemToRemove.url);
+      }
+
+      return currentItems.filter((item) => item.id !== id);
+    });
+  }
 
   return (
-    <form className={cx("create-layout")} onSubmit={(event) => event.preventDefault()}>
+    <form
+      className={cx("create-layout")}
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!canSave) {
+          return;
+        }
+      }}
+    >
       <section className={cx("form-panel")}>
         <div className={cx("form-section")}>
-          <div className={cx("section-heading compact-heading")}>
-            <div>
-              <p className={cx("eyebrow")}>Ảnh kỷ niệm</p>
-              <h2>Chọn ảnh đại diện</h2>
-            </div>
-          </div>
-
-          <div className={cx("upload-zone")}>
-            <span aria-hidden="true">⇧</span>
-            <strong>Kéo ảnh/video vào đây hoặc chọn từ thiết bị</strong>
-            <small>Tối đa 10 media cho một kỷ niệm, có thể gồm ảnh và video ngắn.</small>
-          </div>
-
-          <div className={cx("preview-row")}>
-            {previewImages.map((image, index) => (
-              <div className={cx("preview-item")} key={image}>
-                <Image src={image} alt="" fill sizes="(max-width: 820px) 30vw, 180px" />
-                <span>{index === 0 ? "Cover" : index + 1}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className={cx("form-section")}>
-          <Field label="Tiêu đề" defaultValue="Một buổi chiều đáng nhớ" />
+          <Field
+            label="Tiêu đề"
+            value={title}
+            onChange={setTitle}
+            placeholder="Ví dụ: Xem hoàng hôn ở cầu Mống"
+            isRequired
+          />
 
           <TextAreaField
             label="Nhật ký ngắn"
             rows={6}
-            defaultValue="Mình muốn nhớ lại ánh sáng, âm thanh và cảm giác lúc hai đứa vừa đến nơi này."
+            placeholder="Viết vài dòng để sau này đọc lại vẫn nhớ cảm giác hôm đó."
           />
 
           <div className={cx("prompt-list")} aria-label="Gợi ý viết nhật ký">
@@ -66,6 +101,51 @@ export function CheckinFormMock() {
               </Button>
             ))}
           </div>
+        </div>
+
+        <div className={cx("form-section")}>
+          <section className={cx("quick-media-section create-media-section")} aria-label="Thêm ảnh hoặc video">
+            <div className={cx("quick-media-section-head")}>
+              <div>
+                <strong>Ảnh và video</strong>
+                <small>Thêm media sau khi đã nhập thông tin chính.</small>
+              </div>
+              {mediaItems.length > 0 ? <span>{mediaItems.length} file</span> : null}
+            </div>
+
+            <label className={cx("upload-zone create-upload-zone")} htmlFor="create-photos">
+              <Input id="create-photos" type="file" accept="image/*,video/*" multiple onChange={addMediaItems} />
+              <span aria-hidden="true">+</span>
+              <strong>Kéo ảnh/video vào đây hoặc chọn từ thiết bị</strong>
+              <small>Tối đa 10 media cho một kỷ niệm, có thể gồm ảnh và video ngắn.</small>
+            </label>
+
+            {mediaItems.length > 0 ? (
+              <div className={cx("quick-media-preview create-media-preview")} aria-label="Ảnh và video đã chọn">
+                {mediaItems.map((item) => (
+                  <figure className={cx("quick-media-item")} key={item.id}>
+                    {item.type === "video" ? (
+                      <video src={item.url} muted playsInline preload="metadata" />
+                    ) : (
+                      <img alt="" src={item.url} />
+                    )}
+                    <figcaption>
+                      <strong>{item.name}</strong>
+                      <small>{item.type === "video" ? "Video" : "Ảnh"} · {formatFileSize(item.size)}</small>
+                    </figcaption>
+                    <Button
+                      aria-label={`Xóa ${item.name}`}
+                      className={cx("quick-media-remove")}
+                      type="button"
+                      onPress={() => removeMediaItem(item.id)}
+                    >
+                      ×
+                    </Button>
+                  </figure>
+                ))}
+              </div>
+            ) : null}
+          </section>
         </div>
       </section>
 
@@ -95,16 +175,36 @@ export function CheckinFormMock() {
             </Radio>
           </RadioGroup>
 
-          <Field label="Tên địa điểm" defaultValue="Kokoro Cafe" />
+          <Field
+            label="Tên địa điểm"
+            value={placeName}
+            onChange={setPlaceName}
+            placeholder="Tên quán, cây cầu, công viên..."
+            isRequired
+          />
 
-          <Field label="Địa chỉ" defaultValue="45 Đặng Thái Thân, Đà Lạt" />
+          <Field
+            label="Địa chỉ"
+            value={address}
+            onChange={setAddress}
+            placeholder="Số nhà, đường, phường/xã, thành phố..."
+          />
 
-          <div className={cx("field-grid")}>
-            <Field label="Tọa độ" defaultValue="11.93650, 108.44190" />
+          <div className={cx("field-grid location-detail-grid")}>
+            <Field
+              label="Tọa độ"
+              value={coordinates}
+              onChange={setCoordinates}
+              placeholder="10.77689, 106.70090"
+              description="Nhập theo dạng vĩ độ, kinh độ."
+            />
             <Field
               label="URL Google Maps"
               type="url"
-              defaultValue="https://maps.google.com/?q=11.93650,108.44190"
+              value={googleMapsUrl}
+              onChange={setGoogleMapsUrl}
+              placeholder="https://maps.google.com/?q=10.77689,106.70090"
+              description="Dán link chia sẻ từ Google Maps nếu đã có sẵn địa điểm."
             />
           </div>
 
@@ -132,7 +232,13 @@ export function CheckinFormMock() {
             </SelectField>
           </div>
 
-          <Field label="Ngày kỷ niệm" type="date" defaultValue="2026-04-27" />
+          <Field
+            label="Ngày kỷ niệm"
+            type="date"
+            value={memoryDate}
+            onChange={setMemoryDate}
+            isRequired
+          />
 
           <RadioGroup
             aria-label="Trạng thái lưu"
@@ -147,7 +253,7 @@ export function CheckinFormMock() {
             </Radio>
           </RadioGroup>
 
-          <Button className={cx("btn btn-primary submit-btn")} type="submit">
+          <Button className={cx("btn btn-primary submit-btn")} type="submit" isDisabled={!canSave}>
             <span aria-hidden="true">✓</span>
             Lưu kỷ niệm
           </Button>
@@ -155,4 +261,16 @@ export function CheckinFormMock() {
       </aside>
     </form>
   );
+}
+
+function createMediaId() {
+  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function formatFileSize(size) {
+  if (size < 1024 * 1024) {
+    return `${Math.max(1, Math.round(size / 1024))} KB`;
+  }
+
+  return `${(size / 1024 / 1024).toFixed(1)} MB`;
 }

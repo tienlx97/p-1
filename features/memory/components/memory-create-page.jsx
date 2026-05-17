@@ -8,7 +8,7 @@ export function MemoryCreatePage() {
       <PageHeader
         eyebrow="Thêm kỷ niệm"
         title="Lưu ảnh, ngày, ghi chú và địa điểm trong một form."
-        description="Chỉ tiêu đề và ngày là bắt buộc. Địa điểm, ảnh và cảm xúc có thể thêm sau."
+        description="Nhập thông tin chính trước, sau đó thêm ảnh/video và gắn địa điểm để lưu kỷ niệm."
       />
       <CheckinFormMock />
     </div>
