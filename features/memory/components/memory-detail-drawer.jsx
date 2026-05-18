@@ -12,7 +12,7 @@ export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
   const drawerRef = useRef(null);
   const titleRef = useRef(null);
   const title = checkin?.title ?? "Thông tin kỷ niệm";
-  const { overlayProps } = useOverlay(
+  const { overlayProps, underlayProps } = useOverlay(
     {
       isDismissable: false,
       isKeyboardDismissDisabled: false,
@@ -31,6 +31,7 @@ export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
 
   return (
     <FocusScope restoreFocus>
+      <div {...underlayProps} className={cx("drawer-backdrop")} role="presentation" />
       <aside {...drawerProps} ref={drawerRef} className={cx("map-drawer memory-drawer")}>
         <span className={cx("drawer-handle")} aria-hidden="true" />
         <div className={cx("drawer-head memory-drawer-head")}>

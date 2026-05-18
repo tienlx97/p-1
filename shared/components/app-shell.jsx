@@ -8,7 +8,6 @@ import { cx } from "@/shared/lib/styles";
 
 const navItems = [
   { href: "/", label: "Bản đồ", icon: "map" },
-  { href: "/checkins", label: "Kỷ niệm", icon: "memories" },
   { href: "/profile", label: "Hồ sơ", icon: "profile" }
 ];
 
@@ -81,8 +80,8 @@ export function AppShell({ children }) {
         >
           <span className={cx("bottom-nav-add-icon")} aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
-              <path d="M12 6v12" />
-              <path d="M6 12h12" />
+              <path d="M12 6.5v11" />
+              <path d="M6.5 12h11" />
             </svg>
           </span>
         </Button>
