@@ -24,6 +24,73 @@ import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from '@/featu
 import { checkins } from '@/entities/memory'
 import { cx } from '@/shared/lib/styles'
 
+const LABEL_BOX_WIDTH = 132
+const LABEL_BOX_HEIGHT = 44
+const MARKER_BOX_WIDTH = 44
+const MARKER_BOX_HEIGHT = 54
+const LABEL_VIEWPORT_PADDING = 8
+const LABEL_HORIZONTAL_GAP = 18
+const LABEL_PLACEMENTS = [
+  { id: 'right', dx: LABEL_HORIZONTAL_GAP, dy: -46 },
+  { id: 'left', dx: -(LABEL_BOX_WIDTH + LABEL_HORIZONTAL_GAP), dy: -46 },
+  { id: 'top-right', dx: 10, dy: -(LABEL_BOX_HEIGHT + 56) },
+  { id: 'bottom-right', dx: 10, dy: 8 },
+  { id: 'top-left', dx: -(LABEL_BOX_WIDTH + 10), dy: -(LABEL_BOX_HEIGHT + 56) },
+  { id: 'bottom-left', dx: -(LABEL_BOX_WIDTH + 10), dy: 8 },
+]
+
+function boxesOverlap(first, second) {
+  return (
+    first.left < second.right &&
+    first.right > second.left &&
+    first.top < second.bottom &&
+    first.bottom > second.top
+  )
+}
+
+function createBox(left, top, width, height) {
+  return {
+    left,
+    top,
+    right: left + width,
+    bottom: top + height,
+  }
+}
+
+function scoreLabelBox(box, occupiedBoxes, markerBoxes, mapSize) {
+  let score = 0
+
+  if (box.left < LABEL_VIEWPORT_PADDING) {
+    score += (LABEL_VIEWPORT_PADDING - box.left) * 3
+  }
+
+  if (box.top < LABEL_VIEWPORT_PADDING) {
+    score += (LABEL_VIEWPORT_PADDING - box.top) * 3
+  }
+
+  if (box.right > mapSize.x - LABEL_VIEWPORT_PADDING) {
+    score += (box.right - (mapSize.x - LABEL_VIEWPORT_PADDING)) * 3
+  }
+
+  if (box.bottom > mapSize.y - LABEL_VIEWPORT_PADDING) {
+    score += (box.bottom - (mapSize.y - LABEL_VIEWPORT_PADDING)) * 3
+  }
+
+  for (const occupiedBox of occupiedBoxes) {
+    if (boxesOverlap(box, occupiedBox)) {
+      score += 1000
+    }
+  }
+
+  for (const markerBox of markerBoxes) {
+    if (boxesOverlap(box, markerBox)) {
+      score += 650
+    }
+  }
+
+  return score
+}
+
 function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
   const map = useMapEvents({
     zoomend: () => {
@@ -36,6 +103,98 @@ function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
   }, [map, onPlaceLabelVisibilityChange])
 
   return null
+}
+
+function AdaptivePlaceLabels({ places, visible }) {
+  const [placements, setPlacements] = useState({})
+  const placementsRef = useRef({})
+  const map = useMapEvents({
+    moveend: () => updatePlacements(),
+    resize: () => updatePlacements(),
+    zoomend: () => updatePlacements(),
+  })
+
+  const updatePlacements = useCallback(() => {
+    if (!visible || places.length === 0) {
+      placementsRef.current = {}
+      setPlacements({})
+      return
+    }
+
+    const mapSize = map.getSize()
+    const projectedPlaces = places.map((checkin) => ({
+      checkin,
+      point: map.latLngToContainerPoint([checkin.latitude, checkin.longitude]),
+    }))
+    const markerBoxes = projectedPlaces.map(({ point }) =>
+      createBox(point.x - MARKER_BOX_WIDTH / 2, point.y - MARKER_BOX_HEIGHT, MARKER_BOX_WIDTH, MARKER_BOX_HEIGHT),
+    )
+    const nextPlacements = {}
+    const occupiedBoxes = []
+
+    for (const [placeIndex, { checkin, point }] of projectedPlaces.entries()) {
+      const previousPlacementId = placementsRef.current[checkin.id]
+      const sortedPlacements = previousPlacementId
+        ? [
+            LABEL_PLACEMENTS.find((placement) => placement.id === previousPlacementId),
+            ...LABEL_PLACEMENTS.filter((placement) => placement.id !== previousPlacementId),
+          ].filter(Boolean)
+        : LABEL_PLACEMENTS
+      let selectedPlacement = sortedPlacements[0]
+      let selectedBox = null
+      let selectedScore = Number.POSITIVE_INFINITY
+
+      for (const placement of sortedPlacements) {
+        const box = createBox(
+          point.x + placement.dx,
+          point.y + placement.dy,
+          LABEL_BOX_WIDTH,
+          LABEL_BOX_HEIGHT,
+        )
+        const score = scoreLabelBox(
+          box,
+          occupiedBoxes,
+          markerBoxes.filter((_, markerIndex) => markerIndex !== placeIndex),
+          mapSize,
+        )
+
+        if (score < selectedScore) {
+          selectedPlacement = placement
+          selectedBox = box
+          selectedScore = score
+        }
+
+        if (score === 0) {
+          break
+        }
+      }
+
+      nextPlacements[checkin.id] = selectedPlacement.id
+
+      if (selectedBox) {
+        occupiedBoxes.push(selectedBox)
+      }
+    }
+
+    placementsRef.current = nextPlacements
+    setPlacements(nextPlacements)
+  }, [map, places, visible])
+
+  useEffect(() => {
+    updatePlacements()
+  }, [updatePlacements])
+
+  if (!visible) {
+    return null
+  }
+
+  return places.map((checkin) => (
+    <CheckinPlaceLabel
+      key={`${checkin.id}-label`}
+      checkin={checkin}
+      placement={placements[checkin.id] ?? 'right'}
+    />
+  ))
 }
 
 const CheckinMarker = memo(function CheckinMarker({
@@ -87,8 +246,8 @@ const CheckinMarker = memo(function CheckinMarker({
   )
 })
 
-const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
-  const labelIcon = useMemo(() => createCheckinLabelIcon(checkin), [checkin])
+const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin, placement }) {
+  const labelIcon = useMemo(() => createCheckinLabelIcon(checkin, placement), [checkin, placement])
 
   if (!labelIcon) {
     return null
@@ -325,9 +484,7 @@ export function CheckinMap() {
                   onScheduleCloseHoverPreview={scheduleCloseHoverPreview}
                   onKeepPreviewOpen={keepPreviewOpen}
                 />
-                {showPlaceLabels
-                  ? mapPlaces.map((checkin) => <CheckinPlaceLabel key={`${checkin.id}-label`} checkin={checkin} />)
-                  : null}
+                <AdaptivePlaceLabels places={mapPlaces} visible={showPlaceLabels} />
               </MapContainer>
               {mapPlaces.length === 0 ? (
                 <div className={cx('map-empty-state map-filter-empty-state')}>

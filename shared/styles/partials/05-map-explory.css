@@ -649,9 +649,56 @@
   visibility: visible;
 }
 
+.checkin-place-label-icon.label-left,
+.checkin-place-label-icon.label-top-left,
+.checkin-place-label-icon.label-bottom-left {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .checkin-place-label-icon .explory-marker-label::before {
   bottom: 50%;
   transform: translateY(50%) rotate(45deg);
+}
+
+.checkin-place-label-icon.label-left .explory-marker-label::before {
+  right: -4px;
+  left: auto;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.checkin-place-label-icon.label-top-right .explory-marker-label::before,
+.checkin-place-label-icon.label-top-left .explory-marker-label::before {
+  top: auto;
+  bottom: -4px;
+  left: 14px;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  transform: rotate(45deg);
+}
+
+.checkin-place-label-icon.label-top-left .explory-marker-label::before {
+  right: 14px;
+  left: auto;
+}
+
+.checkin-place-label-icon.label-bottom-right .explory-marker-label::before,
+.checkin-place-label-icon.label-bottom-left .explory-marker-label::before {
+  top: -4px;
+  bottom: auto;
+  left: 14px;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  transform: rotate(45deg);
+}
+
+.checkin-place-label-icon.label-bottom-left .explory-marker-label::before {
+  right: 14px;
+  left: auto;
 }
 
 .explory-marker-label::before {
