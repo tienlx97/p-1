@@ -83,6 +83,9 @@ const homeMarkerIcon = `
 const MARKER_ICON_WIDTH = 44;
 const MARKER_ICON_HEIGHT = 54;
 const MARKER_TIP_Y = 52;
+const MARKER_GRADIENT_START = "#55a7f0";
+const MARKER_GRADIENT_END = "#2f80ed";
+const MARKER_ACTIVE_STROKE = "#1f6fca";
 
 function svgToDataUrl(svg) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
@@ -103,10 +106,34 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function createMarkerSvg({ markerColor, markerActiveColor, moodIcon, isActive }) {
-  const pinColor = escapeHtml(isActive ? markerActiveColor : markerColor);
-  const pinStroke = escapeHtml(isActive ? markerActiveColor : "#ffffff");
+function getReactionAnimationClass(moodId) {
+  if (moodId === "happy") {
+    return "reaction-motion reaction-happy";
+  }
+
+  if (moodId === "romantic" || moodId === "home") {
+    return "reaction-motion reaction-love-beat";
+  }
+
+  if (moodId === "explore") {
+    return "reaction-motion reaction-pop";
+  }
+
+  if (moodId === "memorable") {
+    return "reaction-motion reaction-bounce";
+  }
+
+  if (moodId === "peaceful" || moodId === "sad") {
+    return "reaction-motion reaction-sway";
+  }
+
+  return "reaction-motion reaction-bob";
+}
+
+function createMarkerSvg({ moodIcon, moodId, isActive }) {
+  const pinStroke = escapeHtml(isActive ? MARKER_ACTIVE_STROKE : "#ffffff");
   const reactionSvg = getSvgContent(moodIcon);
+  const reactionAnimationClass = getReactionAnimationClass(moodId);
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 0 ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT}">
@@ -114,14 +141,105 @@ function createMarkerSvg({ markerColor, markerActiveColor, moodIcon, isActive })
         <filter id="pinShadow" x="-25%" y="-18%" width="150%" height="145%" color-interpolation-filters="sRGB">
           <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity="0.28"/>
         </filter>
+        <linearGradient id="pinFill" x1="22" x2="22" y1="2" y2="52" gradientUnits="userSpaceOnUse">
+          <stop stop-color="${MARKER_GRADIENT_START}"/>
+          <stop offset="1" stop-color="${MARKER_GRADIENT_END}"/>
+        </linearGradient>
       </defs>
-      <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="${pinColor}" filter="url(#pinShadow)"/>
+      <style>
+        .reaction-motion,
+        .reaction-tear,
+        .home-heart-icon-main,
+        .home-heart-icon-secondary {
+          transform-box: fill-box;
+          transform-origin: center;
+        }
+
+        .reaction-bob {
+          animation: reaction-bob 2.4s ease-in-out infinite;
+        }
+
+        .reaction-happy {
+          animation: reaction-happy 1.7s ease-in-out infinite;
+        }
+
+        .reaction-pop {
+          animation: reaction-pop 1.8s ease-in-out infinite;
+        }
+
+        .reaction-bounce {
+          animation: reaction-bounce 1.9s ease-in-out infinite;
+        }
+
+        .reaction-sway {
+          animation: reaction-sway 2.2s ease-in-out infinite;
+        }
+
+        .reaction-love-beat {
+          animation: reaction-love-beat 1.2s ease-in-out infinite;
+        }
+
+        .reaction-tear {
+          animation: reaction-tear-drop 2.2s ease-in-out infinite;
+        }
+
+        .home-heart-icon-main {
+          animation: reaction-love-beat 1.12s ease-in-out infinite;
+        }
+
+        .home-heart-icon-secondary {
+          animation: reaction-love-beat 1.12s ease-in-out 120ms infinite;
+        }
+
+        @keyframes reaction-bob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-1.6px); }
+        }
+
+        @keyframes reaction-happy {
+          0%, 100% { transform: rotate(0deg); }
+          30% { transform: rotate(-6deg); }
+          60% { transform: rotate(6deg); }
+        }
+
+        @keyframes reaction-pop {
+          0%, 100% { transform: scale(1); }
+          45% { transform: scale(1.14); }
+          72% { transform: scale(0.98); }
+        }
+
+        @keyframes reaction-bounce {
+          0%, 100% { transform: translateY(0) scale(1); }
+          45% { transform: translateY(-2px) scale(1.06); }
+          75% { transform: translateY(0) scale(0.98); }
+        }
+
+        @keyframes reaction-sway {
+          0%, 100% { transform: rotate(0deg); }
+          35% { transform: rotate(-3.5deg); }
+          70% { transform: rotate(3deg); }
+        }
+
+        @keyframes reaction-love-beat {
+          0%, 100% { transform: scale(1); }
+          42% { transform: scale(1.14); }
+          70% { transform: scale(0.98); }
+        }
+
+        @keyframes reaction-tear-drop {
+          0%, 58%, 100% { opacity: 1; transform: translateY(0); }
+          78% { opacity: .78; transform: translateY(1.6px); }
+        }
+      </style>
+      <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="url(#pinFill)" filter="url(#pinShadow)"/>
       <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="none" stroke="${pinStroke}" stroke-width="2" stroke-linejoin="round"/>
       <circle cx="22" cy="19" r="12.8" fill="#ffffff"/>
       <circle cx="17" cy="12.5" r="4.2" fill="#ffffff" opacity="0.45"/>
-      <svg x="10" y="7" width="24" height="24" viewBox="0 0 24 24">
-        ${reactionSvg}
-      </svg>
+      <g transform="translate(10 7)">
+        <g class="${reactionAnimationClass}">
+          ${reactionSvg}
+        </g>
+      </g>
     </svg>
   `;
 }
@@ -151,12 +269,11 @@ export function fitMapToCheckins(map, visibleCheckins, options = {}) {
 export function createCheckinIcon(checkin, isActive) {
   const category = getCategory(checkin.categoryId);
   const mood = getMood(checkin.moodId);
-  const markerActiveColor = category.id === "home" ? "#b5164f" : category.color;
   const moodIcon = category.id === "home" ? homeMarkerIcon : moodMarkerIcons[mood.id] ?? moodMarkerIcons.happy;
+  const moodId = category.id === "home" ? "home" : mood.id;
   const markerSvg = createMarkerSvg({
-    markerColor: category.color,
-    markerActiveColor,
     moodIcon,
+    moodId,
     isActive
   });
 
