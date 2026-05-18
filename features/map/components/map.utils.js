@@ -83,13 +83,17 @@ const homeMarkerIcon = `
 const MARKER_ICON_WIDTH = 44;
 const MARKER_ICON_HEIGHT = 54;
 const MARKER_TIP_Y = 52;
-const MARKER_VIEWBOX_TOP_PADDING = 4;
+const MARKER_VIEWBOX_TOP_PADDING = 8;
 const CLUSTER_ICON_SIZE = 48;
 const MARKER_GRADIENT_START = "#55a7f0";
 const MARKER_GRADIENT_END = "#2f80ed";
+const MARKER_ACTIVE_GRADIENT_START = "#6db9ff";
+const MARKER_ACTIVE_GRADIENT_END = "#176bd8";
 const MARKER_ACTIVE_STROKE = "#1f6fca";
 const HOME_MARKER_GRADIENT_START = "#ff8fb0";
 const HOME_MARKER_GRADIENT_END = "#e83f72";
+const HOME_MARKER_ACTIVE_GRADIENT_START = "#ff9fbd";
+const HOME_MARKER_ACTIVE_GRADIENT_END = "#d91f62";
 const HOME_MARKER_ACTIVE_STROKE = "#b5164f";
 const checkinIconCache = new Map();
 const checkinClusterIconCache = new Map();
@@ -144,19 +148,32 @@ function getReactionAnimationClass(moodId) {
 }
 
 function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
-  const pinGradientStart = escapeHtml(pinColors?.start ?? MARKER_GRADIENT_START);
-  const pinGradientEnd = escapeHtml(pinColors?.end ?? MARKER_GRADIENT_END);
+  const pinGradientStart = escapeHtml(
+    isActive
+      ? (pinColors?.activeStart ?? MARKER_ACTIVE_GRADIENT_START)
+      : (pinColors?.start ?? MARKER_GRADIENT_START)
+  );
+  const pinGradientEnd = escapeHtml(
+    isActive
+      ? (pinColors?.activeEnd ?? MARKER_ACTIVE_GRADIENT_END)
+      : (pinColors?.end ?? MARKER_GRADIENT_END)
+  );
   const activeStroke = pinColors?.activeStroke ?? MARKER_ACTIVE_STROKE;
   const pinStroke = escapeHtml(isActive ? activeStroke : "#ffffff");
+  const activeShadowColor = escapeHtml(activeStroke);
   const reactionSvg = getSvgContent(moodIcon);
   const reactionAnimationClass = getReactionAnimationClass(moodId);
   const pinAnimationClass = isActive ? "pin-art pin-art-active" : "pin-art";
+  const activeDropShadow = isActive
+    ? `<feDropShadow dx="0" dy="5" stdDeviation="3.2" flood-color="${activeShadowColor}" flood-opacity="0.36"/>`
+    : "";
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 -${MARKER_VIEWBOX_TOP_PADDING} ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT + MARKER_VIEWBOX_TOP_PADDING}">
       <defs>
         <filter id="pinShadow" x="-25%" y="-18%" width="150%" height="145%" color-interpolation-filters="sRGB">
           <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity="0.28"/>
+          ${activeDropShadow}
         </filter>
         <linearGradient id="pinFill" x1="22" x2="22" y1="2" y2="52" gradientUnits="userSpaceOnUse">
           <stop stop-color="${pinGradientStart}"/>
@@ -178,7 +195,7 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
         }
 
         .pin-art-active {
-          animation: pin-lift 520ms ease-in-out infinite alternate;
+          animation: pin-lift 560ms ease-in-out infinite alternate;
         }
 
         .reaction-happy {
@@ -219,8 +236,8 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
         }
 
         @keyframes pin-lift {
-          from { transform: translateY(0); }
-          to { transform: translateY(-2.5px); }
+          from { transform: translateY(0) scale(1); }
+          to { transform: translateY(-5px) scale(1.08); }
         }
 
         @keyframes reaction-happy {
@@ -311,11 +328,13 @@ export function createCheckinIcon(checkin, isActive) {
   const markerSvg = createMarkerSvg({
     moodIcon,
     moodId,
-    isActive,
-    pinColors: isHomeMarker
+        isActive,
+        pinColors: isHomeMarker
       ? {
           start: HOME_MARKER_GRADIENT_START,
           end: HOME_MARKER_GRADIENT_END,
+          activeStart: HOME_MARKER_ACTIVE_GRADIENT_START,
+          activeEnd: HOME_MARKER_ACTIVE_GRADIENT_END,
           activeStroke: HOME_MARKER_ACTIVE_STROKE
         }
       : undefined
