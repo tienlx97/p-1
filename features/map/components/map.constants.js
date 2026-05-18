@@ -1,6 +1,6 @@
 export const DEFAULT_CENTER = [10.7757, 106.7004]
 export const DEFAULT_ZOOM = 11
-export const PLACE_LABEL_MIN_ZOOM = 17
+export const PLACE_LABEL_MIN_ZOOM = 18
 export const USE_MARKER_CLUSTERING = false
 export const ZOOM_TO_CLUSTER_BOUNDS_ON_CLICK = true
 export const SHOW_CLUSTER_LOCATIONS_ON_CLICK = false

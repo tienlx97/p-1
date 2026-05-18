@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import { MapContainer, Marker, TileLayer, Tooltip, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
@@ -24,72 +24,52 @@ import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from '@/featu
 import { checkins } from '@/entities/memory'
 import { cx } from '@/shared/lib/styles'
 
-const LABEL_BOX_WIDTH = 132
-const LABEL_BOX_HEIGHT = 44
-const LABEL_VIEWPORT_PADDING = 8
-const LABEL_EDGE_HORIZONTAL_GAP = 8
-const LABEL_VERTICAL_GAP = 8
-const LABEL_EDGE_VERTICAL_OFFSET = 36
-const LABEL_TOOLTIP_OFFSETS = {
-  right: [18, -27],
-  left: [-18, -27],
-  'top-right': [74, -36],
-  'top-left': [-74, -36],
-  'bottom-right': [74, 10],
-  'bottom-left': [-74, 10],
-}
-const LABEL_TOOLTIP_DIRECTIONS = {
-  right: 'right',
-  left: 'left',
-  'top-right': 'top',
-  'top-left': 'top',
-  'bottom-right': 'bottom',
-  'bottom-left': 'bottom',
+const LABEL_COLLISION_GAP = 4
+const LABEL_TOOLTIP_OFFSET = [18, -27]
+
+function doRectsCollide(first, second, gap = LABEL_COLLISION_GAP) {
+  return !(
+    first.right + gap <= second.left ||
+    first.left >= second.right + gap ||
+    first.bottom + gap <= second.top ||
+    first.top >= second.bottom + gap
+  )
 }
 
-function chooseLabelPlacement(point, mapSize) {
-  const hasRoomRight =
-    point.x + LABEL_EDGE_HORIZONTAL_GAP + LABEL_BOX_WIDTH <= mapSize.x - LABEL_VIEWPORT_PADDING
-  const hasRoomLeft =
-    point.x - LABEL_EDGE_HORIZONTAL_GAP - LABEL_BOX_WIDTH >= LABEL_VIEWPORT_PADDING
-  const hasRoomAbove =
-    point.y - LABEL_EDGE_VERTICAL_OFFSET - LABEL_BOX_HEIGHT >= LABEL_VIEWPORT_PADDING
-  const hasRoomBelow =
-    point.y + LABEL_VERTICAL_GAP + LABEL_BOX_HEIGHT <= mapSize.y - LABEL_VIEWPORT_PADDING
-  const sideLabelTop = point.y - 46
-  const sideLabelBottom = point.y - 2
-  const sideLabelFitsVertically =
-    sideLabelTop >= LABEL_VIEWPORT_PADDING && sideLabelBottom <= mapSize.y - LABEL_VIEWPORT_PADDING
+function applyPlaceLabelCollisions(map) {
+  const mapContainer = map.getContainer()
+  const tooltipElements = [...mapContainer.querySelectorAll('.google-map-tooltip')]
+  const labelItems = tooltipElements
+    .map((tooltipElement, index) => {
+      const labelElement = tooltipElement.querySelector('[data-map-place-label]')
 
-  if (
-    !sideLabelFitsVertically &&
-    sideLabelBottom > mapSize.y - LABEL_VIEWPORT_PADDING &&
-    hasRoomAbove
-  ) {
-    return hasRoomRight || !hasRoomLeft ? 'top-right' : 'top-left'
+      return {
+        index,
+        labelElement,
+        priority: Number(labelElement?.dataset.labelPriority ?? 0),
+        tooltipElement,
+      }
+    })
+    .filter((item) => item.labelElement)
+    .toSorted((first, second) => second.priority - first.priority || first.index - second.index)
+  const occupiedRects = []
+
+  for (const item of labelItems) {
+    item.tooltipElement.style.visibility = 'visible'
   }
 
-  if (!sideLabelFitsVertically && sideLabelTop < LABEL_VIEWPORT_PADDING && hasRoomBelow) {
-    return hasRoomRight || !hasRoomLeft ? 'bottom-right' : 'bottom-left'
-  }
+  for (const item of labelItems) {
+    const rect = item.tooltipElement.getBoundingClientRect()
+    const hasSize = rect.width > 0 && rect.height > 0
+    const collides = hasSize && occupiedRects.some((occupied) => doRectsCollide(rect, occupied))
 
-  if (!hasRoomRight && hasRoomLeft) {
-    return hasRoomAbove ? 'top-left' : 'left'
-  }
+    if (!hasSize || collides) {
+      item.tooltipElement.style.visibility = 'hidden'
+      continue
+    }
 
-  if (!hasRoomLeft && hasRoomRight) {
-    return hasRoomAbove ? 'top-right' : 'right'
+    occupiedRects.push(rect)
   }
-
-  if (!hasRoomRight && !hasRoomLeft) {
-    return hasRoomBelow && !hasRoomAbove ? 'bottom-right' : 'top-right'
-  }
-
-  if (!hasRoomAbove && !hasRoomBelow) {
-    return hasRoomRight ? 'right' : 'left'
-  }
-
-  return hasRoomRight ? 'right' : 'left'
 }
 
 function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
@@ -107,44 +87,56 @@ function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
 }
 
 function AdaptivePlaceLabels({ places, visible }) {
-  const [placements, setPlacements] = useState({})
-  const map = useMapEvents({
-    moveend: () => updatePlacements(),
-    resize: () => updatePlacements(),
-    zoomend: () => updatePlacements(),
-  })
+  const map = useMap()
+  const rafIdsRef = useRef([])
 
-  const updatePlacements = useCallback(() => {
-    if (!visible || places.length === 0) {
-      setPlacements({})
+  const cancelScheduledCollision = useCallback(() => {
+    for (const rafId of rafIdsRef.current) {
+      globalThis.cancelAnimationFrame(rafId)
+    }
+
+    rafIdsRef.current = []
+  }, [])
+
+  const scheduleCollisionUpdate = useCallback(() => {
+    cancelScheduledCollision()
+
+    if (!visible) {
       return
     }
 
-    const mapSize = map.getSize()
-    const nextPlacements = {}
+    const firstFrameId = globalThis.requestAnimationFrame(() => {
+      const secondFrameId = globalThis.requestAnimationFrame(() => {
+        applyPlaceLabelCollisions(map)
+        rafIdsRef.current = []
+      })
 
-    for (const checkin of places) {
-      const point = map.latLngToContainerPoint([checkin.latitude, checkin.longitude])
-      nextPlacements[checkin.id] = chooseLabelPlacement(point, mapSize)
-    }
+      rafIdsRef.current = [secondFrameId]
+    })
 
-    setPlacements(nextPlacements)
-  }, [map, places, visible])
+    rafIdsRef.current = [firstFrameId]
+  }, [cancelScheduledCollision, map, visible])
 
   useEffect(() => {
-    updatePlacements()
-  }, [updatePlacements])
+    map.on('moveend zoomend resize', scheduleCollisionUpdate)
+
+    return () => {
+      map.off('moveend zoomend resize', scheduleCollisionUpdate)
+    }
+  }, [map, scheduleCollisionUpdate])
+
+  useEffect(() => {
+    scheduleCollisionUpdate()
+
+    return cancelScheduledCollision
+  }, [cancelScheduledCollision, places, scheduleCollisionUpdate, visible])
 
   if (!visible) {
     return null
   }
 
   return places.map((checkin) => (
-    <CheckinPlaceLabel
-      key={`${checkin.id}-label`}
-      checkin={checkin}
-      placement={placements[checkin.id] ?? 'right'}
-    />
+    <CheckinPlaceLabel key={`${checkin.id}-label`} checkin={checkin} />
   ))
 }
 
@@ -252,7 +244,7 @@ function splitTooltipTwoLines(text, maxLineLength = 14) {
   return [words.slice(0, bestIndex).join(' '), words.slice(bestIndex).join(' ')]
 }
 
-const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin, placement }) {
+const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
   const labelIcon = useMemo(() => createCheckinLabelAnchorIcon(checkin), [checkin])
 
   const lines = splitTooltipTwoLines(checkin.locationName)
@@ -260,8 +252,6 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin, placement }
   if (!labelIcon) {
     return null
   }
-
-  const normalizedPlacement = LABEL_TOOLTIP_OFFSETS[placement] ? placement : 'right'
 
   return (
     <Marker
@@ -272,18 +262,17 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin, placement }
       zIndexOffset={-20}
     >
       <Tooltip
-        // className={cx('checkin-place-label-tooltip', `label-${normalizedPlacement}`)}
         className={cx('google-map-tooltip')}
-        direction={LABEL_TOOLTIP_DIRECTIONS[normalizedPlacement]}
-        offset={LABEL_TOOLTIP_OFFSETS[normalizedPlacement]}
+        direction="right"
+        offset={LABEL_TOOLTIP_OFFSET}
         opacity={1}
         permanent
       >
         <div
-          // className={cx('explory-marker-label-text')}
           className={cx('google-map-label')}
+          data-label-priority={new Date(checkin.checkinTime).getTime()}
+          data-map-place-label
         >
-          {/* {checkin.locationName} */}
           {lines.map((line, index) => (
             <div key={index}>{line}</div>
           ))}

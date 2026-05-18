@@ -1,12 +1,10 @@
 Có. Trang map hiện tại đã khá ổn về nền tảng: Leaflet được load client-only, marker có ảnh, hover preview, drawer chi tiết/thêm kỷ niệm, mobile full-screen. Nhưng mình nghĩ có vài điểm đáng tối ưu/thêm, theo thứ tự ưu tiên:
+
 Fit map theo dữ liệu ngay khi vào trang
 Hiện map luôn mở ở DEFAULT_CENTER Sài Gòn trong map.constants.js, trong khi dữ liệu có Đà Lạt, Hội An, Nha Trang, Tây Ninh. Nên gọi fitMapToCheckins sau khi map mount để thấy toàn bộ hành trình ngay từ đầu.
 
 Cluster hoặc gom marker cùng địa điểm
 Trong checkin-map.jsx, mapPlaces đang chỉ lấy checkin mới nhất theo locationName. Cách này làm map gọn, nhưng ẩn mất chuyện “nơi này có nhiều kỷ niệm”. Nên marker có badge số lượng, click mở drawer/timeline của địa điểm đó.
-
-Panel lọc nhanh trên map
-Trang checkins có filter, nhưng map thì chưa. Nên thêm chip nhỏ: Tất cả, Quán quen, Bữa ăn, Nhà, Chuyến đi, hoặc lọc theo người tạo/mood. Map là nơi người dùng muốn “nhìn lại theo cảm xúc” rất hợp.
 
 Search địa điểm/kỷ niệm
 Một ô search compact trên map sẽ hữu ích khi số checkin tăng. Search theo title, locationName, city, rồi fly tới marker.
