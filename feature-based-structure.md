@@ -1,839 +1,459 @@
-# Feature-Based Structure Guide
+# Next.js Feature-Based Structure Prompt
 
-> Purpose: This document explains the project structure, coding conventions, and implementation rules for AI coding agents such as Codex, Claude Code, and other agentic development tools.
-
-This project follows a **feature-based architecture**. Code should be organized by business feature, not only by technical type.
-
----
-
-## 1. Core Principle
-
-Group code by **feature/domain** first.
-
-Each feature should contain everything it needs:
-
-- UI components
-- hooks
-- services
-- API logic
-- types
-- validation schemas
-- constants
-- utilities
-- tests
-
-Avoid scattering feature logic across unrelated global folders.
+> Purpose: Use this as the project prompt for Codex, Claude Code, and other AI coding agents working in this repository.
+>
+> This project uses Next.js App Router with JavaScript/JSX files. The source folders live at the repository root, not under `src/`.
 
 ---
 
-## 2. Recommended Project Structure
+## 1. Project Shape
+
+Current root-level structure:
 
 ```txt
-src/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── ...
-│
-├── features/
-│   ├── auth/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   ├── schemas/
-│   │   ├── types/
-│   │   ├── utils/
-│   │   ├── constants/
-│   │   ├── api/
-│   │   ├── tests/
-│   │   └── index.js
-│   │
-│   ├── memory/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   ├── schemas/
-│   │   ├── types/
-│   │   ├── utils/
-│   │   ├── constants/
-│   │   ├── api/
-│   │   ├── tests/
-│   │   └── index.js
-│   │
-│   └── map/
-│       ├── components/
-│       ├── hooks/
-│       ├── services/
-│       ├── schemas/
-│       ├── types/
-│       ├── utils/
-│       ├── constants/
-│       ├── api/
-│       ├── tests/
-│       └── index.js
-│
-├── shared/
-│   ├── components/
-│   ├── hooks/
-│   ├── utils/
-│   ├── types/
-│   ├── constants/
-│   └── lib/
-│
-├── entities/
-│   ├── user/
-│   ├── memory/
-│   └── location/
-│
-├── services/
-│   ├── http/
-│   ├── storage/
-│   └── analytics/
-│
-├── config/
-│   ├── env.js
-│   └── routes.js
-│
-└── styles/
-    ├── globals.css
-    └── tokens.css
+app/
+features/
+entities/
+shared/
+public/
+DOCS/
+```
+
+Path alias:
+
+```txt
+@/* -> ./*
+```
+
+Use imports like:
+
+```javascript
+import { MapSection } from '@/features/map'
+import { checkins } from '@/entities/memory'
+import { cx } from '@/shared/lib/styles'
 ```
 
 ---
 
-## 3. Folder Responsibility
+## 2. Architecture Rule
 
-### `app/`
+Organize code by feature/domain first, then by technical role.
 
-Contains routing, layouts, pages, route handlers, and framework-level files.
+Keep pages thin. Route files in `app/` should compose feature components and pass route-level params/data only when needed.
 
-Rules:
+Prefer this:
 
-- Keep pages thin.
-- Do not place business logic directly in pages.
-- Pages should compose feature components.
-- Route-level data loading is allowed, but feature logic should stay inside `features/`.
-
-Example:
-
-```tsx
-import { MemoryMapPage } from '@/features/memory'
+```jsx
+import { MemoryLibraryPage } from '@/features/memory'
 
 export default function Page() {
-  return <MemoryMapPage />
+  return <MemoryLibraryPage />
 }
 ```
 
+Avoid putting business UI, state machines, map logic, memory filtering, or drawer behavior directly inside `app/` pages.
+
 ---
+
+## 3. Current Folder Status
+
+The current folder set is enough for the app as it exists today.
+
+```txt
+app/
+├── layout.jsx
+├── page.jsx
+├── globals.css
+├── checkins/
+│   ├── page.jsx
+│   └── [id]/page.jsx
+└── profile/page.jsx
+
+features/
+├── map/
+│   ├── components/
+│   └── index.js
+├── memory/
+│   ├── components/
+│   └── index.js
+└── profile/
+    ├── components/
+    └── index.js
+
+entities/
+└── memory/
+    ├── mock-data.js
+    └── index.js
+
+shared/
+├── components/
+├── lib/
+└── styles/
+```
+
+Notes:
+
+- `features/map`, `features/memory`, and `features/profile` are present and exported through `index.js`.
+- `entities/memory` is present and currently owns mock memory/checkin data.
+- `shared/components`, `shared/lib`, and `shared/styles` are present.
+- `services/`, `config/`, `hooks/`, `api/`, `schemas/`, `types/`, and `tests/` are not required yet. Add them only when real code needs them.
+- `app/checkins/new/` currently exists as an empty directory. Either add a route there when needed or remove the empty folder during cleanup.
+
+Do not create empty folders just to satisfy a template.
+
+---
+
+## 4. Folder Responsibilities
+
+### `app/`
+
+Owns Next.js routing and framework files:
+
+- `layout.jsx`
+- `page.jsx`
+- route groups
+- dynamic routes
+- route handlers, if added later
+- global CSS import entry
+
+Rules:
+
+- Keep route files small.
+- Compose feature-level page components.
+- Do not place reusable business logic in route files.
 
 ### `features/`
 
-Contains business features.
+Owns user-facing capabilities.
 
-A feature is a user-facing or business capability.
+Current features:
 
-Examples:
+- `features/map`: map view, Leaflet markers, map controls, map-specific utilities/constants.
+- `features/memory`: memory library, detail drawer/page, media viewer, add-memory UI.
+- `features/profile`: profile page UI.
 
-- `auth`
-- `memory`
-- `map`
-- `timeline`
-- `profile`
-- `settings`
-- `notification`
-
-Each feature may contain:
+Feature internals may include:
 
 ```txt
-feature-name/
+features/[feature]/
 ├── components/
-├── hooks/
-├── services/
-├── api/
-├── schemas/
-├── types/
-├── utils/
-├── constants/
-├── tests/
+├── hooks/       optional
+├── api/         optional
+├── services/    optional
+├── schemas/     optional
+├── types/       optional, or use JSDoc in JS files
+├── utils/       optional
+├── constants/   optional
+├── tests/       optional
 └── index.js
 ```
 
 Rules:
 
-- Keep feature-specific logic inside the feature folder.
-- Do not import from another feature’s internal folders.
-- Cross-feature usage must go through the feature `index.js`.
-- If logic is reused by multiple features, move it to `shared/`.
+- Keep feature-specific code inside its feature.
+- Export cross-feature public pieces from `features/[feature]/index.js`.
+- Do not import from another feature's internal folders unless there is a strong local reason.
+- Move code to `shared/` only after reuse is clear and the code is business-agnostic.
 
-Allowed:
+### `entities/`
+
+Owns stable domain data and pure domain helpers shared by features.
+
+Current entity:
+
+- `entities/memory`: mock checkin data and memory exports.
+
+Good entity candidates:
+
+- `memory`
+- `location`
+- `media`
+- `profile`
+- `user`, if auth is added
+
+Rules:
+
+- No page UI.
+- No feature-specific component state.
+- Domain constants, schemas, mock data, pure formatters, and shared model helpers are allowed.
+
+### `shared/`
+
+Owns reusable code with no business ownership.
+
+Current shared areas:
+
+- `shared/components`: app shell, aria providers, generic UI wrappers.
+- `shared/lib`: generic helpers such as class name merging.
+- `shared/styles`: shared CSS and StyleX tokens/constants.
+
+Rules:
+
+- `shared/` must not import from `features/` or `app/`.
+- If a component name or behavior depends on memories, maps, checkins, locations, or profile concepts, it probably belongs in a feature.
+- Keep shared components boring and reusable.
+
+### `public/`
+
+Owns static assets such as icons and manifest files.
+
+### `DOCS/`
+
+Owns supporting documentation.
+
+---
+
+## 5. Import Boundaries
+
+Preferred direction:
+
+```txt
+app -> features
+app -> entities
+app -> shared
+features -> entities
+features -> shared
+entities -> shared
+```
+
+Forbidden direction:
+
+```txt
+shared -> features
+shared -> app
+entities -> features
+entities -> app
+features/[a]/components -> features/[b]/components
+```
+
+Feature-to-feature imports should use the public API:
 
 ```javascript
-import { MemoryCard } from '@/features/memory'
+import { MemoryHoverPreview } from '@/features/memory'
 ```
 
 Avoid:
 
 ```javascript
-import { MemoryCard } from '@/features/memory/components/MemoryCard'
+import { MemoryHoverPreview } from '@/features/memory/components/memory-hover-preview'
 ```
 
----
-
-### `shared/`
-
-Contains reusable, feature-independent code.
-
-Use `shared/` only for code that is truly generic.
-
-Examples:
-
-- buttons
-- inputs
-- modal components
-- formatting utilities
-- common hooks
-- common TypeScript helpers
-- layout primitives
-
-Rules:
-
-- `shared/` must not depend on `features/`.
-- `shared/` must not contain business-specific logic.
-- If a component mentions a business entity, it probably belongs in `features/` or `entities/`.
-
----
-
-### `entities/`
-
-Contains core domain models shared across features.
-
-Examples:
-
-```txt
-entities/
-├── user/
-│   ├── types.js
-│   ├── schemas.js
-│   └── utils.js
-│
-├── memory/
-│   ├── types.js
-│   ├── schemas.js
-│   └── utils.js
-│
-└── location/
-    ├── types.js
-    ├── schemas.js
-    └── utils.js
-```
-
-Use `entities/` for stable business objects.
-
-Examples:
-
-- `User`
-- `Memory`
-- `Location`
-- `Place`
-- `Photo`
-- `Comment`
-
-Rules:
-
-- Entity code should be reusable across features.
-- Entity code should not contain UI page logic.
-- Entity code may include types, validation schemas, formatters, and pure helpers.
-
----
-
-### `services/`
-
-Contains infrastructure-level integrations.
-
-Examples:
-
-- HTTP client
-- database client
-- storage service
-- authentication provider wrapper
-- analytics service
-- logging service
-
-Rules:
-
-- Keep external tool/provider logic here.
-- Do not mix business UI logic into `services/`.
-- Feature-specific service wrappers should stay inside the relevant feature.
-
----
-
-### `config/`
-
-Contains project-level configuration.
-
-Examples:
-
-- environment variables
-- route constants
-- app metadata
-- feature flags
-- navigation config
-
-Rules:
-
-- Validate environment variables in one place.
-- Avoid reading `process.env` directly across the app.
-- Use typed config exports.
-
----
-
-## 4. Feature Folder Template
-
-Use this template when creating a new feature:
-
-```txt
-features/[feature-name]/
-├── components/
-│   └── [FeatureName]View.tsx
-│
-├── hooks/
-│   └── use[FeatureName].js
-│
-├── services/
-│   └── [feature-name].service.js
-│
-├── api/
-│   └── [feature-name].api.js
-│
-├── schemas/
-│   └── [feature-name].schema.js
-│
-├── types/
-│   └── [feature-name].types.js
-│
-├── utils/
-│   └── [feature-name].utils.js
-│
-├── constants/
-│   └── [feature-name].constants.js
-│
-├── tests/
-│   └── [feature-name].test.js
-│
-└── index.js
-```
-
----
-
-## 5. Import Rules
-
-### Preferred Import Direction
-
-```txt
-app → features → entities → shared
-app → shared
-features → entities
-features → shared
-entities → shared
-services → config
-```
-
-### Forbidden Import Direction
-
-```txt
-shared → features
-shared → app
-entities → features
-entities → app
-features/auth/internal → features/memory/internal
-```
-
-### Rule
-
-A lower-level layer must not depend on a higher-level layer.
+Exception: inside the same feature, importing sibling internals is allowed.
 
 ---
 
 ## 6. Public API Rule
 
-Every feature should expose its public API through `index.js`.
+Each feature and entity should expose only the public surface through `index.js`.
 
 Example:
 
 ```javascript
-export { MemoryMapPage } from './components/MemoryMapPage'
-export { MemoryCard } from './components/MemoryCard'
-export { useMemories } from './hooks/useMemories'
-export type { Memory } from './types/memory.types'
+export { MapSection } from './components/map-section'
 ```
 
-Only export what other parts of the app need.
+Good public exports:
 
-Do not export everything by default.
+- route-level page components
+- reusable feature components needed by another feature
+- feature hooks meant for external use
+- domain data/helpers from entities
+
+Avoid exporting every internal helper by default. Keep private implementation details private.
 
 ---
 
-## 7. Component Rules
+## 7. Naming Rules
 
-### Feature Components
+This repo currently uses:
 
-Feature components belong inside:
+- JavaScript and JSX: `.js`, `.jsx`
+- kebab-case file names: `memory-detail-page.jsx`
+- PascalCase component names: `MemoryDetailPage`
+- camelCase function/hook names: `splitTooltipTwoLines`, `useMemories`
+- UPPER_SNAKE_CASE constants: `DEFAULT_CENTER`
 
-```txt
-features/[feature]/components/
-```
+Keep this style unless doing a deliberate migration.
 
-Use for components that contain business meaning.
-
-Examples:
-
-- `MemoryCard`
-- `MemoryMap`
-- `LoginForm`
-- `TimelineList`
-- `ProfileHeader`
-
-### Shared Components
-
-Shared components belong inside:
-
-```txt
-shared/components/
-```
-
-Use for generic UI only.
-
-Examples:
-
-- `Button`
-- `Input`
-- `Dialog`
-- `Dropdown`
-- `EmptyState`
-- `LoadingSpinner`
+Do not introduce `.tsx` or TypeScript-only syntax unless the project is explicitly migrated to TypeScript.
 
 ---
 
-## 8. Hook Rules
+## 8. When To Add Folders
 
-Feature hooks belong inside the feature.
+Add folders only when the feature has real code for them.
 
-Examples:
+Use this decision guide:
 
-```txt
-features/memory/hooks/useMemories.js
-features/auth/hooks/useLogin.js
-features/map/hooks/useMapPins.js
-```
+- `components/`: UI with feature meaning.
+- `hooks/`: reusable feature state/effects.
+- `api/`: HTTP calls for that feature.
+- `services/`: feature-specific orchestration or wrappers.
+- `schemas/`: validation for forms/API payloads.
+- `types/`: TypeScript types, or skip in this JavaScript repo unless migrating.
+- `utils/`: pure feature-specific helpers used by multiple files.
+- `constants/`: repeated values used by multiple files.
+- `tests/`: tests for meaningful business logic or risky UI behavior.
 
-Shared hooks belong in:
+Do not create `hooks/`, `api/`, `services/`, `schemas/`, `types/`, `utils/`, `constants/`, or `tests/` as empty placeholders.
 
-```txt
-shared/hooks/
-```
+---
 
-Examples:
+## 9. Styling Rules
 
-- `useDebounce`
-- `useMediaQuery`
-- `usePrevious`
-- `useMounted`
+Current styling is split between:
+
+- `app/globals.css`
+- `shared/styles/styles.module.css`
+- `shared/styles/partials/*.css`
+- StyleX token/constant files in `shared/styles/`
 
 Rules:
 
-- Hooks that call feature APIs stay inside that feature.
-- Generic hooks without business meaning may go to `shared/hooks/`.
+- Keep global resets and app-level imports in `app/globals.css`.
+- Keep broad shared styles in `shared/styles`.
+- Keep feature-specific class names clearly named by feature or UI area.
+- Avoid moving one-off feature styling into shared files unless it is truly reused.
 
 ---
 
-## 9. Type Rules
+## 10. State And Data Rules
 
-Use colocated types when the type is feature-specific.
-
-```txt
-features/memory/types/memory.types.js
-```
-
-Use entity types when shared across multiple features.
-
-```txt
-entities/memory/types.js
-```
-
-Use shared types only for generic technical helpers.
-
-```txt
-shared/types/api.types.js
-```
-
-Avoid putting all types into one global `types/` folder.
-
----
-
-## 10. API and Service Rules
-
-### Feature API
-
-Feature API files handle feature-specific API calls.
-
-```txt
-features/memory/api/memory.api.js
-```
-
-Example:
-
-```javascript
-export async function getMemories() {}
-export async function createMemory() {}
-export async function updateMemory() {}
-export async function deleteMemory() {}
-```
-
-### Global Service
-
-Global service files handle infrastructure.
-
-```txt
-services/http/client.js
-services/storage/storage.service.js
-```
-
-Example:
-
-```javascript
-export const httpClient = createHttpClient()
-```
-
----
-
-## 11. Naming Conventions
-
-### Files
-
-Use kebab-case for file names:
-
-```txt
-memory-card.tsx
-use-memories.js
-memory.api.js
-memory.types.js
-memory.schema.js
-```
-
-Alternative PascalCase for React components is allowed only if the project already uses it consistently:
-
-```txt
-MemoryCard.tsx
-MemoryMapPage.tsx
-```
-
-Do not mix naming styles randomly.
-
-### Components
-
-Use PascalCase:
-
-```tsx
-MemoryCard
-MemoryMapPage
-LoginForm
-```
-
-### Hooks
-
-Use camelCase and start with `use`:
-
-```javascript
-useMemories
-useLogin
-useMapPins
-```
-
-### Types
-
-Use PascalCase:
-
-```javascript
-Memory
-MemoryStatus
-CreateMemoryInput
-UpdateMemoryPayload
-```
-
-### Constants
-
-Use UPPER_SNAKE_CASE:
-
-```javascript
-MAX_UPLOAD_SIZE
-DEFAULT_PAGE_SIZE
-MEMORY_STATUS_OPTIONS
-```
-
----
-
-## 12. State Management Rules
-
-Keep state as close as possible to where it is used.
+Keep state as local as possible.
 
 Preferred order:
 
-1. Local component state
-2. Feature-level hook
+1. Component state
+2. Feature component/hook state
 3. URL/search params
-4. Server state library
-5. Global store
+4. Server state library, when real API data exists
+5. Global store only for app-wide concerns
 
-Use global state only for truly app-wide concerns.
+Valid global concerns:
 
-Examples of valid global state:
-
-- authenticated user
+- auth user
 - theme
-- app language
-- global modal
-- notification/toast state
+- language
+- global toasts
+- app-wide modal state
 
-Avoid global state for feature-local form data.
+Avoid global state for one drawer, one map hover state, or one form.
 
 ---
 
-## 13. Validation Rules
+## 11. AI Agent Workflow
 
-Place validation schemas near the feature or entity they belong to.
+When modifying this repo:
 
-Examples:
+1. Read the relevant feature and its `index.js`.
+2. Check existing naming/style before adding files.
+3. Keep pages in `app/` thin.
+4. Prefer feature-local code over premature shared abstractions.
+5. Use public imports across features.
+6. Preserve existing user changes in the working tree.
+7. Add tests only when there is an existing test setup or when adding one is part of the task.
+8. Run available checks before the final response:
 
 ```txt
-features/memory/schemas/create-memory.schema.js
-entities/user/schemas.js
+pnpm lint
+pnpm type-check
 ```
 
-Rules:
-
-- Use schemas for form validation and API input validation.
-- Keep validation messages consistent.
-- Reuse entity schemas when possible.
+Run `pnpm build` for larger routing, bundling, or Next.js behavior changes.
 
 ---
 
-## 14. Testing Rules
+## 12. New Feature Checklist
 
-Feature tests should stay close to the feature.
+When adding a new feature:
+
+- [ ] Create `features/[feature-name]/`.
+- [ ] Add `components/` with the first real component.
+- [ ] Add `index.js` and export only the public API.
+- [ ] Add optional folders only when they contain real files.
+- [ ] Put domain data/model helpers in `entities/` if multiple features need them.
+- [ ] Compose the feature from an `app/` route.
+- [ ] Use `@/features/[feature-name]` from outside the feature.
+- [ ] Run lint/type-check.
+
+Minimal feature:
 
 ```txt
-features/memory/tests/
+features/example/
+├── components/
+│   └── example-page.jsx
+└── index.js
 ```
 
-Test priorities:
+Larger feature, only when needed:
 
-1. Business logic
-2. Data transformation
-3. API service behavior
-4. Important UI flows
-5. Edge cases and error states
-
-Use shared test utilities only when they are generic.
-
----
-
-## 15. Error Handling Rules
-
-Each feature should handle:
-
-- loading state
-- empty state
-- error state
-- permission denied state
-- invalid input state
-- network failure state
-
-Do not silently ignore errors.
-
-Use clear user-facing error messages.
+```txt
+features/example/
+├── components/
+├── hooks/
+├── api/
+├── schemas/
+├── utils/
+├── constants/
+├── tests/
+└── index.js
+```
 
 ---
 
-## 16. AI Agent Instructions
+## 13. Refactoring Checklist
 
-When modifying this project, follow these rules:
+When refactoring:
 
-1. Read this document before changing code.
-2. Preserve the feature-based structure.
-3. Do not create large global folders unless truly necessary.
-4. Do not move feature-specific code into `shared/`.
-5. Do not import from another feature’s internal files.
-6. Use each feature’s `index.js` as the public API.
-7. Keep pages thin and move business logic into features.
-8. Add or update types when changing data structures.
-9. Add or update validation schemas when changing forms or API inputs.
-10. Add tests for changed business logic where possible.
-11. Run lint/typecheck/test commands before final response if available.
-12. Explain changed files and reasoning in the final response.
+- [ ] Identify the owning feature.
+- [ ] Move route business UI from `app/` into `features/`.
+- [ ] Move shared domain data/helpers into `entities/`.
+- [ ] Move generic UI/helpers into `shared/`.
+- [ ] Keep feature internals private unless another layer needs them.
+- [ ] Update imports to use public APIs where appropriate.
+- [ ] Check for circular dependencies.
+- [ ] Run lint/type-check.
 
 ---
 
-## 17. New Feature Checklist
-
-When creating a new feature:
-
-- [ ] Create `features/[feature-name]/`
-- [ ] Add `components/`
-- [ ] Add `hooks/` if needed
-- [ ] Add `api/` or `services/` if needed
-- [ ] Add `types/`
-- [ ] Add `schemas/` if forms or API inputs exist
-- [ ] Add `utils/` only for feature-specific helpers
-- [ ] Add `constants/` if repeated values exist
-- [ ] Add `tests/` for important logic
-- [ ] Add `index.js`
-- [ ] Export only the public API
-- [ ] Compose the feature from `app/` route/page
-
----
-
-## 18. Refactoring Checklist
-
-When refactoring existing code:
-
-- [ ] Identify which feature owns the code
-- [ ] Move feature-specific components into `features/[feature]/components/`
-- [ ] Move feature-specific hooks into `features/[feature]/hooks/`
-- [ ] Move shared UI into `shared/components/`
-- [ ] Move shared domain models into `entities/`
-- [ ] Remove duplicate types/utilities
-- [ ] Fix imports to use public `index.js`
-- [ ] Ensure no circular dependencies
-- [ ] Run lint/typecheck/tests
-
----
-
-## 19. Decision Guide
-
-### Put code in `features/` when:
-
-- It belongs to one business capability.
-- It contains feature-specific UI.
-- It calls feature-specific APIs.
-- It contains feature-specific business rules.
-
-### Put code in `shared/` when:
-
-- It is generic.
-- It has no business meaning.
-- It can be reused by many features.
-- It does not depend on feature code.
-
-### Put code in `entities/` when:
-
-- It represents a core business object.
-- It is reused across multiple features.
-- It contains domain types, schemas, or pure helpers.
-
-### Put code in `services/` when:
-
-- It connects to external systems.
-- It wraps infrastructure.
-- It is not tied to one feature.
-
----
-
-## 20. Anti-Patterns to Avoid
+## 14. Anti-Patterns
 
 Avoid:
 
 ```txt
-src/components/
-src/hooks/
-src/utils/
-src/types/
+components/
+hooks/
+utils/
+types/
 ```
 
-when these folders become dumping grounds for unrelated code.
+at the repo root as dumping grounds.
 
-Avoid:
-
-```txt
-features/memory/components/MemoryCard.tsx
-features/map/components/MapView.tsx
-features/profile/components/ProfileCard.tsx
-```
-
-being imported directly across features.
-
-Avoid:
+Avoid importing another feature's internals:
 
 ```javascript
-import { something } from '@/features/other-feature/components/...'
-```
-
-Prefer:
-
-```javascript
-import { Something } from '@/features/other-feature'
+import { Something } from '@/features/other-feature/components/something'
 ```
 
 Avoid moving code to `shared/` only because two files use it once.
 
-Duplicate small code first if abstraction is unclear. Abstract only when the pattern is stable.
+Prefer small duplication until the abstraction is obvious.
+
+Avoid template-driven empty folders. The structure should describe real code, not wishes.
 
 ---
 
-## 21. Example: Memory Feature
+## 15. Final Rule
 
-```txt
-features/memory/
-├── components/
-│   ├── MemoryCard.tsx
-│   ├── MemoryForm.tsx
-│   ├── MemoryMap.tsx
-│   └── MemoryTimeline.tsx
-│
-├── hooks/
-│   ├── useMemories.js
-│   ├── useCreateMemory.js
-│   └── useMemoryFilters.js
-│
-├── api/
-│   └── memory.api.js
-│
-├── schemas/
-│   └── memory.schema.js
-│
-├── types/
-│   └── memory.types.js
-│
-├── utils/
-│   └── memory-formatters.js
-│
-├── constants/
-│   └── memory.constants.js
-│
-└── index.js
-```
+Feature-based structure is a navigation system, not bureaucracy.
 
-Example public API:
+Optimize for:
 
-```javascript
-export { MemoryMap } from './components/MemoryMap'
-export { MemoryTimeline } from './components/MemoryTimeline'
-export { MemoryForm } from './components/MemoryForm'
-export { useMemories } from './hooks/useMemories'
-export type { Memory, CreateMemoryInput } from './types/memory.types'
-```
+- easy file discovery
+- clear ownership
+- stable import boundaries
+- thin routes
+- small, focused changes
+- no premature global abstractions
 
----
-
-## 22. Final Rule
-
-Prefer clarity over cleverness.
-
-The folder structure should help humans and AI agents understand:
-
-- where code belongs
-- where to add new files
-- what can be reused
-- what should stay private
-- how features connect to the app
-
-When uncertain, keep code inside the feature first. Move it to `shared/` or `entities/` only after reuse is clear.
+When unsure, keep code inside the owning feature first. Move it to `entities/` or `shared/` only when reuse is real and the ownership is clear.

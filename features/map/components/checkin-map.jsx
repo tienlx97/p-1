@@ -25,7 +25,7 @@ import { checkins } from '@/entities/memory'
 import { cx } from '@/shared/lib/styles'
 
 const LABEL_COLLISION_GAP = 4
-const LABEL_TOOLTIP_OFFSET = [18, -27]
+const LABEL_TOOLTIP_OFFSET = [0, 8]
 
 function doRectsCollide(first, second, gap = LABEL_COLLISION_GAP) {
   return !(
@@ -263,7 +263,7 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
     >
       <Tooltip
         className={cx('google-map-tooltip')}
-        direction="right"
+        direction="bottom"
         offset={LABEL_TOOLTIP_OFFSET}
         opacity={1}
         permanent

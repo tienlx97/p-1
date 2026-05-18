@@ -88,6 +88,9 @@ const CLUSTER_ICON_SIZE = 48;
 const MARKER_GRADIENT_START = "#55a7f0";
 const MARKER_GRADIENT_END = "#2f80ed";
 const MARKER_ACTIVE_STROKE = "#1f6fca";
+const HOME_MARKER_GRADIENT_START = "#ff8fb0";
+const HOME_MARKER_GRADIENT_END = "#e83f72";
+const HOME_MARKER_ACTIVE_STROKE = "#b5164f";
 const checkinIconCache = new Map();
 const checkinClusterIconCache = new Map();
 const labelAnchorIcon = L.divIcon({
@@ -140,8 +143,11 @@ function getReactionAnimationClass(moodId) {
   return "reaction-motion reaction-bob";
 }
 
-function createMarkerSvg({ moodIcon, moodId, isActive }) {
-  const pinStroke = escapeHtml(isActive ? MARKER_ACTIVE_STROKE : "#ffffff");
+function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
+  const pinGradientStart = escapeHtml(pinColors?.start ?? MARKER_GRADIENT_START);
+  const pinGradientEnd = escapeHtml(pinColors?.end ?? MARKER_GRADIENT_END);
+  const activeStroke = pinColors?.activeStroke ?? MARKER_ACTIVE_STROKE;
+  const pinStroke = escapeHtml(isActive ? activeStroke : "#ffffff");
   const reactionSvg = getSvgContent(moodIcon);
   const reactionAnimationClass = getReactionAnimationClass(moodId);
   const pinAnimationClass = isActive ? "pin-art pin-art-active" : "pin-art";
@@ -153,8 +159,8 @@ function createMarkerSvg({ moodIcon, moodId, isActive }) {
           <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity="0.28"/>
         </filter>
         <linearGradient id="pinFill" x1="22" x2="22" y1="2" y2="52" gradientUnits="userSpaceOnUse">
-          <stop stop-color="${MARKER_GRADIENT_START}"/>
-          <stop offset="1" stop-color="${MARKER_GRADIENT_END}"/>
+          <stop stop-color="${pinGradientStart}"/>
+          <stop offset="1" stop-color="${pinGradientEnd}"/>
         </linearGradient>
       </defs>
       <style>
@@ -299,12 +305,20 @@ export function createCheckinIcon(checkin, isActive) {
 
   const category = getCategory(checkin.categoryId);
   const mood = getMood(checkin.moodId);
+  const isHomeMarker = category.id === "home";
   const moodIcon = category.id === "home" ? homeMarkerIcon : moodMarkerIcons[mood.id] ?? moodMarkerIcons.happy;
   const moodId = category.id === "home" ? "home" : mood.id;
   const markerSvg = createMarkerSvg({
     moodIcon,
     moodId,
-    isActive
+    isActive,
+    pinColors: isHomeMarker
+      ? {
+          start: HOME_MARKER_GRADIENT_START,
+          end: HOME_MARKER_GRADIENT_END,
+          activeStroke: HOME_MARKER_ACTIVE_STROKE
+        }
+      : undefined
   });
 
   const icon = L.icon({
