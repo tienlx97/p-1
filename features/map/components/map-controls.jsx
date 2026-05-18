@@ -7,7 +7,7 @@ import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/components/map.cons
 import { fitMapToCheckins } from "@/features/map/components/map.utils";
 import { cx } from "@/shared/lib/styles";
 
-export function MapControls({ activeCheckin, visibleCheckins, onAddMemory }) {
+export function MapControls({ activeCheckin, visibleCheckins }) {
   const map = useMap();
   const [locationStatus, setLocationStatus] = useState("");
 
@@ -80,12 +80,6 @@ export function MapControls({ activeCheckin, visibleCheckins, onAddMemory }) {
       <div className={cx("explory-control-button")}>
         <Button type="button" title="Vị trí hiện tại" aria-label="Vị trí hiện tại" onPress={locateUser}>
           <span className={cx("control-location")} aria-hidden="true" />
-        </Button>
-      </div>
-
-      <div className={cx("explory-control-button primary")}>
-        <Button type="button" title="Thêm kỷ niệm" aria-label="Thêm kỷ niệm" onPress={onAddMemory}>
-          +
         </Button>
       </div>
 

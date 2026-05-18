@@ -411,6 +411,23 @@ export function CheckinMap() {
     setDrawerMode('add')
   }, [])
 
+  useEffect(() => {
+    const eventName = 'photo-mem:open-add-memory'
+
+    function handleOpenAddMemory() {
+      openAddMemoryDrawer()
+    }
+
+    globalThis.addEventListener(eventName, handleOpenAddMemory)
+
+    if (sessionStorage.getItem(eventName) === '1') {
+      sessionStorage.removeItem(eventName)
+      openAddMemoryDrawer()
+    }
+
+    return () => globalThis.removeEventListener(eventName, handleOpenAddMemory)
+  }, [openAddMemoryDrawer])
+
   const openMemoryDetail = useCallback(
     (checkinId, mediaIndex = null) => {
       keepPreviewOpen()
@@ -459,7 +476,6 @@ export function CheckinMap() {
                 <MapControls
                   activeCheckin={activeCheckin}
                   visibleCheckins={mapPlaces}
-                  onAddMemory={openAddMemoryDrawer}
                 />
 
                 {USE_MARKER_CLUSTERING ? (

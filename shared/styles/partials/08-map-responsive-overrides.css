@@ -146,19 +146,19 @@
   right: max(18px, env(safe-area-inset-right));
   bottom: max(14px, env(safe-area-inset-bottom));
   left: max(18px, env(safe-area-inset-left));
-  width: min(410px, calc(100vw - 36px));
-  max-width: 410px;
-  border-color: rgba(218, 220, 224, 0.94);
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.94);
+  width: min(420px, calc(100vw - 36px));
+  max-width: 420px;
+  border-color: rgba(218, 220, 224, 0.76);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.86);
   box-shadow:
-    0 2px 8px rgba(60, 64, 67, 0.14),
-    0 14px 34px rgba(60, 64, 67, 0.18);
+    0 1px 6px rgba(60, 64, 67, 0.08),
+    0 10px 28px rgba(60, 64, 67, 0.14);
 }
 
 .bottom-nav-item {
-  min-height: 54px;
-  border-radius: 20px;
+  min-height: 48px;
+  border-radius: 14px;
 }
 
 .bottom-nav-item.active {
@@ -296,8 +296,8 @@
   .bottom-nav {
     right: 18px;
     left: auto;
-    width: min(410px, calc(100vw - 36px));
-    max-width: 410px;
+    width: min(420px, calc(100vw - 36px));
+    max-width: 420px;
   }
 
   .main-panel:not(:has(.overview-map-page)) {
@@ -582,9 +582,9 @@
 
   .map-drawer.memory-drawer {
     top: max(56px, env(safe-area-inset-top));
-    right: max(18px, env(safe-area-inset-right));
-    bottom: max(8px, env(safe-area-inset-bottom));
-    left: max(18px, env(safe-area-inset-left));
+    right: env(safe-area-inset-right);
+    bottom: env(safe-area-inset-bottom);
+    left: env(safe-area-inset-left);
     height: auto;
     max-height: none;
   }
@@ -615,12 +615,12 @@
     right: max(8px, env(safe-area-inset-right));
     bottom: max(8px, env(safe-area-inset-bottom));
     left: max(8px, env(safe-area-inset-left));
-    width: min(410px, calc(100vw - 16px));
-    padding: 6px;
+    width: min(382px, calc(100vw - 16px));
+    padding: 5px;
   }
 
   .bottom-nav-item {
-    min-height: 52px;
+    min-height: 46px;
   }
 
   .bottom-nav-label {
