@@ -36,11 +36,11 @@ export function MapFilterPanel({
     <section className={cx("map-filter-panel")} aria-label="Lọc nhanh bản đồ">
       <Button
         type="button"
-        className={cx("map-filter-scroll")}
+        className={cx("map-filter-scroll", "is-left")}
         aria-label="Cuộn bộ lọc sang trái"
         onPress={() => scrollRail(-1)}
       >
-        ‹
+        <span className={cx("map-filter-scroll-icon")} aria-hidden="true" />
       </Button>
 
       <div ref={railRef} className={cx("map-filter-row")} aria-label="Lọc theo nhóm">
@@ -71,11 +71,11 @@ export function MapFilterPanel({
 
       <Button
         type="button"
-        className={cx("map-filter-scroll")}
+        className={cx("map-filter-scroll", "is-right")}
         aria-label="Cuộn bộ lọc sang phải"
         onPress={() => scrollRail(1)}
       >
-        ›
+        <span className={cx("map-filter-scroll-icon")} aria-hidden="true" />
       </Button>
     </section>
   );

@@ -1,31 +1,31 @@
 # AGENTS.md
 
-Hướng dẫn này dành cho AI coding agents khi tạo, sửa hoặc refactor code trong repo này.
+These instructions are for AI coding agents when creating, editing, or refactoring code in this repository.
 
-Repo dùng Next.js App Router với JavaScript/JSX. Source folder nằm ở root, không dùng `src/`.
+This repo uses Next.js App Router with JavaScript/JSX. Source folders live at the repository root; there is no `src/` directory.
 
-Trước khi code, đọc thêm quy chuẩn chi tiết trong:
+Before coding, also read the detailed structure guidelines in:
 
 ```txt
 feature-based-structure.md
 ```
 
-## Nguyên Tắc Chính
+## Core Principles
 
-Code phải đi theo feature-based structure:
+Code must follow a feature-based structure:
 
 ```txt
-app/       Next.js routes, layout, global framework files
-features/  UI và logic theo từng business feature
-entities/  domain data/model/helper dùng chung giữa features
-shared/    UI/helper/style generic, không mang business meaning
+app/       Next.js routes, layout, and global framework files
+features/  UI and logic grouped by business feature
+entities/  shared domain data, models, and helpers used across features
+shared/    generic UI, helpers, and styles with no business meaning
 public/    static assets
-DOCS/      tài liệu
+DOCS/      documentation
 ```
 
-Giữ route trong `app/` thật mỏng. Page chỉ nên import và compose component từ `features/`.
+Keep routes in `app/` thin. Pages should only import and compose components from `features/`.
 
-Ví dụ đúng:
+Correct example:
 
 ```jsx
 import { MemoryLibraryPage } from '@/features/memory'
@@ -35,11 +35,11 @@ export default function Page() {
 }
 ```
 
-Không đặt business logic, form workflow, drawer state, map behavior, filter logic hoặc data transformation lớn trực tiếp trong `app/page.jsx`.
+Do not put business logic, form workflows, drawer state, map behavior, filter logic, or large data transformations directly in `app/page.jsx`.
 
-## Import Boundary
+## Import Boundaries
 
-Được phép:
+Allowed:
 
 ```txt
 app -> features
@@ -50,7 +50,7 @@ features -> shared
 entities -> shared
 ```
 
-Không được:
+Not allowed:
 
 ```txt
 shared -> features
@@ -60,21 +60,21 @@ entities -> app
 features/a/components -> features/b/components
 ```
 
-Khi cần dùng code từ feature khác, import qua public API:
+When code from another feature is needed, import it through that feature's public API:
 
 ```javascript
 import { MemoryHoverPreview } from '@/features/memory'
 ```
 
-Tránh import sâu từ internal folder của feature khác:
+Avoid deep imports from another feature's internal folders:
 
 ```javascript
 import { MemoryHoverPreview } from '@/features/memory/components/memory-hover-preview'
 ```
 
-## Khi Tạo Feature Mới
+## When Creating A New Feature
 
-Tạo feature tối thiểu như sau:
+Create the minimal feature shape:
 
 ```txt
 features/[feature-name]/
@@ -83,7 +83,7 @@ features/[feature-name]/
 └── index.js
 ```
 
-Chỉ thêm các folder sau khi có file thật cần dùng:
+Only add these folders once they contain real files that are needed:
 
 ```txt
 hooks/
@@ -95,33 +95,33 @@ constants/
 tests/
 ```
 
-Không tạo folder rỗng theo template.
+Do not create empty template folders.
 
-Sau khi tạo component public, export trong `features/[feature-name]/index.js`:
+After creating a public component, export it from `features/[feature-name]/index.js`:
 
 ```javascript
 export { ExamplePage } from './components/example-page'
 ```
 
-## Khi Thêm Code Vào Feature Có Sẵn
+## When Adding Code To An Existing Feature
 
-Chọn đúng owner:
+Choose the correct owner:
 
-- Map, marker, Leaflet, map controls: `features/map`
-- Memory/checkin library, detail, drawer, media viewer: `features/memory`
+- Map, markers, Leaflet, and map controls: `features/map`
+- Memory/checkin library, detail views, drawers, and media viewer: `features/memory`
 - Profile UI: `features/profile`
-- Mock memory/checkin data hoặc domain helper dùng chung: `entities/memory`
-- UI/helper generic không business-specific: `shared`
+- Mock memory/checkin data or shared domain helpers: `entities/memory`
+- Generic UI/helpers with no business-specific meaning: `shared`
 
-Nếu code chỉ phục vụ một feature, giữ trong feature đó.
+If code only serves one feature, keep it inside that feature.
 
-Nếu code được nhiều feature dùng và có business meaning, cân nhắc đưa vào `entities/`.
+If code is used by multiple features and has business meaning, consider moving it to `entities/`.
 
-Nếu code generic và không phụ thuộc business domain, đưa vào `shared/`.
+If code is generic and does not depend on the business domain, move it to `shared/`.
 
 ## Naming
 
-Repo hiện dùng:
+This repo currently uses:
 
 ```txt
 .js / .jsx
@@ -131,7 +131,7 @@ camelCase functions/hooks
 UPPER_SNAKE_CASE constants
 ```
 
-Ví dụ:
+Examples:
 
 ```txt
 memory-detail-page.jsx
@@ -140,11 +140,11 @@ map.utils.js
 map.constants.js
 ```
 
-Không thêm `.tsx` hoặc TypeScript syntax nếu chưa có yêu cầu migrate TypeScript.
+Do not add `.tsx` files or TypeScript syntax unless a TypeScript migration is explicitly requested.
 
 ## Styling
 
-Styling hiện nằm ở:
+Styling currently lives in:
 
 ```txt
 app/globals.css
@@ -153,34 +153,34 @@ shared/styles/partials/*.css
 shared/styles/*.stylex.js
 ```
 
-Giữ style generic trong `shared/styles`.
+Keep generic styles in `shared/styles`.
 
-Style có business meaning hoặc chỉ dùng cho một feature thì đặt tên class rõ theo feature/UI area, không biến `shared` thành nơi chứa mọi thứ.
+Styles with business meaning, or styles used by only one feature, should use class names that clearly match the feature or UI area. Do not turn `shared` into a dumping ground for everything.
 
-## Checklist Trước Khi Trả Lời
+## Checklist Before Responding
 
-Trước final response, agent nên:
+Before the final response, agents should:
 
-- Đọc file liên quan và `index.js` của feature.
-- Giữ thay đổi nhỏ, đúng owner.
-- Không revert thay đổi người dùng đã có trong working tree.
-- Không tạo folder rỗng.
-- Cập nhật public export nếu thêm component/hook public.
-- Chạy check nếu phù hợp:
+- Read the relevant files and the feature's `index.js`.
+- Keep changes small and in the correct owner.
+- Do not revert existing user changes in the working tree.
+- Do not create empty folders.
+- Update the public export when adding a public component or hook.
+- Run checks when appropriate:
 
 ```txt
 pnpm lint
 pnpm type-check
 ```
 
-Với thay đổi lớn liên quan route/build/runtime Next.js, chạy thêm:
+For larger changes related to routes, builds, or Next.js runtime behavior, also run:
 
 ```txt
 pnpm build
 ```
 
-## Quy Tắc Cuối
+## Final Rule
 
-Feature-based structure là để dễ tìm code và rõ ownership, không phải để tạo nhiều folder.
+Feature-based structure is for easier file discovery and clear ownership, not for creating many folders.
 
-Khi chưa chắc code nên đặt ở đâu, hãy giữ trong feature đang sở hữu hành vi đó trước. Chỉ move sang `entities/` hoặc `shared/` khi reuse thật sự rõ ràng.
+When you are unsure where code belongs, keep it in the feature that owns the behavior first. Move it to `entities/` or `shared/` only when reuse is truly clear.
