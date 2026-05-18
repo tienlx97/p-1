@@ -12,6 +12,10 @@
   animation: media-viewer-in 160ms ease both;
 }
 
+.media-viewer-open .bottom-nav {
+  display: none;
+}
+
 .memory-media-viewer.drawer-stage-viewer {
   left: min(430px, calc(100% - 32px));
   z-index: 490;

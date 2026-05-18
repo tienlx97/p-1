@@ -62,8 +62,8 @@
 
 .google-place-facts div {
   display: grid;
-  grid-template-columns: 14px minmax(0, 1fr);
-  gap: 0 12px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 0 14px;
   padding: 10px 24px;
 }
 
@@ -73,6 +73,27 @@
   font-size: 14px;
   line-height: 1.1;
   text-align: center;
+}
+
+.google-place-fact-icon {
+  position: relative;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: #edf4ff;
+  box-shadow: inset 0 0 0 1px rgba(40, 103, 200, 0.1);
+}
+
+.google-place-fact-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: #2867c8;
+}
+
+.google-place-fact-icon circle {
+  fill: #fff;
 }
 
 .google-place-facts dt,

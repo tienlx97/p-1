@@ -19,6 +19,11 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
   usePreventScroll();
 
   useEffect(() => {
+    document.body.classList.add("media-viewer-open");
+    return () => document.body.classList.remove("media-viewer-open");
+  }, []);
+
+  useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === "Escape") {
         event.preventDefault();

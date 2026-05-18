@@ -73,7 +73,12 @@ export function MemoryDetailContent({ checkin, initialMediaIndex }) {
 
           <dl className={cx("google-place-facts drawer-meta")}>
             <div>
-              <span aria-hidden="true">⌖</span>
+              <span className={cx("google-place-fact-icon")} aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M12 21s6.5-5.52 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5.48 6.5 11 6.5 11Z" />
+                  <circle cx="12" cy="10" r="2.4" />
+                </svg>
+              </span>
               <dt>Địa điểm</dt>
               <dd>
                 {checkin.locationName}
