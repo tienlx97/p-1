@@ -98,8 +98,13 @@
 
 .map-filter-panel {
   top: max(14px, env(safe-area-inset-top));
+  left: calc(max(14px, env(safe-area-inset-left)) + 408px);
+  max-width: min(880px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right)) - 408px));
+}
+
+.map-place-search {
+  top: max(14px, env(safe-area-inset-top));
   left: max(14px, env(safe-area-inset-left));
-  max-width: min(880px, calc(100vw - max(14px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right))));
 }
 
 .map-filter-row {
@@ -357,12 +362,29 @@
   }
 
   .map-filter-panel {
-    top: max(10px, env(safe-area-inset-top));
+    top: calc(max(10px, env(safe-area-inset-top)) + 64px);
     right: max(10px, env(safe-area-inset-right));
     left: max(10px, env(safe-area-inset-left));
     display: flex;
     max-width: none;
     gap: 7px;
+  }
+
+  .map-place-search {
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+    left: max(10px, env(safe-area-inset-left));
+    width: auto;
+  }
+
+  .map-place-search-field {
+    min-height: 52px;
+    border-radius: 8px;
+  }
+
+  .map-place-search-results {
+    max-height: min(300px, 45dvh);
+    overflow: auto;
   }
 
   .map-filter-row {
@@ -600,6 +622,10 @@
 
   .map-filter-panel {
     gap: 6px;
+  }
+
+  .map-place-search {
+    top: max(10px, env(safe-area-inset-top));
   }
 
   .map-filter-count {

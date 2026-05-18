@@ -24,6 +24,10 @@ export function MapFilterPanel({
 }) {
   const railRef = useRef(null);
   const categoryOptions = [{ id: "all", name: "Tất cả địa điểm" }, ...categories];
+  const countLabel =
+    visibleCount === totalCount
+      ? `${totalCount} địa điểm`
+      : `${visibleCount}/${totalCount} địa điểm`;
 
   function scrollRail(direction) {
     railRef.current?.scrollBy({
@@ -44,8 +48,8 @@ export function MapFilterPanel({
       </Button>
 
       <div ref={railRef} className={cx("map-filter-row")} aria-label="Lọc theo nhóm">
-        <span className={cx("map-filter-count")} aria-label={`${visibleCount} trên ${totalCount} kỷ niệm`}>
-          {visibleCount}/{totalCount}
+        <span className={cx("map-filter-count")} aria-label={countLabel}>
+          {countLabel}
         </span>
 
         {categoryOptions.map((category) => {

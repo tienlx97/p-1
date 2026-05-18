@@ -20,6 +20,7 @@ import {
 } from '@/features/map/components/map.utils'
 import { MapControls } from '@/features/map/components/map-controls'
 import { MapFilterPanel } from '@/features/map/components/map-filter-panel'
+import { MapPlaceSearch } from '@/features/map/components/map-place-search'
 import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from '@/features/memory'
 import { checkins } from '@/entities/memory'
 import { cx } from '@/shared/lib/styles'
@@ -82,6 +83,15 @@ function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
   useEffect(() => {
     onPlaceLabelVisibilityChange(map.getZoom() >= PLACE_LABEL_MIN_ZOOM)
   }, [map, onPlaceLabelVisibilityChange])
+
+  return null
+}
+
+function MapPreviewDismissWatcher({ onDismissPreview }) {
+  useMapEvents({
+    click: onDismissPreview,
+    dragstart: onDismissPreview,
+  })
 
   return null
 }
@@ -405,6 +415,11 @@ export function CheckinMap() {
     }, 180)
   }, [keepPreviewOpen])
 
+  const closeHoverPreview = useCallback(() => {
+    keepPreviewOpen()
+    setHoveredPreviewId(null)
+  }, [keepPreviewOpen])
+
   const openAddMemoryDrawer = useCallback(() => {
     setActiveId(null)
     setInitialMediaIndex(null)
@@ -473,10 +488,12 @@ export function CheckinMap() {
               >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapZoomWatcher onPlaceLabelVisibilityChange={setShowPlaceLabels} />
+                <MapPreviewDismissWatcher onDismissPreview={closeHoverPreview} />
                 <MapControls
                   activeCheckin={activeCheckin}
                   visibleCheckins={mapPlaces}
                 />
+                <MapPlaceSearch places={mapPlaces} onShowHoverPreview={showHoverPreview} />
 
                 {USE_MARKER_CLUSTERING ? (
                   <MarkerClusterGroup
