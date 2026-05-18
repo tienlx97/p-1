@@ -83,6 +83,8 @@ const homeMarkerIcon = `
 const MARKER_ICON_WIDTH = 44;
 const MARKER_ICON_HEIGHT = 54;
 const MARKER_TIP_Y = 52;
+const LABEL_ICON_WIDTH = 132;
+const LABEL_ICON_HEIGHT = 44;
 const MARKER_GRADIENT_START = "#55a7f0";
 const MARKER_GRADIENT_END = "#2f80ed";
 const MARKER_ACTIVE_STROKE = "#1f6fca";
@@ -134,6 +136,7 @@ function createMarkerSvg({ moodIcon, moodId, isActive }) {
   const pinStroke = escapeHtml(isActive ? MARKER_ACTIVE_STROKE : "#ffffff");
   const reactionSvg = getSvgContent(moodIcon);
   const reactionAnimationClass = getReactionAnimationClass(moodId);
+  const pinAnimationClass = isActive ? "pin-art pin-art-active" : "pin-art";
 
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 0 ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT}">
@@ -148,6 +151,7 @@ function createMarkerSvg({ moodIcon, moodId, isActive }) {
       </defs>
       <style>
         .reaction-motion,
+        .pin-art,
         .reaction-tear,
         .home-heart-icon-main,
         .home-heart-icon-secondary {
@@ -157,6 +161,10 @@ function createMarkerSvg({ moodIcon, moodId, isActive }) {
 
         .reaction-bob {
           animation: reaction-bob 2.4s ease-in-out infinite;
+        }
+
+        .pin-art-active {
+          animation: pin-lift 520ms ease-in-out infinite alternate;
         }
 
         .reaction-happy {
@@ -196,6 +204,11 @@ function createMarkerSvg({ moodIcon, moodId, isActive }) {
           50% { transform: translateY(-1.6px); }
         }
 
+        @keyframes pin-lift {
+          from { transform: translateY(0); }
+          to { transform: translateY(-2.5px); }
+        }
+
         @keyframes reaction-happy {
           0%, 100% { transform: rotate(0deg); }
           30% { transform: rotate(-6deg); }
@@ -231,13 +244,15 @@ function createMarkerSvg({ moodIcon, moodId, isActive }) {
           78% { opacity: .78; transform: translateY(1.6px); }
         }
       </style>
-      <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="url(#pinFill)" filter="url(#pinShadow)"/>
-      <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="none" stroke="${pinStroke}" stroke-width="2" stroke-linejoin="round"/>
-      <circle cx="22" cy="19" r="12.8" fill="#ffffff"/>
-      <circle cx="17" cy="12.5" r="4.2" fill="#ffffff" opacity="0.45"/>
-      <g transform="translate(10 7)">
-        <g class="${reactionAnimationClass}">
-          ${reactionSvg}
+      <g class="${pinAnimationClass}">
+        <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="url(#pinFill)" filter="url(#pinShadow)"/>
+        <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="none" stroke="${pinStroke}" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="22" cy="19" r="12.8" fill="#ffffff"/>
+        <circle cx="17" cy="12.5" r="4.2" fill="#ffffff" opacity="0.45"/>
+        <g transform="translate(10 7)">
+          <g class="${reactionAnimationClass}">
+            ${reactionSvg}
+          </g>
         </g>
       </g>
     </svg>
@@ -284,5 +299,24 @@ export function createCheckinIcon(checkin, isActive) {
     popupAnchor: [0, -MARKER_TIP_Y],
     tooltipAnchor: [0, -(MARKER_TIP_Y + 8)],
     className: cx("checkin-leaflet-svg-icon")
+  });
+}
+
+export function createCheckinLabelIcon(checkin) {
+  const category = getCategory(checkin.categoryId);
+
+  if (category.id === "home") {
+    return null;
+  }
+
+  return L.divIcon({
+    className: cx("checkin-place-label-icon"),
+    html: `
+      <span class="${cx("explory-marker-label")}">
+        <span class="${cx("explory-marker-label-text")}">${escapeHtml(checkin.locationName)}</span>
+      </span>
+    `,
+    iconSize: [LABEL_ICON_WIDTH, LABEL_ICON_HEIGHT],
+    iconAnchor: [-28, 44]
   });
 }

@@ -340,6 +340,12 @@
   pointer-events: auto;
 }
 
+.checkin-place-label-icon {
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
 .memory-hover-tooltip {
   border: 0;
   background: transparent;
@@ -582,6 +588,21 @@
 .checkin-leaflet-map.show-place-labels .explory-marker-label {
   opacity: 1;
   visibility: visible;
+}
+
+.checkin-place-label-icon .explory-marker-label {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  display: inline-block;
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+
+.checkin-place-label-icon .explory-marker-label::before {
+  bottom: 50%;
+  transform: translateY(50%) rotate(45deg);
 }
 
 .explory-marker-label::before {

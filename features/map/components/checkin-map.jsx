@@ -8,7 +8,7 @@ import {
   PLACE_LABEL_MIN_ZOOM,
   USE_DEFAULT_LEAFLET_MARKERS,
 } from '@/features/map/components/map.constants'
-import { createCheckinIcon } from '@/features/map/components/map.utils'
+import { createCheckinIcon, createCheckinLabelIcon } from '@/features/map/components/map.utils'
 import { MapControls } from '@/features/map/components/map-controls'
 import { MapFilterPanel } from '@/features/map/components/map-filter-panel'
 import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from '@/features/memory'
@@ -34,6 +34,7 @@ function CheckinMarker({
   drawerMode,
   activeId,
   hoveredPreviewId,
+  showPlaceLabels,
   onOpenMemoryDetail,
   onShowHoverPreview,
   onScheduleCloseHoverPreview,
@@ -45,35 +46,47 @@ function CheckinMarker({
     () => (USE_DEFAULT_LEAFLET_MARKERS ? null : createCheckinIcon(checkin, isActive)),
     [checkin, isActive],
   )
+  const labelIcon = useMemo(() => createCheckinLabelIcon(checkin), [checkin])
 
   return (
-    <Marker
-      position={[checkin.latitude, checkin.longitude]}
-      {...(icon ? { icon } : {})}
-      eventHandlers={{
-        click: () => onOpenMemoryDetail(checkin.id),
-        mouseover: () => onShowHoverPreview(checkin.id),
-        mouseout: onScheduleCloseHoverPreview,
-      }}
-    >
-      {hoveredPreviewId === checkin.id ? (
-        <Tooltip
-          className={cx('memory-hover-tooltip')}
-          direction="top"
-          interactive
-          offset={[0, 0]}
-          opacity={1}
-          permanent
-        >
-          <MemoryHoverPreview
-            checkin={checkin}
-            onMouseEnter={onKeepPreviewOpen}
-            onMouseLeave={onScheduleCloseHoverPreview}
-            onPress={(mediaIndex) => onOpenMemoryDetail(checkin.id, mediaIndex)}
-          />
-        </Tooltip>
+    <>
+      <Marker
+        position={[checkin.latitude, checkin.longitude]}
+        {...(icon ? { icon } : {})}
+        eventHandlers={{
+          click: () => onOpenMemoryDetail(checkin.id),
+          mouseover: () => onShowHoverPreview(checkin.id),
+          mouseout: onScheduleCloseHoverPreview,
+        }}
+      >
+        {hoveredPreviewId === checkin.id ? (
+          <Tooltip
+            className={cx('memory-hover-tooltip')}
+            direction="top"
+            interactive
+            offset={[0, 0]}
+            opacity={1}
+            permanent
+          >
+            <MemoryHoverPreview
+              checkin={checkin}
+              onMouseEnter={onKeepPreviewOpen}
+              onMouseLeave={onScheduleCloseHoverPreview}
+              onPress={(mediaIndex) => onOpenMemoryDetail(checkin.id, mediaIndex)}
+            />
+          </Tooltip>
+        ) : null}
+      </Marker>
+      {showPlaceLabels && labelIcon ? (
+        <Marker
+          position={[checkin.latitude, checkin.longitude]}
+          icon={labelIcon}
+          interactive={false}
+          keyboard={false}
+          zIndexOffset={-20}
+        />
       ) : null}
-    </Marker>
+    </>
   )
 }
 
@@ -222,6 +235,7 @@ export function CheckinMap() {
                     drawerMode={drawerMode}
                     activeId={activeId}
                     hoveredPreviewId={hoveredPreviewId}
+                    showPlaceLabels={showPlaceLabels}
                     onOpenMemoryDetail={openMemoryDetail}
                     onShowHoverPreview={showHoverPreview}
                     onScheduleCloseHoverPreview={scheduleCloseHoverPreview}
