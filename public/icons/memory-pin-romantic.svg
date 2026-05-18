@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54" role="img" aria-labelledby="title">
+  <title id="title">Romantic memory location pin</title>
+  <defs>
+    <filter id="pin-shadow" x="-25%" y="-18%" width="150%" height="145%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity=".28"/>
+    </filter>
+    <linearGradient id="pin-fill" x1="22" x2="22" y1="2" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff6f9a"/>
+      <stop offset="1" stop-color="#b5164f"/>
+    </linearGradient>
+  </defs>
+  <path d="M22 52S5 31.3 5 19C5 9.6 12.6 2 22 2s17 7.6 17 17c0 12.3-17 33-17 33Z" fill="url(#pin-fill)" filter="url(#pin-shadow)"/>
+  <path d="M22 52S5 31.3 5 19C5 9.6 12.6 2 22 2s17 7.6 17 17c0 12.3-17 33-17 33Z" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="2"/>
+  <circle cx="22" cy="19" r="12.8" fill="#fff"/>
+  <circle cx="17" cy="12.5" r="4.2" fill="#fff" opacity=".45"/>
+  <g transform="translate(10 7)">
+    <circle cx="12" cy="12" r="10" fill="#f33e58"/>
+    <path d="M12 18.5S6.1 14.9 6.1 10.7c0-1.9 1.3-3.2 3-3.2 1.1 0 2.1.6 2.9 1.6.8-1 1.8-1.6 2.9-1.6 1.7 0 3 1.3 3 3.2 0 4.2-5.9 7.8-5.9 7.8Z" fill="#fff"/>
+  </g>
+</svg>

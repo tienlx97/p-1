@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54" role="img" aria-labelledby="title">
+  <title id="title">Sad memory location pin</title>
+  <defs>
+    <filter id="pin-shadow" x="-25%" y="-18%" width="150%" height="145%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity=".28"/>
+    </filter>
+    <linearGradient id="pin-fill" x1="22" x2="22" y1="2" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e8a747"/>
+      <stop offset="1" stop-color="#c28b25"/>
+    </linearGradient>
+  </defs>
+  <path d="M22 52S5 31.3 5 19C5 9.6 12.6 2 22 2s17 7.6 17 17c0 12.3-17 33-17 33Z" fill="url(#pin-fill)" filter="url(#pin-shadow)"/>
+  <path d="M22 52S5 31.3 5 19C5 9.6 12.6 2 22 2s17 7.6 17 17c0 12.3-17 33-17 33Z" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="2"/>
+  <circle cx="22" cy="19" r="12.8" fill="#fff"/>
+  <circle cx="17" cy="12.5" r="4.2" fill="#fff" opacity=".45"/>
+  <g transform="translate(10 7)">
+    <circle cx="12" cy="12" r="10" fill="#f7b928"/>
+    <circle cx="8.4" cy="10.2" r="1.1" fill="#4b2f13"/>
+    <circle cx="15.6" cy="10.2" r="1.1" fill="#4b2f13"/>
+    <path d="M8.5 15.8c1.9-1.4 5.1-1.4 7 0" fill="none" stroke="#4b2f13" stroke-linecap="round" stroke-width="1.8"/>
+    <path d="M17.5 12.3c1.5 1.6 2.1 2.8 2.1 3.8a2.1 2.1 0 0 1-4.2 0c0-1 .6-2.2 2.1-3.8Z" fill="#4fc3f7" stroke="#1b75bb" stroke-linejoin="round" stroke-width=".8"/>
+  </g>
+</svg>
