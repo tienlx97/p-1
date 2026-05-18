@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
 import { MapContainer, Marker, TileLayer, Tooltip, useMapEvents } from 'react-leaflet'
 import {
@@ -8,10 +8,16 @@ import {
   DEFAULT_ZOOM,
   MARKER_CLUSTER_DISABLE_AT_ZOOM,
   PLACE_LABEL_MIN_ZOOM,
+  SHOW_CLUSTER_LOCATIONS_ON_CLICK,
   USE_MARKER_CLUSTERING,
   USE_DEFAULT_LEAFLET_MARKERS,
+  ZOOM_TO_CLUSTER_BOUNDS_ON_CLICK,
 } from '@/features/map/components/map.constants'
-import { createCheckinIcon, createCheckinLabelIcon } from '@/features/map/components/map.utils'
+import {
+  createCheckinClusterIcon,
+  createCheckinIcon,
+  createCheckinLabelIcon,
+} from '@/features/map/components/map.utils'
 import { MapControls } from '@/features/map/components/map-controls'
 import { MapFilterPanel } from '@/features/map/components/map-filter-panel'
 import { AddMemoryDrawer, MemoryDetailDrawer, MemoryHoverPreview } from '@/features/memory'
@@ -32,34 +38,35 @@ function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
   return null
 }
 
-function CheckinMarker({
+const CheckinMarker = memo(function CheckinMarker({
   checkin,
-  drawerMode,
-  activeId,
-  hoveredPreviewId,
+  isActive,
+  isPreviewOpen,
   onOpenMemoryDetail,
   onShowHoverPreview,
   onScheduleCloseHoverPreview,
   onKeepPreviewOpen,
 }) {
-  const isActive =
-    (drawerMode === 'memory' && checkin.id === activeId) || checkin.id === hoveredPreviewId
   const icon = useMemo(
     () => (USE_DEFAULT_LEAFLET_MARKERS ? null : createCheckinIcon(checkin, isActive)),
     [checkin, isActive],
+  )
+  const eventHandlers = useMemo(
+    () => ({
+      click: () => onOpenMemoryDetail(checkin.id),
+      mouseover: () => onShowHoverPreview(checkin.id),
+      mouseout: onScheduleCloseHoverPreview,
+    }),
+    [checkin.id, onOpenMemoryDetail, onScheduleCloseHoverPreview, onShowHoverPreview],
   )
 
   return (
     <Marker
       position={[checkin.latitude, checkin.longitude]}
       {...(icon ? { icon } : {})}
-      eventHandlers={{
-        click: () => onOpenMemoryDetail(checkin.id),
-        mouseover: () => onShowHoverPreview(checkin.id),
-        mouseout: onScheduleCloseHoverPreview,
-      }}
+      eventHandlers={eventHandlers}
     >
-      {hoveredPreviewId === checkin.id ? (
+      {isPreviewOpen ? (
         <Tooltip
           className={cx('memory-hover-tooltip')}
           direction="top"
@@ -78,9 +85,9 @@ function CheckinMarker({
       ) : null}
     </Marker>
   )
-}
+})
 
-function CheckinPlaceLabel({ checkin }) {
+const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
   const labelIcon = useMemo(() => createCheckinLabelIcon(checkin), [checkin])
 
   if (!labelIcon) {
@@ -96,9 +103,9 @@ function CheckinPlaceLabel({ checkin }) {
       zIndexOffset={-20}
     />
   )
-}
+})
 
-function CheckinMarkers({
+const CheckinMarkers = memo(function CheckinMarkers({
   checkins,
   drawerMode,
   activeId,
@@ -112,16 +119,15 @@ function CheckinMarkers({
     <CheckinMarker
       key={checkin.id}
       checkin={checkin}
-      drawerMode={drawerMode}
-      activeId={activeId}
-      hoveredPreviewId={hoveredPreviewId}
+      isActive={(drawerMode === 'memory' && checkin.id === activeId) || checkin.id === hoveredPreviewId}
+      isPreviewOpen={hoveredPreviewId === checkin.id}
       onOpenMemoryDetail={onOpenMemoryDetail}
       onShowHoverPreview={onShowHoverPreview}
       onScheduleCloseHoverPreview={onScheduleCloseHoverPreview}
       onKeepPreviewOpen={onKeepPreviewOpen}
     />
   ))
-}
+})
 
 export function CheckinMap() {
   const [activeId, setActiveId] = useState(null)
@@ -168,9 +174,13 @@ export function CheckinMap() {
     [mapPlaces],
   )
 
-  const activeCheckin = activeId
-    ? (filteredCheckins.find((checkin) => checkin.id === activeId) ?? null)
-    : null
+  const activeCheckin = useMemo(
+    () =>
+      activeId
+        ? (filteredCheckins.find((checkin) => checkin.id === activeId) ?? null)
+        : null,
+    [activeId, filteredCheckins],
+  )
 
   useEffect(() => {
     return () => {
@@ -197,40 +207,40 @@ export function CheckinMap() {
     }
   }, [activeId, filteredCheckins, hoveredPreviewId])
 
-  function keepPreviewOpen() {
+  const keepPreviewOpen = useCallback(() => {
     if (hoverCloseTimerRef.current) {
       globalThis.clearTimeout(hoverCloseTimerRef.current)
       hoverCloseTimerRef.current = null
     }
-  }
+  }, [])
 
-  function showHoverPreview(checkinId) {
+  const showHoverPreview = useCallback((checkinId) => {
     keepPreviewOpen()
     setHoveredPreviewId(checkinId)
-  }
+  }, [keepPreviewOpen])
 
-  function scheduleCloseHoverPreview() {
+  const scheduleCloseHoverPreview = useCallback(() => {
     keepPreviewOpen()
     hoverCloseTimerRef.current = globalThis.setTimeout(() => {
       setHoveredPreviewId(null)
     }, 180)
-  }
+  }, [keepPreviewOpen])
 
-  function openAddMemoryDrawer() {
+  const openAddMemoryDrawer = useCallback(() => {
     setActiveId(null)
     setInitialMediaIndex(null)
     setDrawerMode('add')
-  }
+  }, [])
 
-  function openMemoryDetail(checkinId, mediaIndex = null) {
+  const openMemoryDetail = useCallback((checkinId, mediaIndex = null) => {
     keepPreviewOpen()
     setActiveId(checkinId)
     setInitialMediaIndex(mediaIndex)
     setHoveredPreviewId(null)
     setDrawerMode('memory')
-  }
+  }, [keepPreviewOpen])
 
-  function closeDrawer() {
+  const closeDrawer = useCallback(() => {
     setDrawerMode(null)
     setHoveredPreviewId(null)
     setInitialMediaIndex(null)
@@ -238,7 +248,7 @@ export function CheckinMap() {
     if (drawerMode === 'memory') {
       setActiveId(null)
     }
-  }
+  }, [drawerMode])
 
   return (
     <section className={cx('map-workspace')}>
@@ -274,8 +284,12 @@ export function CheckinMap() {
                   <MarkerClusterGroup
                     chunkedLoading
                     disableClusteringAtZoom={MARKER_CLUSTER_DISABLE_AT_ZOOM}
+                    iconCreateFunction={createCheckinClusterIcon}
+                    removeOutsideVisibleBounds
                     showCoverageOnHover={false}
-                    spiderfyOnMaxZoom={false}
+                    spiderfyOnEveryZoom={false}
+                    spiderfyOnMaxZoom={SHOW_CLUSTER_LOCATIONS_ON_CLICK}
+                    zoomToBoundsOnClick={ZOOM_TO_CLUSTER_BOUNDS_ON_CLICK}
                     maxClusterRadius={54}
                   >
                     <CheckinMarkers

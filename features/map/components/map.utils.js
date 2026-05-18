@@ -83,11 +83,16 @@ const homeMarkerIcon = `
 const MARKER_ICON_WIDTH = 44;
 const MARKER_ICON_HEIGHT = 54;
 const MARKER_TIP_Y = 52;
+const MARKER_VIEWBOX_TOP_PADDING = 4;
 const LABEL_ICON_WIDTH = 132;
 const LABEL_ICON_HEIGHT = 44;
+const CLUSTER_ICON_SIZE = 48;
 const MARKER_GRADIENT_START = "#55a7f0";
 const MARKER_GRADIENT_END = "#2f80ed";
 const MARKER_ACTIVE_STROKE = "#1f6fca";
+const checkinIconCache = new Map();
+const checkinLabelIconCache = new Map();
+const checkinClusterIconCache = new Map();
 
 function svgToDataUrl(svg) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
@@ -139,7 +144,7 @@ function createMarkerSvg({ moodIcon, moodId, isActive }) {
   const pinAnimationClass = isActive ? "pin-art pin-art-active" : "pin-art";
 
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 0 ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 -${MARKER_VIEWBOX_TOP_PADDING} ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT + MARKER_VIEWBOX_TOP_PADDING}">
       <defs>
         <filter id="pinShadow" x="-25%" y="-18%" width="150%" height="145%" color-interpolation-filters="sRGB">
           <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity="0.28"/>
@@ -282,6 +287,13 @@ export function fitMapToCheckins(map, visibleCheckins, options = {}) {
 }
 
 export function createCheckinIcon(checkin, isActive) {
+  const cacheKey = `${checkin.id}:${checkin.categoryId}:${checkin.moodId}:${isActive ? "active" : "idle"}`;
+  const cachedIcon = checkinIconCache.get(cacheKey);
+
+  if (cachedIcon) {
+    return cachedIcon;
+  }
+
   const category = getCategory(checkin.categoryId);
   const mood = getMood(checkin.moodId);
   const moodIcon = category.id === "home" ? homeMarkerIcon : moodMarkerIcons[mood.id] ?? moodMarkerIcons.happy;
@@ -292,7 +304,7 @@ export function createCheckinIcon(checkin, isActive) {
     isActive
   });
 
-  return L.icon({
+  const icon = L.icon({
     iconUrl: svgToDataUrl(markerSvg),
     iconSize: [MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT],
     iconAnchor: [MARKER_ICON_WIDTH / 2, MARKER_TIP_Y],
@@ -300,6 +312,41 @@ export function createCheckinIcon(checkin, isActive) {
     tooltipAnchor: [0, -(MARKER_TIP_Y + 8)],
     className: cx("checkin-leaflet-svg-icon")
   });
+
+  checkinIconCache.set(cacheKey, icon);
+
+  return icon;
+}
+
+export function createCheckinClusterIcon(cluster) {
+  const childCount = cluster.getChildCount();
+  const cachedIcon = checkinClusterIconCache.get(childCount);
+
+  if (cachedIcon) {
+    return cachedIcon;
+  }
+
+  const sizeClass =
+    childCount >= 100
+      ? "is-large"
+      : childCount >= 10
+        ? "is-medium"
+        : "is-small";
+
+  const icon = L.divIcon({
+    className: cx("explory-marker-cluster", sizeClass),
+    html: `
+      <span class="${cx("explory-marker-cluster-ring")}">
+        <span class="${cx("explory-marker-cluster-count")}">${childCount}</span>
+      </span>
+    `,
+    iconSize: [CLUSTER_ICON_SIZE, CLUSTER_ICON_SIZE],
+    iconAnchor: [CLUSTER_ICON_SIZE / 2, CLUSTER_ICON_SIZE / 2]
+  });
+
+  checkinClusterIconCache.set(childCount, icon);
+
+  return icon;
 }
 
 export function createCheckinLabelIcon(checkin) {
@@ -309,7 +356,14 @@ export function createCheckinLabelIcon(checkin) {
     return null;
   }
 
-  return L.divIcon({
+  const cacheKey = `${checkin.id}:${checkin.categoryId}:${checkin.locationName}`;
+  const cachedIcon = checkinLabelIconCache.get(cacheKey);
+
+  if (cachedIcon) {
+    return cachedIcon;
+  }
+
+  const icon = L.divIcon({
     className: cx("checkin-place-label-icon"),
     html: `
       <span class="${cx("explory-marker-label")}">
@@ -319,4 +373,8 @@ export function createCheckinLabelIcon(checkin) {
     iconSize: [LABEL_ICON_WIDTH, LABEL_ICON_HEIGHT],
     iconAnchor: [-28, 44]
   });
+
+  checkinLabelIconCache.set(cacheKey, icon);
+
+  return icon;
 }
