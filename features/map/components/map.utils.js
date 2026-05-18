@@ -2,6 +2,7 @@ import L from "leaflet";
 import markerIcon2xUrl from "leaflet/dist/images/marker-icon-2x.png";
 import markerIconUrl from "leaflet/dist/images/marker-icon.png";
 import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
+import { REACTION_MARKER_ICON_VERSION } from "@/features/map/components/map.constants";
 import { getCategory, getMood } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
 
@@ -14,7 +15,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: getLeafletAssetUrl(markerShadowUrl)
 });
 
-const moodMarkerIcons = {
+const moodMarkerIconsV1 = {
   chill: `
     <svg class="${cx("reaction-icon reaction-smile")}" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#f7b928" />
@@ -72,6 +73,127 @@ const moodMarkerIcons = {
     </svg>
   `
 };
+
+const moodMarkerIconsV2 = {
+  chill: `
+    <svg class="${cx("reaction-icon reaction-smile")}" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <radialGradient id="chillFace" cx="34%" cy="26%" r="76%">
+          <stop stop-color="#fff7b3"/>
+          <stop offset=".42" stop-color="#ffd95a"/>
+          <stop offset="1" stop-color="#f7a928"/>
+        </radialGradient>
+        <linearGradient id="chillShade" x1="8" x2="16" y1="14" y2="18" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#7c4a15"/>
+          <stop offset="1" stop-color="#5c3510"/>
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#chillFace)" />
+      <ellipse cx="8.6" cy="10.2" rx="1.15" ry="1.35" fill="#5c3510" />
+      <ellipse cx="15.4" cy="10.2" rx="1.15" ry="1.35" fill="#5c3510" />
+      <path d="M7.8 14.3c2.2 1.65 6.2 1.65 8.4 0" fill="none" stroke="url(#chillShade)" stroke-linecap="round" stroke-width="1.9" />
+      <ellipse cx="8.1" cy="6.8" rx="2.2" ry=".9" fill="#fff8d6" opacity=".58" transform="rotate(-24 8.1 6.8)" />
+    </svg>
+  `,
+  explore: `
+    <svg class="${cx("reaction-icon reaction-wow")}" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <radialGradient id="wowFace" cx="34%" cy="26%" r="76%">
+          <stop stop-color="#fff4ad"/>
+          <stop offset=".45" stop-color="#ffc94a"/>
+          <stop offset="1" stop-color="#f59b1a"/>
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#wowFace)" />
+      <ellipse cx="8.45" cy="9.6" rx="1.45" ry="1.8" fill="#56320e" />
+      <ellipse cx="15.55" cy="9.6" rx="1.45" ry="1.8" fill="#56320e" />
+      <ellipse cx="12" cy="15.15" rx="2.45" ry="3.05" fill="#56320e" />
+      <ellipse cx="11.25" cy="14.1" rx=".7" ry=".42" fill="#8a5518" opacity=".54" />
+      <ellipse cx="8.1" cy="6.7" rx="2.2" ry=".85" fill="#fff8d6" opacity=".55" transform="rotate(-24 8.1 6.7)" />
+    </svg>
+  `,
+  happy: `
+    <svg class="${cx("reaction-icon reaction-haha")}" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <radialGradient id="laughFace" cx="34%" cy="25%" r="77%">
+          <stop stop-color="#fff3aa"/>
+          <stop offset=".44" stop-color="#ffd246"/>
+          <stop offset="1" stop-color="#f69b18"/>
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#laughFace)" />
+      <path d="M6.9 9.35c1.08 1.05 2.3 1.05 3.38 0M13.72 9.35c1.08 1.05 2.3 1.05 3.38 0" fill="none" stroke="#573410" stroke-linecap="round" stroke-width="1.85" />
+      <path d="M7.45 13.25h9.1c-.38 3.1-2.1 4.7-4.55 4.7s-4.17-1.6-4.55-4.7Z" fill="#573410" />
+      <path d="M9 15.35c1.65.82 4.35.82 6 0" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="1.15" opacity=".86" />
+      <ellipse cx="8.1" cy="6.75" rx="2.2" ry=".85" fill="#fff8d6" opacity=".56" transform="rotate(-24 8.1 6.75)" />
+    </svg>
+  `,
+  memorable: `
+    <svg class="${cx("reaction-icon reaction-like")}" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <radialGradient id="likeBadge" cx="32%" cy="24%" r="78%">
+          <stop stop-color="#7cc4ff"/>
+          <stop offset=".45" stop-color="#2f8df1"/>
+          <stop offset="1" stop-color="#1767d1"/>
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#likeBadge)" />
+      <path d="M6.4 10.7h2.75v7H6.4Z" fill="#dcebff" opacity=".98" />
+      <path d="M9.15 10.65c1.18-1.14 1.96-2.58 2.32-4.3.12-.56.54-.95 1.08-.95 1.18 0 2.03 1.02 1.82 2.18l-.33 1.75h3.6c.98 0 1.68.9 1.47 1.85l-.95 4.46c-.25 1.18-1.18 2.06-2.4 2.06H9.15Z" fill="#fff" />
+      <path d="M9.15 10.65v7.05" fill="none" stroke="#cae1ff" stroke-linecap="round" stroke-width=".9" />
+      <ellipse cx="8.3" cy="6.8" rx="2.35" ry=".78" fill="#dff0ff" opacity=".5" transform="rotate(-24 8.3 6.8)" />
+    </svg>
+  `,
+  peaceful: `
+    <svg class="${cx("reaction-icon reaction-sad")}" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <radialGradient id="peaceFace" cx="34%" cy="25%" r="77%">
+          <stop stop-color="#fff1a8"/>
+          <stop offset=".43" stop-color="#ffd25c"/>
+          <stop offset="1" stop-color="#e9a533"/>
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#peaceFace)" />
+      <path d="M7.2 10.1c.9-.65 1.82-.65 2.72 0M14.08 10.1c.9-.65 1.82-.65 2.72 0" fill="none" stroke="#5a3711" stroke-linecap="round" stroke-width="1.75" />
+      <path d="M8.35 15c1.85 1.2 5.45 1.2 7.3 0" fill="none" stroke="#5a3711" stroke-linecap="round" stroke-width="1.65" opacity=".9" />
+      <path d="M17.25 5.85c1.15.65 1.5 2 .92 3.1-.47.9-1.38 1.34-2.35 1.16.85-.55 1.23-1.38 1.02-2.34-.14-.65-.54-1.28-1.08-1.75.5-.28 1.04-.33 1.49-.17Z" fill="#fff6c9" opacity=".82" />
+    </svg>
+  `,
+  romantic: `
+    <svg class="${cx("reaction-icon reaction-love")}" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <radialGradient id="loveBadge" cx="34%" cy="24%" r="78%">
+          <stop stop-color="#ff8fac"/>
+          <stop offset=".48" stop-color="#f43f66"/>
+          <stop offset="1" stop-color="#c9184a"/>
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#loveBadge)" />
+      <path d="M12 18.25S6.05 14.7 6.05 10.55c0-1.82 1.28-3.12 2.98-3.12 1.14 0 2.12.62 2.97 1.75.85-1.13 1.83-1.75 2.97-1.75 1.7 0 2.98 1.3 2.98 3.12 0 4.15-5.95 7.7-5.95 7.7Z" fill="#fff" />
+      <ellipse cx="8.45" cy="6.55" rx="2.15" ry=".75" fill="#ffd9e3" opacity=".65" transform="rotate(-24 8.45 6.55)" />
+    </svg>
+  `,
+  sad: `
+    <svg class="${cx("reaction-icon reaction-sad")}" viewBox="0 0 24 24" aria-hidden="true">
+      <defs>
+        <radialGradient id="sadFace" cx="34%" cy="25%" r="77%">
+          <stop stop-color="#fff1a8"/>
+          <stop offset=".43" stop-color="#ffd15a"/>
+          <stop offset="1" stop-color="#f0a022"/>
+        </radialGradient>
+      </defs>
+      <circle cx="12" cy="12" r="10" fill="url(#sadFace)" />
+      <ellipse cx="8.5" cy="10.2" rx="1.12" ry="1.3" fill="#5a3711" />
+      <ellipse cx="15.5" cy="10.2" rx="1.12" ry="1.3" fill="#5a3711" />
+      <path d="M8.4 16.05c1.9-1.35 5.3-1.35 7.2 0" fill="none" stroke="#5a3711" stroke-linecap="round" stroke-width="1.8" />
+      <path class="${cx("reaction-tear")}" d="M17.55 12.5c1.28 1.43 1.82 2.46 1.82 3.35a1.82 1.82 0 0 1-3.64 0c0-.89.54-1.92 1.82-3.35Z" fill="#72d7ff" stroke="#2196d3" stroke-width=".62" />
+      <ellipse cx="8.1" cy="6.8" rx="2.15" ry=".78" fill="#fff8d6" opacity=".5" transform="rotate(-24 8.1 6.8)" />
+    </svg>
+  `
+};
+
+const moodMarkerIcons =
+  REACTION_MARKER_ICON_VERSION === 2 ? moodMarkerIconsV2 : moodMarkerIconsV1;
 
 const homeMarkerIcon = `
   <svg class="${cx("home-heart-icon")}" viewBox="0 0 24 24" aria-hidden="true">

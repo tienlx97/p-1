@@ -55,7 +55,7 @@
   position: absolute;
   top: 18px;
   left: 424px;
-  z-index: 880;
+  z-index: 860;
   display: flex;
   max-width: min(880px, calc(100vw - 442px));
   align-items: center;
@@ -232,23 +232,23 @@
   position: absolute;
   top: 18px;
   left: 18px;
-  z-index: 920;
+  z-index: 980;
   width: min(390px, calc(100vw - 36px));
   pointer-events: auto;
 }
 
 .map-place-search-field {
   display: flex;
-  min-height: 54px;
+  min-height: 38px;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 24px;
   background: #fff;
   box-shadow:
     0 1px 4px rgba(60, 64, 67, 0.3),
     0 4px 12px rgba(60, 64, 67, 0.15);
-  padding: 0 10px 0 20px;
+  padding: 0 7px 0 14px;
   transition:
     box-shadow 140ms ease,
     outline-color 140ms ease;
@@ -260,6 +260,13 @@
   box-shadow:
     0 1px 4px rgba(60, 64, 67, 0.28),
     0 6px 16px rgba(60, 64, 67, 0.18);
+}
+
+.map-place-search-field.has-results {
+  border-radius: 24px 24px 0 0;
+  box-shadow:
+    0 1px 4px rgba(60, 64, 67, 0.24),
+    0 4px 12px rgba(60, 64, 67, 0.12);
 }
 
 .map-place-search-icon {
@@ -298,7 +305,7 @@
   border: 0;
   background: transparent;
   color: #202124;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1;
   outline: 0;
@@ -320,8 +327,8 @@
 
 .map-place-search-clear {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   flex: 0 0 auto;
   place-items: center;
   border: 0;
@@ -335,15 +342,15 @@
 
 .map-place-search-divider {
   width: 1px;
-  height: 28px;
+  height: 24px;
   flex: 0 0 auto;
   background: #e8eaed;
 }
 
 .map-place-search-submit {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   flex: 0 0 auto;
   place-items: center;
   border: 0;
@@ -374,31 +381,36 @@
 }
 
 .map-place-search-results {
+  position: relative;
+  z-index: 2;
   overflow: hidden;
   margin-top: 0;
   border: 0;
-  border-top: 1px solid #f1f3f4;
-  border-radius: 0 0 8px 8px;
+  border-top: 1px solid #edf0f2;
+  border-radius: 0 0 24px 24px;
   background: #fff;
   box-shadow:
     0 2px 6px rgba(60, 64, 67, 0.2),
     0 10px 26px rgba(60, 64, 67, 0.16);
-  padding: 8px 0;
+  padding: 8px;
 }
 
 .map-place-search-result {
   display: grid;
   width: 100%;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   border: 0;
-  border-radius: 0;
+  border-radius: 14px;
   background: transparent;
   color: #202124;
   cursor: pointer;
-  padding: 11px 18px 11px 20px;
+  padding: 10px 12px;
   text-align: left;
+  transition:
+    background 140ms ease,
+    transform 140ms ease;
 }
 
 .map-place-search-result:hover,
@@ -406,10 +418,37 @@
   background: #f2f6fd;
 }
 
+.map-place-search-result:active {
+  transform: scale(0.99);
+}
+
+.map-place-search-result-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.72), transparent 34%),
+    color-mix(in srgb, var(--result-reaction-color, #2f80ed) 18%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--result-reaction-color, #2f80ed) 22%, transparent);
+  color: var(--result-reaction-color, #2f80ed);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.map-place-search-result-icon.home {
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.76), transparent 34%),
+    color-mix(in srgb, var(--result-reaction-color, #e83f72) 20%, #fff);
+  color: #d91f62;
+}
+
 .map-place-search-result span {
   display: grid;
   min-width: 0;
-  gap: 3px;
+  gap: 4px;
 }
 
 .map-place-search-result strong,
@@ -422,25 +461,27 @@
 
 .map-place-search-result strong {
   color: #202124;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 800;
+  line-height: 1.18;
 }
 
 .map-place-search-result small {
   color: #5f6368;
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 650;
+  line-height: 1.2;
 }
 
 .map-place-search-result em {
-  max-width: 92px;
+  max-width: 86px;
   border-radius: 999px;
   background: #eef3f1;
-  color: #3c4043;
+  color: #4f5f58;
   font-size: 11px;
   font-style: normal;
   font-weight: 760;
-  padding: 5px 8px;
+  padding: 5px 8px 4px;
 }
 
 .map-place-search-empty {

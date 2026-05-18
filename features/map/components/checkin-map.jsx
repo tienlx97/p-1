@@ -470,12 +470,6 @@ export function CheckinMap() {
         <div className={cx('leaflet-map-shell')}>
           {checkins.length > 0 ? (
             <>
-              <MapFilterPanel
-                categoryId={categoryFilter}
-                totalCount={checkins.length}
-                visibleCount={filteredCheckins.length}
-                onCategoryChange={setCategoryFilter}
-              />
               <MapContainer
                 center={DEFAULT_CENTER}
                 zoom={DEFAULT_ZOOM}
@@ -486,6 +480,12 @@ export function CheckinMap() {
                 scrollWheelZoom
                 className={cx('checkin-leaflet-map', showPlaceLabels && 'show-place-labels')}
               >
+                <MapFilterPanel
+                  categoryId={categoryFilter}
+                  totalCount={checkins.length}
+                  visibleCount={filteredCheckins.length}
+                  onCategoryChange={setCategoryFilter}
+                />
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapZoomWatcher onPlaceLabelVisibilityChange={setShowPlaceLabels} />
                 <MapPreviewDismissWatcher onDismissPreview={closeHoverPreview} />

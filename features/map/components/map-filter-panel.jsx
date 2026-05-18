@@ -16,6 +16,10 @@ const categoryIcons = {
   travel: "✈"
 };
 
+function stopMapInteraction(event) {
+  event.stopPropagation();
+}
+
 export function MapFilterPanel({
   categoryId,
   onCategoryChange,
@@ -37,7 +41,13 @@ export function MapFilterPanel({
   }
 
   return (
-    <section className={cx("map-filter-panel")} aria-label="Lọc nhanh bản đồ">
+    <section
+      className={cx("map-filter-panel")}
+      aria-label="Lọc nhanh bản đồ"
+      onDoubleClick={stopMapInteraction}
+      onPointerDown={stopMapInteraction}
+      onWheel={stopMapInteraction}
+    >
       <Button
         type="button"
         className={cx("map-filter-scroll", "is-left")}

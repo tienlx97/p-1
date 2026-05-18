@@ -4,11 +4,21 @@ import { useMemo, useRef, useState } from "react";
 import { Button } from "react-aria-components";
 import { useMap } from "react-leaflet";
 
-import { getCategory } from "@/entities/memory";
+import { getCategory, getMood } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
 
 const MAX_RESULTS = 6;
 const SEARCH_ZOOM = 15;
+
+const resultReactionSymbols = {
+  chill: "⌁",
+  explore: "!",
+  happy: "☺",
+  memorable: "★",
+  peaceful: "☾",
+  romantic: "♥",
+  sad: "•"
+};
 
 function normalizeSearchText(value) {
   return String(value ?? "")
@@ -36,10 +46,28 @@ function stopMapInteraction(event) {
   event.stopPropagation();
 }
 
+function SearchResultReactionIcon({ place }) {
+  const category = getCategory(place.categoryId);
+  const mood = getMood(place.moodId);
+  const isHome = category.id === "home";
+  const symbol = isHome ? "♥" : (resultReactionSymbols[mood.id] ?? "•");
+
+  return (
+    <span
+      className={cx("map-place-search-result-icon", isHome && "home")}
+      style={{ "--result-reaction-color": category.color }}
+      aria-hidden="true"
+    >
+      {symbol}
+    </span>
+  );
+}
+
 export function MapPlaceSearch({ places, onShowHoverPreview }) {
   const map = useMap();
   const [query, setQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const blurTimerRef = useRef(null);
   const searchRef = useRef(null);
   const normalizedQuery = normalizeSearchText(query);
 
@@ -66,6 +94,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
     });
     onShowHoverPreview(place.id);
     setQuery(place.locationName);
+    setIsFocused(false);
     searchRef.current?.blur();
   }
 
@@ -74,6 +103,13 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
 
     if (results[0]) {
       jumpToPlace(results[0]);
+    }
+  }
+
+  function clearBlurTimer() {
+    if (blurTimerRef.current) {
+      globalThis.clearTimeout(blurTimerRef.current);
+      blurTimerRef.current = null;
     }
   }
 
@@ -87,7 +123,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
       onSubmit={handleSubmit}
       onWheel={stopMapInteraction}
     >
-      <div className={cx("map-place-search-field")}>
+      <div className={cx("map-place-search-field", showResults && "has-results")}>
         <input
           ref={searchRef}
           type="search"
@@ -98,10 +134,17 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
           aria-expanded={showResults}
           aria-controls="map-place-search-results"
           onBlur={() => {
-            globalThis.setTimeout(() => setIsFocused(false), 120);
+            clearBlurTimer();
+            blurTimerRef.current = globalThis.setTimeout(() => {
+              setIsFocused(false);
+              blurTimerRef.current = null;
+            }, 120);
           }}
           onChange={(event) => setQuery(event.target.value)}
-          onFocus={() => setIsFocused(true)}
+          onFocus={() => {
+            clearBlurTimer();
+            setIsFocused(true);
+          }}
         />
         {query ? (
           <Button
@@ -109,7 +152,9 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
             className={cx("map-place-search-clear")}
             aria-label="Xóa tìm kiếm"
             onPress={() => {
+              clearBlurTimer();
               setQuery("");
+              setIsFocused(true);
               searchRef.current?.focus();
             }}
           >
@@ -137,6 +182,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
                 className={cx("map-place-search-result")}
                 onPress={() => jumpToPlace(place)}
               >
+                <SearchResultReactionIcon place={place} />
                 <span>
                   <strong>{place.locationName}</strong>
                   <small>{place.title}</small>
