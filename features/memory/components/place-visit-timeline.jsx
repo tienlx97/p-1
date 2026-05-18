@@ -4,8 +4,30 @@ import { Button } from "react-aria-components";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { MediaPreview } from "@/features/memory/components/media-preview";
-import { formatDate, getMemoryMedia } from "@/entities/memory";
+import { formatDate, getMemoryMedia, getMemoryRating } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
+
+const RATING_STARS = [1, 2, 3, 4, 5];
+
+function VisitRating({ rating }) {
+  return (
+    <div
+      className={cx("timeline-visit-rating")}
+      aria-label={`Đánh giá buổi đi chơi: ${rating} trên 5 sao`}
+      title={`${rating}/5 sao`}
+    >
+      {RATING_STARS.map((star) => (
+        <span
+          aria-hidden="true"
+          className={star <= rating ? cx("is-filled") : undefined}
+          key={star}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export function PlaceVisitTimeline({ visits, onOpenMedia }) {
   return (
@@ -18,14 +40,18 @@ export function PlaceVisitTimeline({ visits, onOpenMedia }) {
       <div className={cx("timeline-list")}>
         {visits.map((visit) => {
           const visitMedia = getMemoryMedia(visit);
+          const rating = getMemoryRating(visit);
 
           return (
             <article className={cx("timeline-visit")} key={visit.id}>
               <div className={cx("timeline-marker")} aria-hidden="true" />
               <div className={cx("timeline-visit-content")}>
-                <div className={cx("timeline-visit-date")}>
-                  <strong>{formatDate(visit.checkinTime)}</strong>
-                  <span>{visit.title}</span>
+                <div className={cx("timeline-visit-head")}>
+                  <div className={cx("timeline-visit-date")}>
+                    <strong>{formatDate(visit.checkinTime)}</strong>
+                    <span>{visit.title}</span>
+                  </div>
+                  <VisitRating rating={rating} />
                 </div>
                 <Swiper
                   className={cx("timeline-media-swiper")}

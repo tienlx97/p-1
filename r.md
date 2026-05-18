@@ -20,3 +20,8 @@ locationStatus trong map-controls.jsx hiện ở lại mãi. Nên auto clear sau
 
 Attribution OpenStreetMap
 attributionControl={false} đang tắt attribution. Nếu app public/prod thì nên bật hoặc render attribution riêng, vì tile OSM thường cần ghi nguồn.
+
+Travel memory map: HoloMap, TravelDiary
+Couple private space: Notery, Love Ledger
+Map/list/place detail UX: Atlas Obscura, travel map app shots
+Điểm khác biệt nên giữ cho app của bạn: không làm travel discovery,

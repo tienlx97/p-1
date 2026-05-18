@@ -255,6 +255,14 @@
   min-width: 0;
 }
 
+.timeline-visit-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
 .timeline-visit-date {
   display: grid;
   gap: 2px;
@@ -274,6 +282,20 @@
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.timeline-visit-rating {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 1px;
+  color: #dadce0;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.timeline-visit-rating .is-filled {
+  color: #fbbc04;
 }
 
 .timeline-media-swiper {

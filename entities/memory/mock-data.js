@@ -961,6 +961,15 @@ export function getMediaSummary(checkin) {
   return { total: media.length, photos, videos };
 }
 
+export function getMemoryRating(checkin) {
+  if (Number.isInteger(checkin.rating)) {
+    return Math.min(5, Math.max(1, checkin.rating));
+  }
+
+  const daySeed = new Date(checkin.checkinTime).getDate() + checkin.id.length;
+  return (daySeed % 5) + 1;
+}
+
 export function formatDate(value) {
   return new Intl.DateTimeFormat("vi-VN", {
     day: "2-digit",

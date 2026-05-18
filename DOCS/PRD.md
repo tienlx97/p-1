@@ -2,13 +2,15 @@
 
 ## 1. Product Summary
 
-Photo Memory Map is a private memory map for two people. It helps a couple save shared memories with photos, videos, notes, dates, moods, categories, and locations, then revisit them through a map-first interface, a photo library, and a shared profile space.
+Photo Memory Map is a private memory map for two people. It helps a couple save shared memories with photos, videos, notes, dates, moods, categories, and locations, then revisit them through a map-first interface, a photo library, and a shared profile space. It can also support optional live location sharing so each person can see where the other person is on the same private map when sharing is enabled.
 
 The current project is a Next.js App Router prototype using JavaScript/JSX, Leaflet, React Aria, StyleX/CSS, and mock memory data. The product direction should stay close to what the app already does:
 
-> Open the private map, browse memories by place, filter them, preview media, open details, and add a new memory through a focused drawer/form.
+> Open the private map, browse memories by place, filter them, preview media, open details, add a new memory, and optionally see each other live on the map when location sharing is turned on.
 
 The product is not a social network. There are no public feeds, follows, likes, comments, or public discovery mechanics.
+
+Live location sharing is not a public tracking feature. It is an explicit, opt-in couple safety/presence feature between the two people in the same private space.
 
 ---
 
@@ -30,6 +32,7 @@ The product is not a social network. There are no public feeds, follows, likes, 
 | Map, markers, clustering, map controls, category filter | `features/map` |
 | Memory library, cards, detail drawer/page, media viewer, add-memory drawer/form | `features/memory` |
 | Couple profile and stats | `features/profile` |
+| Live location sharing UI and map presence | Future `features/location-sharing` or `features/map` integration |
 | Mock couple space, categories, moods, checkins, formatters | `entities/memory` |
 | Generic layout, UI primitives, styles, helper utilities | `shared` |
 
@@ -45,12 +48,15 @@ There is no production backend, database persistence, authentication, real uploa
 
 Create a warm, private place where two people can revisit their shared journey through locations and media.
 
+When live location sharing is enabled, the product should also create a gentle sense of presence: "I can see where you are now" without making the app feel like surveillance.
+
 The app should feel:
 
 - Private
 - Personal
 - Photo-first
 - Map-first
+- Presence-aware when both people opt in
 - Warm but not childish
 - Simple enough to use often
 - Clearly different from public social media
@@ -97,6 +103,13 @@ Photo Memory Map solves this by grouping:
 
 into one private memory system.
 
+For couples who want more real-time presence, the product also solves:
+
+- "Where are you now?" without needing to ask repeatedly.
+- Seeing whether the other person is moving or staying in one place.
+- Coordinating meetups by looking at both people on the same private map.
+- Reducing uncertainty while still making location sharing explicit and controllable.
+
 ---
 
 ## 6. MVP Scope
@@ -120,6 +133,8 @@ The MVP should focus on the experience already being built:
 | Photo/video media viewer | Implemented prototype | Media support exists in mock data/UI |
 | Couple profile page | Implemented prototype | Couple info, stats, milestones |
 | Mock data model | Implemented prototype | Stored in `entities/memory` |
+| Live location marker for each person | Planned | Needed for iOS/native phase or realtime backend phase |
+| Moving location state | Planned | Needed for live sharing experience |
 
 ### 6.2. Not Yet Implemented
 
@@ -131,6 +146,8 @@ The MVP should focus on the experience already being built:
 | Create/update/delete APIs | Future backend phase |
 | Location search API | Future enhancement |
 | GPS current-location save | Future enhancement |
+| Live location sharing | Future realtime/native phase |
+| Background location updates on iOS | Future iOS phase |
 | Settings page | Future enhancement |
 | Public sharing | Out of scope |
 | Like/comment/follow/feed | Out of scope |
@@ -163,7 +180,68 @@ Current implementation notes:
 - Uses `react-leaflet` and marker clustering.
 - Uses category filtering from mock memory data.
 
-### 7.2. MEMORY-001 - Memory Library
+### 7.2. LOCATION-001 - Live Location Sharing
+
+Goal: let either person share their current location with the other person inside the private couple map.
+
+Requirements:
+
+- Each person can turn location sharing on or off.
+- Location sharing must be opt-in and visible in the UI.
+- If only Person 1 is sharing, only Person 1's live marker appears.
+- If only Person 2 is sharing, only Person 2's live marker appears.
+- If both people are sharing, both live markers appear at the same time.
+- Live markers must be visually distinct from memory pins.
+- A live marker should use the person's avatar, initials, or a clear "current person" style.
+- A live marker should show the person's display name.
+- A live marker should show last updated time, for example "updated 20 seconds ago".
+- A live marker should show status: active, stale, paused, or unavailable.
+- Tapping a live marker should open a compact person/location card.
+- The map should offer a "center on partner" action when the partner is sharing.
+- The map should offer a "center on both of us" action when both people are sharing.
+
+Non-goals:
+
+- Do not show location to anyone outside the couple space.
+- Do not create public location links.
+- Do not store detailed location history in MVP unless explicitly added later.
+- Do not make location sharing invisible or hard to stop.
+
+### 7.3. LOCATION-002 - Movement On Map
+
+Goal: when a sharing person moves, the other person should see that movement reflected on the map.
+
+Requirements:
+
+- The live marker should update when new coordinates arrive.
+- Marker movement should animate smoothly enough to feel alive, not jumpy.
+- The UI should indicate movement when the person is moving.
+- Movement state can be inferred from recent coordinate changes, speed, or heading when available.
+- If heading is available, the marker may show direction.
+- If speed is available, the location card may show "moving" versus "stopped"; avoid showing overly precise speed unless useful.
+- If updates stop arriving, the marker should become stale after a defined timeout.
+- If the person turns sharing off, remove or pause their live marker immediately.
+
+Suggested realtime states:
+
+| State | Meaning |
+| --- | --- |
+| `active` | Recent location update received |
+| `moving` | Recent updates show meaningful movement |
+| `stationary` | Recent updates show no meaningful movement |
+| `stale` | Last update is older than the allowed freshness window |
+| `paused` | User intentionally turned sharing off |
+| `unavailable` | Permission/network/device state prevents sharing |
+
+Suggested update behavior:
+
+- Foreground app: update every 5-15 seconds or on meaningful location change.
+- Background iOS app: update using iOS location capabilities and battery-aware significant changes where possible.
+- Realtime delivery: use WebSocket, realtime database subscriptions, or push-assisted refresh.
+- UI freshness timeout: mark as stale after 60-120 seconds without updates.
+- Hard privacy expiry: optionally stop a sharing session after a selected duration.
+
+### 7.4. MEMORY-001 - Memory Library
 
 Goal: provide a gallery/list view for browsing all saved memories.
 
@@ -178,7 +256,7 @@ Requirements:
 - Open the full detail page from a memory card.
 - Empty and filtered-empty states should guide the user gently.
 
-### 7.3. MEMORY-002 - Add Memory
+### 7.5. MEMORY-002 - Add Memory
 
 Goal: make adding a memory feel quick, visual, and not overloaded.
 
@@ -206,7 +284,7 @@ MVP behavior target:
 - Until backend exists, submission may remain prototype-only.
 - Once backend exists, successful submit should create a memory and show it on the map/library.
 
-### 7.4. MEMORY-003 - Memory Detail
+### 7.6. MEMORY-003 - Memory Detail
 
 Goal: show the full story behind one memory.
 
@@ -219,7 +297,7 @@ Requirements:
 - Show related memories.
 - Provide edit/delete actions as UI affordances, even if backend behavior is added later.
 
-### 7.5. PROFILE-001 - Couple Space
+### 7.7. PROFILE-001 - Couple Space
 
 Goal: summarize the shared private space.
 
@@ -252,7 +330,44 @@ The current mock data should guide the first backend schema.
 | `bio` | Short description |
 | `stats` | Derived or cached stats |
 
-### 8.2. Memory / Checkin
+### 8.2. LiveLocationSession
+
+| Field | Meaning |
+| --- | --- |
+| `id` | Sharing session ID |
+| `coupleSpaceId` | Couple space ID |
+| `userId` | Person who is sharing |
+| `status` | `active`, `paused`, or `ended` |
+| `startedAt` | When sharing started |
+| `endedAt` | When sharing ended |
+| `expiresAt` | Optional automatic stop time |
+| `lastLocationId` | Latest location update reference |
+| `createdAt` | Created timestamp |
+| `updatedAt` | Updated timestamp |
+
+### 8.3. LiveLocationUpdate
+
+| Field | Meaning |
+| --- | --- |
+| `id` | Location update ID |
+| `sessionId` | Sharing session reference |
+| `coupleSpaceId` | Couple space ID |
+| `userId` | Person who sent the update |
+| `latitude` | Current latitude |
+| `longitude` | Current longitude |
+| `accuracyMeters` | Location accuracy if available |
+| `heading` | Direction if available |
+| `speedMetersPerSecond` | Speed if available |
+| `batteryState` | Optional coarse battery state |
+| `recordedAt` | Device timestamp |
+| `receivedAt` | Server timestamp |
+
+Retention rule:
+
+- MVP should store only the latest location per active user or a very short rolling window for movement smoothing.
+- Long-term location history should be off by default and require a separate product decision.
+
+### 8.4. Memory / Checkin
 
 | Field | Meaning |
 | --- | --- |
@@ -274,7 +389,7 @@ The current mock data should guide the first backend schema.
 | `media` | Rich media objects for images/videos |
 | `mapPosition` | Legacy/static mini-map position helper |
 
-### 8.3. Category
+### 8.5. Category
 
 | Field | Meaning |
 | --- | --- |
@@ -284,7 +399,7 @@ The current mock data should guide the first backend schema.
 | `icon` | Icon label/name |
 | `color` | Category color |
 
-### 8.4. Mood
+### 8.6. Mood
 
 | Field | Meaning |
 | --- | --- |
@@ -300,7 +415,9 @@ The current mock data should guide the first backend schema.
 - Map-first, but not travel-app-first. The map is for remembering, not public discovery.
 - Photo-first cards and previews should make the app feel personal immediately.
 - Keep actions obvious: add memory, open detail, return to map, filter.
+- Keep live location controls obvious: start sharing, stop sharing, center on partner.
 - Avoid social-media patterns such as public engagement counters.
+- Avoid surveillance patterns: no hidden sharing, no public sharing, no permanent history by default.
 - Mobile must stay usable, especially drawers, filters, and media previews.
 - Labels, markers, and cards should not visually collide or feel noisy.
 - Empty states should encourage adding the first memory.
@@ -335,6 +452,8 @@ Current stack:
 
 Do not rewrite the app toward TypeScript, Tailwind, Prisma, Supabase, or another stack unless that is a deliberate project decision.
 
+For an iOS/native companion app, the product should use native location APIs for foreground and background location updates, request permission with clear copy, and respect iOS background-location indicators and permission controls.
+
 ---
 
 ## 11. Backend Phase Requirements
@@ -354,6 +473,11 @@ Required backend capabilities:
 - Upload image/video media.
 - Delete media.
 - Set cover media.
+- Start live location sharing.
+- Stop live location sharing.
+- Receive live location updates.
+- Broadcast partner location updates to the other person.
+- Mark stale/unavailable live locations when updates stop.
 
 Security requirements:
 
@@ -361,6 +485,12 @@ Security requirements:
 - Users outside the couple space must not access memory data.
 - Uploaded media must be private or served through signed/authorized access.
 - Location permission must only be requested after explicit user action.
+- Live location sharing must be explicit opt-in per person.
+- Each person must be able to stop sharing at any time.
+- The app must show when sharing is active.
+- Live location data must be scoped to the couple space.
+- Live location history should not be retained by default.
+- If retention is needed for debugging, use short retention and avoid exposing it as a user-facing history.
 
 ---
 
@@ -382,9 +512,68 @@ The current prototype is acceptable when:
 12. `/profile` shows the couple space overview.
 13. The UI remains usable on mobile and desktop.
 
+## 13. Acceptance Criteria For Live Location
+
+The live location feature is acceptable when:
+
+1. Person 1 can turn location sharing on and Person 2 sees Person 1 on the map.
+2. Person 2 can turn location sharing on and Person 1 sees Person 2 on the map.
+3. If both people share, both live markers are visible at the same time.
+4. Live markers are visually different from memory pins.
+5. A live marker updates position when new coordinates arrive.
+6. Movement is visible through smooth marker updates or a clear moving state.
+7. The marker shows last updated time.
+8. Stale updates are marked clearly after the freshness timeout.
+9. Stopping sharing removes or pauses the live marker for the other person.
+10. The app never shares location before the user explicitly enables it.
+11. Location updates are only visible inside the correct couple space.
+12. The iOS app remains battery-aware and does not request excessive background updates.
+
 ---
 
-## 13. Roadmap
+## 14. iOS App Direction
+
+The iOS app should be a companion-first experience for live presence and quick memory capture.
+
+Core iOS tabs:
+
+| Tab | Purpose |
+| --- | --- |
+| Map | Memory pins plus live partner location |
+| Add | Quick photo/video memory capture |
+| Library | Browse saved memories |
+| Us | Couple space/profile and sharing status |
+
+Map requirements on iOS:
+
+- Show memory pins and live person markers together.
+- Use different visual systems for memory pins and live markers.
+- Provide a prominent share-location toggle.
+- Provide quick actions: "Center on me", "Center on partner", and "Show both".
+- Show permission and sharing status clearly.
+- If partner is moving, animate their marker and show "moving now" or similar copy.
+- If partner's location is stale, show the last known time instead of pretending it is live.
+
+iOS permission requirements:
+
+- Ask for location permission only when the user turns sharing on.
+- Explain why the app needs location before the system prompt.
+- Support foreground sharing first.
+- Add background sharing only when the product is ready to handle battery, privacy, and iOS review expectations.
+- Show an in-app active sharing indicator whenever sharing is on.
+
+Recommended native implementation direction:
+
+- Use SwiftUI for the app shell.
+- Use MapKit for the iOS map.
+- Use Core Location for device location.
+- Use a realtime backend channel for partner updates.
+- Use push notifications only for supportive events, not as the main location stream.
+- Keep the web app and iOS app aligned around the same backend model: couple space, memories, media, live location session, latest location update.
+
+---
+
+## 15. Roadmap
 
 ### Phase 1 - Stabilize Prototype
 
@@ -403,7 +592,18 @@ The current prototype is acceptable when:
 - Add edit/delete behavior.
 - Replace mock stats with computed real stats.
 
-### Phase 3 - Memory Experience
+### Phase 3 - Live Location MVP
+
+- Add live location sharing sessions.
+- Add latest-location storage scoped by couple space.
+- Add live person markers on the map.
+- Add start/stop sharing controls.
+- Add stale/paused/unavailable states.
+- Add realtime delivery for partner location updates.
+- Add iOS foreground sharing.
+- Add battery-aware iOS background sharing only after foreground behavior is stable.
+
+### Phase 4 - Memory Experience
 
 - Timeline by month/year.
 - Better place grouping.
@@ -413,7 +613,7 @@ The current prototype is acceptable when:
 - Optional tags.
 - Better location picking/search.
 
-### Phase 4 - Personalization And Archive
+### Phase 5 - Personalization And Archive
 
 - Couple themes.
 - Export album/PDF.
@@ -422,7 +622,7 @@ The current prototype is acceptable when:
 
 ---
 
-## 14. Explicitly Out Of Scope
+## 16. Explicitly Out Of Scope
 
 Do not build these unless the product direction changes:
 
@@ -434,13 +634,16 @@ Do not build these unless the product direction changes:
 - Place review system
 - Booking or trip planning marketplace
 - Public discovery
+- Public live location links
+- Hidden location tracking
+- Permanent live location history by default
 - Multi-couple community
 - Complex AI features
 - Ads or monetized social mechanics
 
 ---
 
-## 15. Success Metrics
+## 17. Success Metrics
 
 Because this is a private product for two people, success should measure meaningful usage, not social growth.
 
@@ -454,11 +657,14 @@ Because this is a private product for two people, success should measure meaning
 | Couple journey | Number of unique places saved |
 | Retention | Weekly return visits by the two users |
 | Data quality | Memories with title, date, media, and location |
+| Live sharing | Number of intentional sharing sessions |
+| Live freshness | Percentage of active sessions with fresh latest location |
+| Presence value | Partner marker opens or center-on-partner actions |
 
 ---
 
-## 16. Product Conclusion
+## 18. Product Conclusion
 
 Photo Memory Map should stay focused: a private, visual, map-based memory space for two people.
 
-The current project is already strongest when it behaves like a living memory atlas: open the map, see the places, hover a pin, revisit a photo, and open the full story. The PRD should protect that direction while leaving a clear path from mock prototype to real private MVP.
+The current project is already strongest when it behaves like a living memory atlas: open the map, see the places, hover a pin, revisit a photo, and open the full story. Live location sharing can extend that map into a gentle real-time presence layer, but it must stay explicit, private, reversible, and clearly separate from saved memory pins.
