@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import MarkerClusterGroup from 'react-leaflet-markercluster'
 import { MapContainer, Marker, TileLayer, Tooltip, useMapEvents } from 'react-leaflet'
 import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
+  MARKER_CLUSTER_DISABLE_AT_ZOOM,
   PLACE_LABEL_MIN_ZOOM,
+  USE_MARKER_CLUSTERING,
   USE_DEFAULT_LEAFLET_MARKERS,
 } from '@/features/map/components/map.constants'
 import { createCheckinIcon, createCheckinLabelIcon } from '@/features/map/components/map.utils'
@@ -34,7 +37,6 @@ function CheckinMarker({
   drawerMode,
   activeId,
   hoveredPreviewId,
-  showPlaceLabels,
   onOpenMemoryDetail,
   onShowHoverPreview,
   onScheduleCloseHoverPreview,
@@ -46,48 +48,79 @@ function CheckinMarker({
     () => (USE_DEFAULT_LEAFLET_MARKERS ? null : createCheckinIcon(checkin, isActive)),
     [checkin, isActive],
   )
-  const labelIcon = useMemo(() => createCheckinLabelIcon(checkin), [checkin])
 
   return (
-    <>
-      <Marker
-        position={[checkin.latitude, checkin.longitude]}
-        {...(icon ? { icon } : {})}
-        eventHandlers={{
-          click: () => onOpenMemoryDetail(checkin.id),
-          mouseover: () => onShowHoverPreview(checkin.id),
-          mouseout: onScheduleCloseHoverPreview,
-        }}
-      >
-        {hoveredPreviewId === checkin.id ? (
-          <Tooltip
-            className={cx('memory-hover-tooltip')}
-            direction="top"
-            interactive
-            offset={[0, 0]}
-            opacity={1}
-            permanent
-          >
-            <MemoryHoverPreview
-              checkin={checkin}
-              onMouseEnter={onKeepPreviewOpen}
-              onMouseLeave={onScheduleCloseHoverPreview}
-              onPress={(mediaIndex) => onOpenMemoryDetail(checkin.id, mediaIndex)}
-            />
-          </Tooltip>
-        ) : null}
-      </Marker>
-      {showPlaceLabels && labelIcon ? (
-        <Marker
-          position={[checkin.latitude, checkin.longitude]}
-          icon={labelIcon}
-          interactive={false}
-          keyboard={false}
-          zIndexOffset={-20}
-        />
+    <Marker
+      position={[checkin.latitude, checkin.longitude]}
+      {...(icon ? { icon } : {})}
+      eventHandlers={{
+        click: () => onOpenMemoryDetail(checkin.id),
+        mouseover: () => onShowHoverPreview(checkin.id),
+        mouseout: onScheduleCloseHoverPreview,
+      }}
+    >
+      {hoveredPreviewId === checkin.id ? (
+        <Tooltip
+          className={cx('memory-hover-tooltip')}
+          direction="top"
+          interactive
+          offset={[0, 0]}
+          opacity={1}
+          permanent
+        >
+          <MemoryHoverPreview
+            checkin={checkin}
+            onMouseEnter={onKeepPreviewOpen}
+            onMouseLeave={onScheduleCloseHoverPreview}
+            onPress={(mediaIndex) => onOpenMemoryDetail(checkin.id, mediaIndex)}
+          />
+        </Tooltip>
       ) : null}
-    </>
+    </Marker>
   )
+}
+
+function CheckinPlaceLabel({ checkin }) {
+  const labelIcon = useMemo(() => createCheckinLabelIcon(checkin), [checkin])
+
+  if (!labelIcon) {
+    return null
+  }
+
+  return (
+    <Marker
+      position={[checkin.latitude, checkin.longitude]}
+      icon={labelIcon}
+      interactive={false}
+      keyboard={false}
+      zIndexOffset={-20}
+    />
+  )
+}
+
+function CheckinMarkers({
+  checkins,
+  drawerMode,
+  activeId,
+  hoveredPreviewId,
+  onOpenMemoryDetail,
+  onShowHoverPreview,
+  onScheduleCloseHoverPreview,
+  onKeepPreviewOpen,
+}) {
+  return checkins.map((checkin) => (
+    <CheckinMarker
+      key={checkin.id}
+      checkin={checkin}
+      drawerMode={drawerMode}
+      activeId={activeId}
+      hoveredPreviewId={hoveredPreviewId}
+      onOpenMemoryDetail={onOpenMemoryDetail}
+      onShowHoverPreview={onShowHoverPreview}
+      onScheduleCloseHoverPreview={onScheduleCloseHoverPreview}
+      onKeepPreviewOpen={onKeepPreviewOpen}
+    />
+  ))
 }
 
 export function CheckinMap() {
@@ -125,6 +158,15 @@ export function CheckinMap() {
 
     return [...places.values()]
   }, [filteredCheckins])
+
+  const clusterablePlaces = useMemo(
+    () => mapPlaces.filter((checkin) => checkin.categoryId !== 'home'),
+    [mapPlaces],
+  )
+  const standalonePlaces = useMemo(
+    () => mapPlaces.filter((checkin) => checkin.categoryId === 'home'),
+    [mapPlaces],
+  )
 
   const activeCheckin = activeId
     ? (filteredCheckins.find((checkin) => checkin.id === activeId) ?? null)
@@ -228,20 +270,50 @@ export function CheckinMap() {
                   onAddMemory={openAddMemoryDrawer}
                 />
 
-                {mapPlaces.map((checkin) => (
-                  <CheckinMarker
-                    key={checkin.id}
-                    checkin={checkin}
+                {USE_MARKER_CLUSTERING ? (
+                  <MarkerClusterGroup
+                    chunkedLoading
+                    disableClusteringAtZoom={MARKER_CLUSTER_DISABLE_AT_ZOOM}
+                    showCoverageOnHover={false}
+                    spiderfyOnMaxZoom={false}
+                    maxClusterRadius={54}
+                  >
+                    <CheckinMarkers
+                      checkins={clusterablePlaces}
+                      drawerMode={drawerMode}
+                      activeId={activeId}
+                      hoveredPreviewId={hoveredPreviewId}
+                      onOpenMemoryDetail={openMemoryDetail}
+                      onShowHoverPreview={showHoverPreview}
+                      onScheduleCloseHoverPreview={scheduleCloseHoverPreview}
+                      onKeepPreviewOpen={keepPreviewOpen}
+                    />
+                  </MarkerClusterGroup>
+                ) : (
+                  <CheckinMarkers
+                    checkins={clusterablePlaces}
                     drawerMode={drawerMode}
                     activeId={activeId}
                     hoveredPreviewId={hoveredPreviewId}
-                    showPlaceLabels={showPlaceLabels}
                     onOpenMemoryDetail={openMemoryDetail}
                     onShowHoverPreview={showHoverPreview}
                     onScheduleCloseHoverPreview={scheduleCloseHoverPreview}
                     onKeepPreviewOpen={keepPreviewOpen}
                   />
-                ))}
+                )}
+                <CheckinMarkers
+                  checkins={standalonePlaces}
+                  drawerMode={drawerMode}
+                  activeId={activeId}
+                  hoveredPreviewId={hoveredPreviewId}
+                  onOpenMemoryDetail={openMemoryDetail}
+                  onShowHoverPreview={showHoverPreview}
+                  onScheduleCloseHoverPreview={scheduleCloseHoverPreview}
+                  onKeepPreviewOpen={keepPreviewOpen}
+                />
+                {showPlaceLabels
+                  ? mapPlaces.map((checkin) => <CheckinPlaceLabel key={`${checkin.id}-label`} checkin={checkin} />)
+                  : null}
               </MapContainer>
               {mapPlaces.length === 0 ? (
                 <div className={cx('map-empty-state map-filter-empty-state')}>
