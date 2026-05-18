@@ -108,7 +108,7 @@
 
 .explory-map-controls {
   right: max(16px, env(safe-area-inset-right));
-  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 86px);
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 132px);
   left: auto;
   align-items: flex-end;
 }
@@ -389,7 +389,7 @@
 
   .explory-map-controls {
     right: max(10px, env(safe-area-inset-right));
-    bottom: calc(max(92px, env(safe-area-inset-bottom)) + 8px);
+    bottom: calc(max(92px, env(safe-area-inset-bottom)) + 54px);
     left: auto;
     gap: 8px;
   }
@@ -733,4 +733,16 @@
 .segmented button.active {
   background: #f2f6fd;
   color: #2867c8;
+}
+
+@media (max-width: 820px) {
+  .overview-map-page .explory-map-controls {
+    bottom: calc(max(92px, env(safe-area-inset-bottom)) + 96px);
+  }
+}
+
+@media (max-width: 520px) {
+  .overview-map-page .explory-map-controls {
+    bottom: calc(max(92px, env(safe-area-inset-bottom)) + 112px);
+  }
 }
