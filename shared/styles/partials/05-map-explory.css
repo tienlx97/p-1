@@ -366,24 +366,20 @@
   justify-items: center;
   cursor: pointer;
   overflow: visible;
-  transition:
-    filter 140ms ease,
-    transform 140ms ease;
+  transition: filter 140ms ease;
   transform-origin: 50% 100%;
-  will-change: transform;
 }
 
 .explory-memory-marker.active {
-  transform: translateY(-2px) scale(1.08);
+  filter: saturate(1.04);
 }
 
 .explory-memory-marker:hover {
   filter: saturate(1.05);
-  transform: translateY(-2px) scale(1.06);
 }
 
 .explory-memory-marker.active:hover {
-  transform: translateY(-3px) scale(1.1);
+  filter: saturate(1.08);
 }
 
 .explory-marker-pulse {
@@ -396,6 +392,67 @@
   background: rgba(26, 115, 232, 0.22);
   animation: marker-pulse 1.8s ease-out infinite;
   transform: translateX(-50%);
+}
+
+.explory-marker-pin {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 44px;
+  height: 54px;
+  overflow: visible;
+  filter: drop-shadow(0 4px 7px rgba(60, 64, 67, 0.24));
+}
+
+.explory-marker-pin-shadow {
+  fill: rgba(30, 40, 54, 0.18);
+  transform: translateY(1px);
+}
+
+.explory-marker-pin-body {
+  fill: var(--marker-color, #2f83da);
+  stroke: #fff;
+  stroke-linejoin: round;
+  stroke-width: 2px;
+}
+
+.explory-marker-pin-inner {
+  fill: #fff;
+  opacity: 0.98;
+}
+
+.explory-marker-pin-gloss {
+  fill: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}
+
+.explory-marker-reaction {
+  position: absolute;
+  left: 50%;
+  top: 19px;
+  z-index: 3;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  place-items: center;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+}
+
+.explory-marker-reaction svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.explory-memory-marker:hover .explory-marker-pin-body,
+.explory-memory-marker.active .explory-marker-pin-body {
+  fill: var(--marker-active-color, #1f75d1);
+}
+
+.explory-memory-marker.active .explory-marker-pin {
+  filter: drop-shadow(0 5px 10px color-mix(in srgb, var(--marker-active-color, #1f75d1) 34%, transparent));
 }
 
 .explory-marker-photo {
@@ -508,13 +565,23 @@
   font-size: 11.5px;
   font-weight: 650;
   line-height: 1.14;
+  opacity: 0;
   padding: 4px 7px 4px 8px;
   pointer-events: none;
   text-shadow:
     0 1px 1px rgba(0, 0, 0, 0.74),
     1px 0 1px rgba(0, 0, 0, 0.48),
     -1px 0 1px rgba(0, 0, 0, 0.48);
+  transition:
+    opacity 140ms ease,
+    visibility 140ms ease;
   transform: translateY(-2px);
+  visibility: hidden;
+}
+
+.checkin-leaflet-map.show-place-labels .explory-marker-label {
+  opacity: 1;
+  visibility: visible;
 }
 
 .explory-marker-label::before {

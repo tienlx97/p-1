@@ -1,6 +1,18 @@
 import L from "leaflet";
+import markerIcon2xUrl from "leaflet/dist/images/marker-icon-2x.png";
+import markerIconUrl from "leaflet/dist/images/marker-icon.png";
+import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
 import { getCategory, getMood } from "@/entities/memory";
 import { cx } from "@/shared/lib/styles";
+
+const getLeafletAssetUrl = (asset) => asset?.src ?? asset;
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: getLeafletAssetUrl(markerIcon2xUrl),
+  iconUrl: getLeafletAssetUrl(markerIconUrl),
+  shadowUrl: getLeafletAssetUrl(markerShadowUrl)
+});
 
 const moodMarkerIcons = {
   chill: `
@@ -68,6 +80,20 @@ const homeMarkerIcon = `
   </svg>
 `;
 
+const MARKER_ICON_WIDTH = 44;
+const MARKER_ICON_HEIGHT = 54;
+const MARKER_TIP_Y = 52;
+
+function svgToDataUrl(svg) {
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function getSvgContent(svg) {
+  const match = svg.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
+
+  return match ? match[1] : svg;
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -75,6 +101,29 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function createMarkerSvg({ markerColor, markerActiveColor, moodIcon, isActive }) {
+  const pinColor = escapeHtml(isActive ? markerActiveColor : markerColor);
+  const pinStroke = escapeHtml(isActive ? markerActiveColor : "#ffffff");
+  const reactionSvg = getSvgContent(moodIcon);
+
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 0 ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT}">
+      <defs>
+        <filter id="pinShadow" x="-25%" y="-18%" width="150%" height="145%" color-interpolation-filters="sRGB">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity="0.28"/>
+        </filter>
+      </defs>
+      <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="${pinColor}" filter="url(#pinShadow)"/>
+      <path d="M22 52C22 52 5 31.3 5 19C5 9.6 12.6 2 22 2S39 9.6 39 19C39 31.3 22 52 22 52Z" fill="none" stroke="${pinStroke}" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="22" cy="19" r="12.8" fill="#ffffff"/>
+      <circle cx="17" cy="12.5" r="4.2" fill="#ffffff" opacity="0.45"/>
+      <svg x="10" y="7" width="24" height="24" viewBox="0 0 24 24">
+        ${reactionSvg}
+      </svg>
+    </svg>
+  `;
 }
 
 export function fitMapToCheckins(map, visibleCheckins, options = {}) {
@@ -99,40 +148,24 @@ export function fitMapToCheckins(map, visibleCheckins, options = {}) {
   });
 }
 
-export function createCheckinIcon(checkin, isActive, showLabel = false) {
+export function createCheckinIcon(checkin, isActive) {
   const category = getCategory(checkin.categoryId);
   const mood = getMood(checkin.moodId);
   const markerActiveColor = category.id === "home" ? "#b5164f" : category.color;
   const moodIcon = category.id === "home" ? homeMarkerIcon : moodMarkerIcons[mood.id] ?? moodMarkerIcons.happy;
-  const shouldShowLabel = showLabel && category.id !== "home";
-  const label = escapeHtml(checkin.locationName);
-  const width = 44;
-  const height = 54;
-  const anchorY = 50;
-  const markerClassName = cx(
-    "explory-memory-marker",
-    "marker-mood",
-    category.id === "home" && "home-marker",
-    isActive && "active"
-  );
+  const markerSvg = createMarkerSvg({
+    markerColor: category.color,
+    markerActiveColor,
+    moodIcon,
+    isActive
+  });
 
-  return L.divIcon({
-    className: cx("checkin-leaflet-icon"),
-    html: `
-      <span class="${markerClassName}" style="--marker-color: ${category.color}; --marker-active-color: ${markerActiveColor}">
-        ${isActive ? `<span class="${cx("explory-marker-pulse")}"></span>` : ""}
-        <span class="${cx("explory-marker-core")}">
-          <span class="${cx("explory-marker-photo")}"></span>
-          <span class="${cx("explory-marker-glass")}"></span>
-          <span class="${cx("explory-marker-camera mood-camera")}" aria-hidden="true">${moodIcon}</span>
-        </span>
-        ${shouldShowLabel ? `<span class="${cx("explory-marker-label")}"><span class="${cx("explory-marker-label-text")}">${label}</span></span>` : ""}
-        <span class="${cx("explory-marker-tip")}" aria-hidden="true"></span>
-      </span>
-    `,
-    iconSize: [width, height],
-    iconAnchor: [width / 2, anchorY],
-    popupAnchor: [0, -anchorY],
-    tooltipAnchor: [0, -(anchorY + 8)]
+  return L.icon({
+    iconUrl: svgToDataUrl(markerSvg),
+    iconSize: [MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT],
+    iconAnchor: [MARKER_ICON_WIDTH / 2, MARKER_TIP_Y],
+    popupAnchor: [0, -MARKER_TIP_Y],
+    tooltipAnchor: [0, -(MARKER_TIP_Y + 8)],
+    className: cx("checkin-leaflet-svg-icon")
   });
 }
