@@ -16,7 +16,7 @@ import {
 import {
   createCheckinClusterIcon,
   createCheckinIcon,
-  createCheckinLabelIcon,
+  createCheckinLabelAnchorIcon,
 } from '@/features/map/components/map.utils'
 import { MapControls } from '@/features/map/components/map-controls'
 import { MapFilterPanel } from '@/features/map/components/map-filter-panel'
@@ -26,69 +26,70 @@ import { cx } from '@/shared/lib/styles'
 
 const LABEL_BOX_WIDTH = 132
 const LABEL_BOX_HEIGHT = 44
-const MARKER_BOX_WIDTH = 44
-const MARKER_BOX_HEIGHT = 54
 const LABEL_VIEWPORT_PADDING = 8
-const LABEL_HORIZONTAL_GAP = 18
-const LABEL_PLACEMENTS = [
-  { id: 'right', dx: LABEL_HORIZONTAL_GAP, dy: -46 },
-  { id: 'left', dx: -(LABEL_BOX_WIDTH + LABEL_HORIZONTAL_GAP), dy: -46 },
-  { id: 'top-right', dx: 10, dy: -(LABEL_BOX_HEIGHT + 56) },
-  { id: 'bottom-right', dx: 10, dy: 8 },
-  { id: 'top-left', dx: -(LABEL_BOX_WIDTH + 10), dy: -(LABEL_BOX_HEIGHT + 56) },
-  { id: 'bottom-left', dx: -(LABEL_BOX_WIDTH + 10), dy: 8 },
-]
-
-function boxesOverlap(first, second) {
-  return (
-    first.left < second.right &&
-    first.right > second.left &&
-    first.top < second.bottom &&
-    first.bottom > second.top
-  )
+const LABEL_EDGE_HORIZONTAL_GAP = 8
+const LABEL_VERTICAL_GAP = 8
+const LABEL_EDGE_VERTICAL_OFFSET = 36
+const LABEL_TOOLTIP_OFFSETS = {
+  right: [18, -27],
+  left: [-18, -27],
+  'top-right': [74, -36],
+  'top-left': [-74, -36],
+  'bottom-right': [74, 10],
+  'bottom-left': [-74, 10],
+}
+const LABEL_TOOLTIP_DIRECTIONS = {
+  right: 'right',
+  left: 'left',
+  'top-right': 'top',
+  'top-left': 'top',
+  'bottom-right': 'bottom',
+  'bottom-left': 'bottom',
 }
 
-function createBox(left, top, width, height) {
-  return {
-    left,
-    top,
-    right: left + width,
-    bottom: top + height,
-  }
-}
+function chooseLabelPlacement(point, mapSize) {
+  const hasRoomRight =
+    point.x + LABEL_EDGE_HORIZONTAL_GAP + LABEL_BOX_WIDTH <= mapSize.x - LABEL_VIEWPORT_PADDING
+  const hasRoomLeft =
+    point.x - LABEL_EDGE_HORIZONTAL_GAP - LABEL_BOX_WIDTH >= LABEL_VIEWPORT_PADDING
+  const hasRoomAbove =
+    point.y - LABEL_EDGE_VERTICAL_OFFSET - LABEL_BOX_HEIGHT >= LABEL_VIEWPORT_PADDING
+  const hasRoomBelow =
+    point.y + LABEL_VERTICAL_GAP + LABEL_BOX_HEIGHT <= mapSize.y - LABEL_VIEWPORT_PADDING
+  const sideLabelTop = point.y - 46
+  const sideLabelBottom = point.y - 2
+  const sideLabelFitsVertically =
+    sideLabelTop >= LABEL_VIEWPORT_PADDING && sideLabelBottom <= mapSize.y - LABEL_VIEWPORT_PADDING
 
-function scoreLabelBox(box, occupiedBoxes, markerBoxes, mapSize) {
-  let score = 0
-
-  if (box.left < LABEL_VIEWPORT_PADDING) {
-    score += (LABEL_VIEWPORT_PADDING - box.left) * 3
-  }
-
-  if (box.top < LABEL_VIEWPORT_PADDING) {
-    score += (LABEL_VIEWPORT_PADDING - box.top) * 3
-  }
-
-  if (box.right > mapSize.x - LABEL_VIEWPORT_PADDING) {
-    score += (box.right - (mapSize.x - LABEL_VIEWPORT_PADDING)) * 3
+  if (
+    !sideLabelFitsVertically &&
+    sideLabelBottom > mapSize.y - LABEL_VIEWPORT_PADDING &&
+    hasRoomAbove
+  ) {
+    return hasRoomRight || !hasRoomLeft ? 'top-right' : 'top-left'
   }
 
-  if (box.bottom > mapSize.y - LABEL_VIEWPORT_PADDING) {
-    score += (box.bottom - (mapSize.y - LABEL_VIEWPORT_PADDING)) * 3
+  if (!sideLabelFitsVertically && sideLabelTop < LABEL_VIEWPORT_PADDING && hasRoomBelow) {
+    return hasRoomRight || !hasRoomLeft ? 'bottom-right' : 'bottom-left'
   }
 
-  for (const occupiedBox of occupiedBoxes) {
-    if (boxesOverlap(box, occupiedBox)) {
-      score += 1000
-    }
+  if (!hasRoomRight && hasRoomLeft) {
+    return hasRoomAbove ? 'top-left' : 'left'
   }
 
-  for (const markerBox of markerBoxes) {
-    if (boxesOverlap(box, markerBox)) {
-      score += 650
-    }
+  if (!hasRoomLeft && hasRoomRight) {
+    return hasRoomAbove ? 'top-right' : 'right'
   }
 
-  return score
+  if (!hasRoomRight && !hasRoomLeft) {
+    return hasRoomBelow && !hasRoomAbove ? 'bottom-right' : 'top-right'
+  }
+
+  if (!hasRoomAbove && !hasRoomBelow) {
+    return hasRoomRight ? 'right' : 'left'
+  }
+
+  return hasRoomRight ? 'right' : 'left'
 }
 
 function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
@@ -107,7 +108,6 @@ function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
 
 function AdaptivePlaceLabels({ places, visible }) {
   const [placements, setPlacements] = useState({})
-  const placementsRef = useRef({})
   const map = useMapEvents({
     moveend: () => updatePlacements(),
     resize: () => updatePlacements(),
@@ -116,67 +116,18 @@ function AdaptivePlaceLabels({ places, visible }) {
 
   const updatePlacements = useCallback(() => {
     if (!visible || places.length === 0) {
-      placementsRef.current = {}
       setPlacements({})
       return
     }
 
     const mapSize = map.getSize()
-    const projectedPlaces = places.map((checkin) => ({
-      checkin,
-      point: map.latLngToContainerPoint([checkin.latitude, checkin.longitude]),
-    }))
-    const markerBoxes = projectedPlaces.map(({ point }) =>
-      createBox(point.x - MARKER_BOX_WIDTH / 2, point.y - MARKER_BOX_HEIGHT, MARKER_BOX_WIDTH, MARKER_BOX_HEIGHT),
-    )
     const nextPlacements = {}
-    const occupiedBoxes = []
 
-    for (const [placeIndex, { checkin, point }] of projectedPlaces.entries()) {
-      const previousPlacementId = placementsRef.current[checkin.id]
-      const sortedPlacements = previousPlacementId
-        ? [
-            LABEL_PLACEMENTS.find((placement) => placement.id === previousPlacementId),
-            ...LABEL_PLACEMENTS.filter((placement) => placement.id !== previousPlacementId),
-          ].filter(Boolean)
-        : LABEL_PLACEMENTS
-      let selectedPlacement = sortedPlacements[0]
-      let selectedBox = null
-      let selectedScore = Number.POSITIVE_INFINITY
-
-      for (const placement of sortedPlacements) {
-        const box = createBox(
-          point.x + placement.dx,
-          point.y + placement.dy,
-          LABEL_BOX_WIDTH,
-          LABEL_BOX_HEIGHT,
-        )
-        const score = scoreLabelBox(
-          box,
-          occupiedBoxes,
-          markerBoxes.filter((_, markerIndex) => markerIndex !== placeIndex),
-          mapSize,
-        )
-
-        if (score < selectedScore) {
-          selectedPlacement = placement
-          selectedBox = box
-          selectedScore = score
-        }
-
-        if (score === 0) {
-          break
-        }
-      }
-
-      nextPlacements[checkin.id] = selectedPlacement.id
-
-      if (selectedBox) {
-        occupiedBoxes.push(selectedBox)
-      }
+    for (const checkin of places) {
+      const point = map.latLngToContainerPoint([checkin.latitude, checkin.longitude])
+      nextPlacements[checkin.id] = chooseLabelPlacement(point, mapSize)
     }
 
-    placementsRef.current = nextPlacements
     setPlacements(nextPlacements)
   }, [map, places, visible])
 
@@ -208,7 +159,7 @@ const CheckinMarker = memo(function CheckinMarker({
 }) {
   const icon = useMemo(
     () => (USE_DEFAULT_LEAFLET_MARKERS ? null : createCheckinIcon(checkin, isActive)),
-    [checkin, isActive],
+    [checkin, isActive]
   )
   const eventHandlers = useMemo(
     () => ({
@@ -216,7 +167,7 @@ const CheckinMarker = memo(function CheckinMarker({
       mouseover: () => onShowHoverPreview(checkin.id),
       mouseout: onScheduleCloseHoverPreview,
     }),
-    [checkin.id, onOpenMemoryDetail, onScheduleCloseHoverPreview, onShowHoverPreview],
+    [checkin.id, onOpenMemoryDetail, onScheduleCloseHoverPreview, onShowHoverPreview]
   )
 
   return (
@@ -246,12 +197,71 @@ const CheckinMarker = memo(function CheckinMarker({
   )
 })
 
+function splitTooltipTwoLines(text, maxLineLength = 14) {
+  const cleaned = text.trim()
+
+  // Text ngắn -> giữ nguyên 1 dòng
+  if (cleaned.length <= maxLineLength) {
+    return [cleaned]
+  }
+
+  const words = cleaned.split(/\s+/)
+
+  // Ít từ quá -> không split
+  if (words.length <= 2) {
+    return [cleaned]
+  }
+
+  let bestIndex = 1
+  let bestScore = Infinity
+
+  for (let i = 1; i < words.length; i++) {
+    const line1 = words.slice(0, i).join(' ')
+    const line2 = words.slice(i).join(' ')
+
+    // Không cho 1 dòng quá ngắn
+    if (line1.length < 4 || line2.length < 4) {
+      continue
+    }
+
+    const diff = Math.abs(line1.length - line2.length)
+
+    // Ưu tiên cân bằng chiều dài
+    let score = diff
+
+    // Phạt nếu dòng quá dài
+    if (line1.length > maxLineLength) {
+      score += (line1.length - maxLineLength) * 2
+    }
+
+    if (line2.length > maxLineLength) {
+      score += (line2.length - maxLineLength) * 2
+    }
+
+    // Tránh split sau ký tự "-"
+    if (line1.endsWith('-')) {
+      score += 10
+    }
+
+    if (score < bestScore) {
+      bestScore = score
+      bestIndex = i
+    }
+  }
+
+  return [words.slice(0, bestIndex).join(' '), words.slice(bestIndex).join(' ')]
+}
+
 const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin, placement }) {
-  const labelIcon = useMemo(() => createCheckinLabelIcon(checkin, placement), [checkin, placement])
+  const labelIcon = useMemo(() => createCheckinLabelAnchorIcon(checkin), [checkin])
+
+  const lines = splitTooltipTwoLines(checkin.locationName)
 
   if (!labelIcon) {
     return null
   }
+
+  const normalizedPlacement = LABEL_TOOLTIP_OFFSETS[placement] ? placement : 'right'
 
   return (
     <Marker
@@ -260,7 +270,26 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin, placement }
       interactive={false}
       keyboard={false}
       zIndexOffset={-20}
-    />
+    >
+      <Tooltip
+        // className={cx('checkin-place-label-tooltip', `label-${normalizedPlacement}`)}
+        className={cx('google-map-tooltip')}
+        direction={LABEL_TOOLTIP_DIRECTIONS[normalizedPlacement]}
+        offset={LABEL_TOOLTIP_OFFSETS[normalizedPlacement]}
+        opacity={1}
+        permanent
+      >
+        <div
+          // className={cx('explory-marker-label-text')}
+          className={cx('google-map-label')}
+        >
+          {/* {checkin.locationName} */}
+          {lines.map((line, index) => (
+            <div key={index}>{line}</div>
+          ))}
+        </div>
+      </Tooltip>
+    </Marker>
   )
 })
 
@@ -278,7 +307,9 @@ const CheckinMarkers = memo(function CheckinMarkers({
     <CheckinMarker
       key={checkin.id}
       checkin={checkin}
-      isActive={(drawerMode === 'memory' && checkin.id === activeId) || checkin.id === hoveredPreviewId}
+      isActive={
+        (drawerMode === 'memory' && checkin.id === activeId) || checkin.id === hoveredPreviewId
+      }
       isPreviewOpen={hoveredPreviewId === checkin.id}
       onOpenMemoryDetail={onOpenMemoryDetail}
       onShowHoverPreview={onShowHoverPreview}
@@ -326,19 +357,16 @@ export function CheckinMap() {
 
   const clusterablePlaces = useMemo(
     () => mapPlaces.filter((checkin) => checkin.categoryId !== 'home'),
-    [mapPlaces],
+    [mapPlaces]
   )
   const standalonePlaces = useMemo(
     () => mapPlaces.filter((checkin) => checkin.categoryId === 'home'),
-    [mapPlaces],
+    [mapPlaces]
   )
 
   const activeCheckin = useMemo(
-    () =>
-      activeId
-        ? (filteredCheckins.find((checkin) => checkin.id === activeId) ?? null)
-        : null,
-    [activeId, filteredCheckins],
+    () => (activeId ? (filteredCheckins.find((checkin) => checkin.id === activeId) ?? null) : null),
+    [activeId, filteredCheckins]
   )
 
   useEffect(() => {
@@ -373,10 +401,13 @@ export function CheckinMap() {
     }
   }, [])
 
-  const showHoverPreview = useCallback((checkinId) => {
-    keepPreviewOpen()
-    setHoveredPreviewId(checkinId)
-  }, [keepPreviewOpen])
+  const showHoverPreview = useCallback(
+    (checkinId) => {
+      keepPreviewOpen()
+      setHoveredPreviewId(checkinId)
+    },
+    [keepPreviewOpen]
+  )
 
   const scheduleCloseHoverPreview = useCallback(() => {
     keepPreviewOpen()
@@ -391,13 +422,16 @@ export function CheckinMap() {
     setDrawerMode('add')
   }, [])
 
-  const openMemoryDetail = useCallback((checkinId, mediaIndex = null) => {
-    keepPreviewOpen()
-    setActiveId(checkinId)
-    setInitialMediaIndex(mediaIndex)
-    setHoveredPreviewId(null)
-    setDrawerMode('memory')
-  }, [keepPreviewOpen])
+  const openMemoryDetail = useCallback(
+    (checkinId, mediaIndex = null) => {
+      keepPreviewOpen()
+      setActiveId(checkinId)
+      setInitialMediaIndex(mediaIndex)
+      setHoveredPreviewId(null)
+      setDrawerMode('memory')
+    },
+    [keepPreviewOpen]
+  )
 
   const closeDrawer = useCallback(() => {
     setDrawerMode(null)
@@ -486,12 +520,12 @@ export function CheckinMap() {
                 />
                 <AdaptivePlaceLabels places={mapPlaces} visible={showPlaceLabels} />
               </MapContainer>
-              {mapPlaces.length === 0 ? (
+              {/* {mapPlaces.length === 0 ? (
                 <div className={cx('map-empty-state map-filter-empty-state')}>
                   <h2>Không có kỷ niệm phù hợp</h2>
                   <p>Thử đổi nhóm để xem lại hành trình khác.</p>
                 </div>
-              ) : null}
+              ) : null} */}
             </>
           ) : (
             <div className={cx('map-empty-state')}>

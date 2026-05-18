@@ -84,24 +84,18 @@ const MARKER_ICON_WIDTH = 44;
 const MARKER_ICON_HEIGHT = 54;
 const MARKER_TIP_Y = 52;
 const MARKER_VIEWBOX_TOP_PADDING = 4;
-const LABEL_ICON_WIDTH = 132;
-const LABEL_ICON_HEIGHT = 44;
 const CLUSTER_ICON_SIZE = 48;
-const LABEL_HORIZONTAL_GAP = 18;
 const MARKER_GRADIENT_START = "#55a7f0";
 const MARKER_GRADIENT_END = "#2f80ed";
 const MARKER_ACTIVE_STROKE = "#1f6fca";
 const checkinIconCache = new Map();
-const checkinLabelIconCache = new Map();
 const checkinClusterIconCache = new Map();
-const labelIconAnchors = {
-  right: [-LABEL_HORIZONTAL_GAP, 46],
-  left: [LABEL_ICON_WIDTH + LABEL_HORIZONTAL_GAP, 46],
-  "top-right": [-10, LABEL_ICON_HEIGHT + 56],
-  "bottom-right": [-10, -8],
-  "top-left": [LABEL_ICON_WIDTH + 10, LABEL_ICON_HEIGHT + 56],
-  "bottom-left": [LABEL_ICON_WIDTH + 10, -8]
-};
+const labelAnchorIcon = L.divIcon({
+  className: cx("checkin-place-label-anchor-icon"),
+  html: "",
+  iconSize: [1, 1],
+  iconAnchor: [0, 0]
+});
 
 function svgToDataUrl(svg) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
@@ -358,33 +352,12 @@ export function createCheckinClusterIcon(cluster) {
   return icon;
 }
 
-export function createCheckinLabelIcon(checkin, placement = "right") {
+export function createCheckinLabelAnchorIcon(checkin) {
   const category = getCategory(checkin.categoryId);
 
   if (category.id === "home") {
     return null;
   }
 
-  const normalizedPlacement = labelIconAnchors[placement] ? placement : "right";
-  const cacheKey = `${checkin.id}:${checkin.categoryId}:${checkin.locationName}:${normalizedPlacement}`;
-  const cachedIcon = checkinLabelIconCache.get(cacheKey);
-
-  if (cachedIcon) {
-    return cachedIcon;
-  }
-
-  const icon = L.divIcon({
-    className: cx("checkin-place-label-icon", `label-${normalizedPlacement}`),
-    html: `
-      <span class="${cx("explory-marker-label")}">
-        <span class="${cx("explory-marker-label-text")}">${escapeHtml(checkin.locationName)}</span>
-      </span>
-    `,
-    iconSize: [LABEL_ICON_WIDTH, LABEL_ICON_HEIGHT],
-    iconAnchor: labelIconAnchors[normalizedPlacement]
-  });
-
-  checkinLabelIconCache.set(cacheKey, icon);
-
-  return icon;
+  return labelAnchorIcon;
 }
