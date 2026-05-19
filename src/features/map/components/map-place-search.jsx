@@ -21,6 +21,12 @@ const resultReactionSymbols = {
   sad: "•"
 };
 
+/**
+ * Normalizes Vietnamese accents and casing so search can match user input loosely.
+ *
+ * @param {string | null | undefined} value
+ * @returns {string}
+ */
 function normalizeSearchText(value) {
   return String(value ?? "")
     .normalize("NFD")
@@ -29,6 +35,10 @@ function normalizeSearchText(value) {
     .trim();
 }
 
+/**
+ * @param {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @returns {string}
+ */
 function getSearchText(checkin) {
   const category = getCategory(checkin.categoryId);
 
@@ -64,6 +74,15 @@ function SearchResultReactionIcon({ place }) {
   );
 }
 
+/**
+ * @typedef {object} MapPlaceSearchProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} places
+ * @property {function(string): void} onShowHoverPreview
+ */
+
+/**
+ * @param {MapPlaceSearchProps} props
+ */
 export function MapPlaceSearch({ places, onShowHoverPreview }) {
   const map = useMap();
   const [query, setQuery] = useState("");

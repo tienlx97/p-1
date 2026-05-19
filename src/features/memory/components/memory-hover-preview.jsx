@@ -8,6 +8,17 @@ import { formatDate, getMemoryMedia } from "@/entities/memory";
 import { cx } from "@/shared/lib/cx";
 import styles from "./memory-hover-preview.module.css";
 
+/**
+ * @typedef {object} MemoryHoverPreviewProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @property {function(): void} onMouseEnter
+ * @property {function(): void} onMouseLeave
+ * @property {function(number | null): void} onPress
+ */
+
+/**
+ * @param {MemoryHoverPreviewProps} props
+ */
 export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPress }) {
   const media = getMemoryMedia(checkin);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);

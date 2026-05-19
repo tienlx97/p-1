@@ -10,6 +10,9 @@ import styles from "./place-visit-timeline.module.css";
 
 const RATING_STARS = [1, 2, 3, 4, 5];
 
+/**
+ * @param {{ rating: number }} props
+ */
 function VisitRating({ rating }) {
   return (
     <div
@@ -30,6 +33,15 @@ function VisitRating({ rating }) {
   );
 }
 
+/**
+ * @typedef {object} PlaceVisitTimelineProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} visits
+ * @property {function(import("@/entities/memory/mock-data").MemoryCheckin, number): void} onOpenMedia
+ */
+
+/**
+ * @param {PlaceVisitTimelineProps} props
+ */
 export function PlaceVisitTimeline({ visits, onOpenMedia }) {
   return (
     <section className={styles.root} aria-label="Timeline ảnh theo ngày">

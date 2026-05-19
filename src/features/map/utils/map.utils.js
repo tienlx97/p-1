@@ -7,6 +7,13 @@ import { getCategory, getMood } from "@/entities/memory";
 import { cx } from "@/shared/lib/cx";
 import styles from "./map-marker-icons.module.css";
 
+/**
+ * @typedef {object} FitMapOptions
+ * @property {[number, number]} [padding]
+ * @property {number} [maxZoom]
+ * @property {number} [zoom]
+ */
+
 const getLeafletAssetUrl = (asset) => asset?.src ?? asset;
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -227,16 +234,28 @@ const labelAnchorIcon = L.divIcon({
   iconAnchor: [0, 0]
 });
 
+/**
+ * @param {string} svg
+ * @returns {string}
+ */
 function svgToDataUrl(svg) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
+/**
+ * @param {string} svg
+ * @returns {string}
+ */
 function getSvgContent(svg) {
   const match = svg.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
 
   return match ? match[1] : svg;
 }
 
+/**
+ * @param {string | number | null | undefined} value
+ * @returns {string}
+ */
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -246,6 +265,10 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+/**
+ * @param {string} moodId
+ * @returns {string}
+ */
 function getReactionAnimationClass(moodId) {
   if (moodId === "happy") {
     return "reaction-motion reaction-happy";
@@ -270,6 +293,14 @@ function getReactionAnimationClass(moodId) {
   return "reaction-motion reaction-bob";
 }
 
+/**
+ * @param {object} options
+ * @param {string} options.moodIcon
+ * @param {string} options.moodId
+ * @param {boolean} options.isActive
+ * @param {{ start: string, end: string, activeStart: string, activeEnd: string, activeStroke: string }} [options.pinColors]
+ * @returns {string}
+ */
 function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
   const pinGradientStart = escapeHtml(
     isActive
@@ -413,6 +444,14 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
   `;
 }
 
+/**
+ * Fits or flies the Leaflet map to the currently visible checkins.
+ *
+ * @param {L.Map | null | undefined} map
+ * @param {import("@/entities/memory/mock-data").MemoryCheckin[]} visibleCheckins
+ * @param {FitMapOptions} [options]
+ * @returns {void}
+ */
 export function fitMapToCheckins(map, visibleCheckins, options = {}) {
   if (!map || visibleCheckins.length === 0) {
     return;
@@ -435,6 +474,13 @@ export function fitMapToCheckins(map, visibleCheckins, options = {}) {
   });
 }
 
+/**
+ * Builds and caches the Leaflet marker icon for one checkin and active state.
+ *
+ * @param {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @param {boolean} isActive
+ * @returns {L.Icon}
+ */
 export function createCheckinIcon(checkin, isActive) {
   const cacheKey = `${checkin.id}:${checkin.categoryId}:${checkin.moodId}:${isActive ? "active" : "idle"}`;
   const cachedIcon = checkinIconCache.get(cacheKey);
@@ -477,6 +523,10 @@ export function createCheckinIcon(checkin, isActive) {
   return icon;
 }
 
+/**
+ * @param {{ getChildCount: function(): number }} cluster
+ * @returns {L.DivIcon}
+ */
 export function createCheckinClusterIcon(cluster) {
   const childCount = cluster.getChildCount();
   const cachedIcon = checkinClusterIconCache.get(childCount);
@@ -508,6 +558,10 @@ export function createCheckinClusterIcon(cluster) {
   return icon;
 }
 
+/**
+ * @param {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @returns {L.DivIcon | null}
+ */
 export function createCheckinLabelAnchorIcon(checkin) {
   const category = getCategory(checkin.categoryId);
 

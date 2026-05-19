@@ -5,6 +5,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DEFAULT_ZOOM, PLACE_LABEL_MIN_ZOOM } from '@/features/map/constants/map.constants'
 import { checkins } from '@/entities/memory'
 
+/**
+ * @param {import("@/entities/memory/mock-data").MemoryCheckin[]} sourceCheckins
+ * @returns {import("@/entities/memory/mock-data").MemoryCheckin[]}
+ */
 function getLatestPlaceCheckins(sourceCheckins) {
   const places = new Map()
 
@@ -22,6 +26,33 @@ function getLatestPlaceCheckins(sourceCheckins) {
   return [...places.values()]
 }
 
+/**
+ * @typedef {object} CheckinMapState
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin | null} activeCheckin
+ * @property {string | null} activeId
+ * @property {string} categoryFilter
+ * @property {function(): void} closeDrawer
+ * @property {function(): void} closeHoverPreview
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} clusterablePlaces
+ * @property {"add" | "memory" | null} drawerMode
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} filteredCheckins
+ * @property {string | null} hoveredPreviewId
+ * @property {number | null} initialMediaIndex
+ * @property {function(): void} keepPreviewOpen
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} mapPlaces
+ * @property {function(string, number=): void} openMemoryDetail
+ * @property {function(): void} scheduleCloseHoverPreview
+ * @property {function(string): void} setCategoryFilter
+ * @property {function(boolean): void} setShowPlaceLabels
+ * @property {function(string): void} showHoverPreview
+ * @property {boolean} showPlaceLabels
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} standalonePlaces
+ * @property {number} totalCheckinCount
+ */
+
+/**
+ * @returns {CheckinMapState}
+ */
 export function useCheckinMapState() {
   const [activeId, setActiveId] = useState(null)
   const [categoryFilter, setCategoryFilter] = useState('all')

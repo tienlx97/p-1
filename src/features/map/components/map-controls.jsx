@@ -7,6 +7,15 @@ import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/constants/map.const
 import { fitMapToCheckins } from "@/features/map/utils/map.utils";
 import styles from "./map-controls.module.css";
 
+/**
+ * @typedef {object} MapControlsProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin | null} activeCheckin
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} visibleCheckins
+ */
+
+/**
+ * @param {MapControlsProps} props
+ */
 export function MapControls({ activeCheckin, visibleCheckins }) {
   const map = useMap();
   const [locationStatus, setLocationStatus] = useState("");

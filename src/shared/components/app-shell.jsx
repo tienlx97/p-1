@@ -23,6 +23,16 @@ const PAGE_SCROLL_OPTIONS = {
   }
 };
 
+/**
+ * @typedef {object} AppShellProps
+ * @property {import("react").ReactNode} children
+ * @property {import("@/features/auth/constants/accounts").AuthAccount | null} currentUser
+ * @property {function(): void} onSignOut
+ */
+
+/**
+ * @param {AppShellProps} props
+ */
 export function AppShell({ children, currentUser, onSignOut }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -158,6 +168,9 @@ export function AppShell({ children, currentUser, onSignOut }) {
   );
 }
 
+/**
+ * @param {{ name: string }} props
+ */
 function NavIcon({ name }) {
   if (name === "map") {
     return (

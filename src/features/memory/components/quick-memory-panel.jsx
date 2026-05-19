@@ -8,6 +8,9 @@ import { Field, SelectField, SelectItem, TextAreaField } from "@/shared/componen
 import { cx } from "@/shared/lib/cx";
 import styles from "./quick-memory-panel.module.css";
 
+/**
+ * @param {{ embedded?: boolean }} props
+ */
 export function QuickMemoryPanel({ embedded = false }) {
   const [saved, setSaved] = useState(false);
   const [title, setTitle] = useState("");
@@ -224,10 +227,17 @@ export function QuickMemoryPanel({ embedded = false }) {
   );
 }
 
+/**
+ * @returns {string}
+ */
 function createMediaId() {
   return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+/**
+ * @param {number} size
+ * @returns {string}
+ */
 function formatFileSize(size) {
   if (size < 1024 * 1024) {
     return `${Math.max(1, Math.round(size / 1024))} KB`;

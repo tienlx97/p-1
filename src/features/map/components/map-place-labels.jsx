@@ -9,6 +9,12 @@ import styles from './map-place-labels.module.css'
 const LABEL_COLLISION_GAP = 4
 const LABEL_TOOLTIP_OFFSET = [0, 8]
 
+/**
+ * @param {DOMRect} first
+ * @param {DOMRect} second
+ * @param {number} [gap]
+ * @returns {boolean}
+ */
 function doRectsCollide(first, second, gap = LABEL_COLLISION_GAP) {
   return !(
     first.right + gap <= second.left ||
@@ -18,6 +24,12 @@ function doRectsCollide(first, second, gap = LABEL_COLLISION_GAP) {
   )
 }
 
+/**
+ * Hides lower-priority permanent labels that overlap visible higher-priority labels.
+ *
+ * @param {import("leaflet").Map} map
+ * @returns {void}
+ */
 function applyPlaceLabelCollisions(map) {
   const mapContainer = map.getContainer()
   const tooltipElements = [...mapContainer.querySelectorAll(`.${styles.tooltip}`)]
@@ -54,6 +66,13 @@ function applyPlaceLabelCollisions(map) {
   }
 }
 
+/**
+ * Splits a place name into one or two balanced tooltip lines.
+ *
+ * @param {string} text
+ * @param {number} [maxLineLength]
+ * @returns {string[]}
+ */
 function splitTooltipTwoLines(text, maxLineLength = 14) {
   const cleaned = text.trim()
 
@@ -139,6 +158,15 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
   )
 })
 
+/**
+ * @typedef {object} AdaptivePlaceLabelsProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} places
+ * @property {boolean} visible
+ */
+
+/**
+ * @param {AdaptivePlaceLabelsProps} props
+ */
 export function AdaptivePlaceLabels({ places, visible }) {
   const map = useMap()
   const rafIdsRef = useRef([])

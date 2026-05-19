@@ -96,10 +96,11 @@ export function CheckinMap() {
                 onCategoryChange={setCategoryFilter}
               />
               <TileLayer
+                // maxNativeZoom={MAP_TILE_MAX_ZOOM}
+                maxZoom={MAP_TILE_MAX_ZOOM}
                 attribution={MAP_TILE_ATTRIBUTION}
                 detectRetina
                 keepBuffer={MAP_TILE_KEEP_BUFFER}
-                maxZoom={MAP_TILE_MAX_ZOOM}
                 updateWhenIdle={MAP_TILE_UPDATE_WHEN_IDLE}
                 updateWhenZooming={MAP_TILE_UPDATE_WHEN_ZOOMING}
                 url={MAP_TILE_URL}

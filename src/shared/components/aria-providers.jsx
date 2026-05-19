@@ -4,6 +4,9 @@ import { OverlayProvider } from "react-aria";
 import { RouterProvider } from "react-aria-components";
 import { useRouter } from "next/navigation";
 
+/**
+ * @param {{ children: import("react").ReactNode }} props
+ */
 export function AriaProviders({ children }) {
   const router = useRouter();
 

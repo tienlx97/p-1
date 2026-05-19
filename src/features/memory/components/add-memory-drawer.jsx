@@ -11,6 +11,9 @@ import styles from "./add-memory-drawer.module.css";
 
 const DRAWER_OPEN_CLASS = "memory-drawer-open";
 
+/**
+ * @param {{ onClose: function(): void }} props
+ */
 export function AddMemoryDrawer({ onClose }) {
   const drawerRef = useRef(null);
   const titleRef = useRef(null);

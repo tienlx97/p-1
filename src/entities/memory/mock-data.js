@@ -1,3 +1,77 @@
+/**
+ * @typedef {object} MemoryPerson
+ * @property {string} id
+ * @property {string} displayName
+ * @property {string} avatar
+ */
+
+/**
+ * @typedef {object} CoupleSpace
+ * @property {string} name
+ * @property {string} spaceName
+ * @property {string} coverImage
+ * @property {string} startDate
+ * @property {MemoryPerson[]} people
+ * @property {string} bio
+ * @property {{ memories: number, places: number, photos: number, daysTogether: number }} stats
+ */
+
+/**
+ * @typedef {object} MemoryCategory
+ * @property {string} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} icon
+ * @property {string} color
+ */
+
+/**
+ * @typedef {object} MemoryMood
+ * @property {string} id
+ * @property {string} name
+ * @property {string} slug
+ * @property {string} icon
+ */
+
+/**
+ * @typedef {object} MemoryMediaItem
+ * @property {string} id
+ * @property {"image" | "video"} type
+ * @property {string} url
+ * @property {string} [poster]
+ * @property {string} [alt]
+ */
+
+/**
+ * @typedef {object} MemoryCheckin
+ * @property {string} id
+ * @property {string} title
+ * @property {string} caption
+ * @property {string} locationName
+ * @property {string} address
+ * @property {string} googleMapsUrl
+ * @property {string} city
+ * @property {number} latitude
+ * @property {number} longitude
+ * @property {string} categoryId
+ * @property {string} moodId
+ * @property {string} visibility
+ * @property {string} checkinTime
+ * @property {string} createdBy
+ * @property {string[]} images
+ * @property {MemoryMediaItem[]} [media]
+ * @property {number} [rating]
+ * @property {{ x: number, y: number }} [mapPosition]
+ */
+
+/**
+ * @typedef {object} MediaSummary
+ * @property {number} total
+ * @property {number} photos
+ * @property {number} videos
+ */
+
+/** @type {CoupleSpace} */
 export const coupleSpace = {
   name: "Minh & An",
   spaceName: "Kỷ niệm của chúng mình",
@@ -40,6 +114,7 @@ export const profile = {
   }
 };
 
+/** @type {MemoryCategory[]} */
 export const categories = [
   { id: "coffee", name: "Quán quen", slug: "coffee", icon: "Cafe", color: "#2f7d6f" },
   { id: "food", name: "Bữa ăn", slug: "food", icon: "Meal", color: "#d9654f" },
@@ -50,6 +125,7 @@ export const categories = [
   { id: "culture", name: "Dạo phố", slug: "culture", icon: "Street", color: "#c28b25" }
 ];
 
+/** @type {MemoryMood[]} */
 export const moods = [
   { id: "happy", name: "Vui", slug: "happy", icon: "Smile" },
   { id: "chill", name: "Nhẹ nhàng", slug: "chill", icon: "Calm" },
@@ -68,6 +144,7 @@ export const journalPrompts = [
   "Nếu đặt tên cho ngày đó thì là gì?"
 ];
 
+/** @type {MemoryCheckin[]} */
 export const checkins = [
   {
     id: "ck-home-me",
@@ -922,14 +999,26 @@ export const checkins = [
   }
 ];
 
+/**
+ * @param {string} id
+ * @returns {MemoryCategory}
+ */
 export function getCategory(id) {
   return categories.find((category) => category.id === id) ?? categories[0];
 }
 
+/**
+ * @param {string} id
+ * @returns {MemoryMood}
+ */
 export function getMood(id) {
   return moods.find((mood) => mood.id === id) ?? moods[0];
 }
 
+/**
+ * @param {MemoryCheckin} checkin
+ * @returns {MemoryMediaItem[]}
+ */
 export function getMemoryMedia(checkin) {
   if (Array.isArray(checkin.media) && checkin.media.length > 0) {
     return checkin.media;
@@ -943,16 +1032,28 @@ export function getMemoryMedia(checkin) {
   }));
 }
 
+/**
+ * @param {MemoryCheckin} checkin
+ * @returns {MemoryMediaItem | undefined}
+ */
 export function getCoverMedia(checkin) {
   const media = getMemoryMedia(checkin);
   return media.find((item) => item.type === "image") ?? media[0];
 }
 
+/**
+ * @param {MemoryCheckin} checkin
+ * @returns {string | undefined}
+ */
 export function getCoverImage(checkin) {
   const cover = getCoverMedia(checkin);
   return cover?.type === "video" ? cover.poster : cover?.url;
 }
 
+/**
+ * @param {MemoryCheckin} checkin
+ * @returns {MediaSummary}
+ */
 export function getMediaSummary(checkin) {
   const media = getMemoryMedia(checkin);
   const photos = media.filter((item) => item.type === "image").length;
@@ -961,6 +1062,10 @@ export function getMediaSummary(checkin) {
   return { total: media.length, photos, videos };
 }
 
+/**
+ * @param {MemoryCheckin} checkin
+ * @returns {number}
+ */
 export function getMemoryRating(checkin) {
   if (Number.isInteger(checkin.rating)) {
     return Math.min(5, Math.max(1, checkin.rating));
@@ -970,6 +1075,10 @@ export function getMemoryRating(checkin) {
   return (daySeed % 5) + 1;
 }
 
+/**
+ * @param {string | number | Date} value
+ * @returns {string}
+ */
 export function formatDate(value) {
   return new Intl.DateTimeFormat("vi-VN", {
     day: "2-digit",

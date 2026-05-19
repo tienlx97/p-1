@@ -5,6 +5,9 @@ import Image from "next/image";
 import { cx } from "@/shared/lib/cx";
 import styles from "./loadable-image.module.css";
 
+/**
+ * @param {import("next/image").ImageProps & { className?: string }} props
+ */
 export function LoadableImage({ alt, className = "", src, ...props }) {
   const [isLoaded, setIsLoaded] = useState(false);
 

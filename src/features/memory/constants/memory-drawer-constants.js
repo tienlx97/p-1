@@ -1,3 +1,4 @@
+/** Shared OverlayScrollbars options for memory drawers. */
 export const DRAWER_SCROLL_OPTIONS = {
   overflow: { x: "hidden" },
   scrollbars: {

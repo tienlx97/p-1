@@ -2,6 +2,16 @@
 
 import { LoadableImage } from "@/features/memory/components/loadable-image";
 
+/**
+ * @typedef {object} MediaPreviewProps
+ * @property {import("@/entities/memory/mock-data").MemoryMediaItem | undefined} item
+ * @property {string} alt
+ * @property {string} [className]
+ */
+
+/**
+ * @param {MediaPreviewProps} props
+ */
 export function MediaPreview({ item, alt, className }) {
   if (item?.type === "video") {
     return (

@@ -8,6 +8,20 @@ import { createCheckinIcon } from '@/features/map/utils/map.utils'
 import { MemoryHoverPreview } from '@/features/memory'
 import styles from './checkin-markers.module.css'
 
+/**
+ * @typedef {object} CheckinMarkerProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @property {boolean} isActive
+ * @property {boolean} isPreviewOpen
+ * @property {function(string, number=): void} onOpenMemoryDetail
+ * @property {function(string): void} onShowHoverPreview
+ * @property {function(): void} onScheduleCloseHoverPreview
+ * @property {function(): void} onKeepPreviewOpen
+ */
+
+/**
+ * @param {CheckinMarkerProps} props
+ */
 const CheckinMarker = memo(function CheckinMarker({
   checkin,
   isActive,
@@ -57,6 +71,21 @@ const CheckinMarker = memo(function CheckinMarker({
   )
 })
 
+/**
+ * @typedef {object} CheckinMarkersProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} checkins
+ * @property {"add" | "memory" | null} drawerMode
+ * @property {string | null} activeId
+ * @property {string | null} hoveredPreviewId
+ * @property {function(string, number=): void} onOpenMemoryDetail
+ * @property {function(string): void} onShowHoverPreview
+ * @property {function(): void} onScheduleCloseHoverPreview
+ * @property {function(): void} onKeepPreviewOpen
+ */
+
+/**
+ * @param {CheckinMarkersProps} props
+ */
 export const CheckinMarkers = memo(function CheckinMarkers({
   checkins,
   drawerMode,

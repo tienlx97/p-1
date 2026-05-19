@@ -4,6 +4,10 @@ import { LeafletContext, createLeafletContext } from '@react-leaflet/core'
 import { Map as LeafletMap } from 'leaflet'
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react'
 
+/**
+ * @param {LeafletMap | null | undefined} map
+ * @returns {void}
+ */
 function removeLeafletMap(map) {
   if (!map) {
     return
@@ -18,6 +22,27 @@ function removeLeafletMap(map) {
   }
 }
 
+/**
+ * Props mirror the React Leaflet MapContainer surface used by this app while
+ * recreating the map safely when Next.js remounts the container.
+ *
+ * @typedef {object} LeafletMapContainerProps
+ * @property {import("leaflet").LatLngExpression} [center]
+ * @property {import("leaflet").LatLngBoundsExpression} [bounds]
+ * @property {import("leaflet").FitBoundsOptions} [boundsOptions]
+ * @property {import("react").ReactNode} [children]
+ * @property {string} [className]
+ * @property {string} [id]
+ * @property {import("react").ReactNode} [placeholder]
+ * @property {import("react").CSSProperties} [style]
+ * @property {function(): void} [whenReady]
+ * @property {number} [zoom]
+ */
+
+/**
+ * @param {LeafletMapContainerProps & import("leaflet").MapOptions} props
+ * @param {import("react").ForwardedRef<LeafletMap | null>} forwardedRef
+ */
 function LeafletMapContainerComponent(
   { bounds, boundsOptions, center, children, className, id, placeholder, style, whenReady, zoom, ...options },
   forwardedRef

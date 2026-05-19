@@ -11,6 +11,16 @@ import styles from './memory-detail-drawer.module.css'
 
 const DRAWER_OPEN_CLASS = 'memory-drawer-open'
 
+/**
+ * @typedef {object} MemoryDetailDrawerProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin | null} checkin
+ * @property {number | null} initialMediaIndex
+ * @property {function(): void} onClose
+ */
+
+/**
+ * @param {MemoryDetailDrawerProps} props
+ */
 export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
   const drawerRef = useRef(null)
   const titleRef = useRef(null)

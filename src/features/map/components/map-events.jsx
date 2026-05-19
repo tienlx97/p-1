@@ -5,6 +5,9 @@ import { useMapEvents } from 'react-leaflet'
 
 import { PLACE_LABEL_MIN_ZOOM } from '@/features/map/constants/map.constants'
 
+/**
+ * @param {{ onPlaceLabelVisibilityChange: function(boolean): void }} props
+ */
 export function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
   const map = useMapEvents({
     zoomend: () => {
@@ -19,6 +22,9 @@ export function MapZoomWatcher({ onPlaceLabelVisibilityChange }) {
   return null
 }
 
+/**
+ * @param {{ onDismissPreview: function(): void }} props
+ */
 export function MapPreviewDismissWatcher({ onDismissPreview }) {
   useMapEvents({
     click: onDismissPreview,

@@ -21,6 +21,17 @@ function stopMapInteraction(event) {
   event.stopPropagation()
 }
 
+/**
+ * @typedef {object} MapFilterPanelProps
+ * @property {string} categoryId
+ * @property {function(string): void} onCategoryChange
+ * @property {number} totalCount
+ * @property {number} visibleCount
+ */
+
+/**
+ * @param {MapFilterPanelProps} props
+ */
 export function MapFilterPanel({ categoryId, onCategoryChange, totalCount, visibleCount }) {
   const railRef = useRef(null)
   const categoryOptions = [{ id: 'all', name: 'Tất cả' }, ...categories]

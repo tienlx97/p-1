@@ -14,6 +14,15 @@ import {
 import { cx } from "@/shared/lib/cx";
 import styles from "./memory-detail-content.module.css";
 
+/**
+ * @typedef {object} MemoryDetailContentProps
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @property {number | null} initialMediaIndex
+ */
+
+/**
+ * @param {MemoryDetailContentProps} props
+ */
 export function MemoryDetailContent({ checkin, initialMediaIndex }) {
   const media = getMemoryMedia(checkin);
   const placeVisits = useMemo(() => {

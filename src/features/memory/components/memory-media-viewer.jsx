@@ -12,6 +12,19 @@ import { formatDate } from "@/entities/memory";
 import { cx } from "@/shared/lib/cx";
 import styles from "./memory-media-viewer.module.css";
 
+/**
+ * @typedef {object} MemoryMediaViewerProps
+ * @property {number} activeIndex
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @property {import("@/entities/memory/mock-data").MemoryMediaItem[]} media
+ * @property {function(): void} onClose
+ * @property {function(number | function(number): number): void} onSelect
+ * @property {boolean} [preserveDrawer]
+ */
+
+/**
+ * @param {MemoryMediaViewerProps} props
+ */
 export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSelect, preserveDrawer = false }) {
   const activeItem = media[activeIndex] ?? media[0];
   const [mainSwiper, setMainSwiper] = useState(null);

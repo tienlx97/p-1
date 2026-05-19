@@ -10,6 +10,19 @@ import {
 
 const AuthSessionContext = createContext(null);
 
+/**
+ * @typedef {object} AuthSession
+ * @property {import("@/features/auth/constants/accounts").AuthAccount[]} accounts
+ * @property {import("@/features/auth/constants/accounts").AuthAccount | null} activeAccount
+ * @property {boolean} isAuthenticated
+ * @property {boolean} isReady
+ * @property {function(string, string): boolean} signIn
+ * @property {function(): void} signOut
+ */
+
+/**
+ * @param {{ children: import("react").ReactNode }} props
+ */
 export function AuthSessionProvider({ children }) {
   const [activeAccountId, setActiveAccountId] = useState(null);
   const [isReady, setIsReady] = useState(false);
@@ -54,6 +67,9 @@ export function AuthSessionProvider({ children }) {
   return <AuthSessionContext.Provider value={value}>{children}</AuthSessionContext.Provider>;
 }
 
+/**
+ * @returns {AuthSession}
+ */
 export function useAuthSession() {
   const context = useContext(AuthSessionContext);
 
