@@ -96,7 +96,6 @@ export function CheckinMap() {
                 onCategoryChange={setCategoryFilter}
               />
               <TileLayer
-                // maxNativeZoom={MAP_TILE_MAX_ZOOM}
                 maxZoom={MAP_TILE_MAX_ZOOM}
                 attribution={MAP_TILE_ATTRIBUTION}
                 detectRetina
@@ -107,7 +106,7 @@ export function CheckinMap() {
               />
               <MapZoomWatcher onPlaceLabelVisibilityChange={setShowPlaceLabels} />
               <MapPreviewDismissWatcher onDismissPreview={closeHoverPreview} />
-              <MapControls activeCheckin={activeCheckin} visibleCheckins={mapPlaces} />
+              {/* <MapControls activeCheckin={activeCheckin} visibleCheckins={mapPlaces} /> */}
               <MapPlaceSearch places={mapPlaces} onShowHoverPreview={showHoverPreview} />
 
               {USE_MARKER_CLUSTERING ? (

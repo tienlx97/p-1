@@ -1,5 +1,3 @@
-import stylexPlugin from '@stylexswc/nextjs-plugin/turbopack'
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -10,13 +8,9 @@ const nextConfig = {
       },
     ],
   },
-  allowedDevOrigins: ['192.168.100.34', '26.138.55.203'],
+  allowedDevOrigins: ['192.168.100.34', '192.168.1.26'],
 }
 
 // export default nextConfig
 
-export default stylexPlugin({
-  rsOptions: {
-    dev: process.env.NODE_ENV === 'development',
-  },
-})(nextConfig)
+export default nextConfig
