@@ -643,10 +643,6 @@
   display: none;
 }
 
-.memory-hover-tooltip .leaflet-tooltip-content {
-  margin: 0;
-}
-
 .checkin-place-label-tooltip {
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 6px;
@@ -665,10 +661,6 @@
     0 1px 1px rgba(0, 0, 0, 0.74),
     1px 0 1px rgba(0, 0, 0, 0.48),
     -1px 0 1px rgba(0, 0, 0, 0.48);
-}
-
-.checkin-place-label-tooltip .leaflet-tooltip-content {
-  margin: 0;
 }
 
 .checkin-place-label-tooltip.label-top-right::before,

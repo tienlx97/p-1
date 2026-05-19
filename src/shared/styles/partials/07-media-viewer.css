@@ -249,10 +249,6 @@
   padding: var(--media-viewer-padding-top) 92px var(--media-viewer-padding-bottom);
 }
 
-.media-viewer-main .swiper-wrapper {
-  height: 100%;
-}
-
 .media-viewer-slide {
   position: relative;
   display: grid;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Button } from "react-aria-components";
+import { Button, Input } from "react-aria-components";
 import { useMap } from "react-leaflet";
 
 import { getCategory, getMood } from "@/entities/memory";
@@ -124,7 +124,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
       onWheel={stopMapInteraction}
     >
       <div className={cx("map-place-search-field", showResults && "has-results")}>
-        <input
+        <Input
           ref={searchRef}
           type="search"
           value={query}

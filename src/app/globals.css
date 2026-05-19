@@ -98,6 +98,14 @@ textarea:focus {
     sans-serif;
 }
 
+.leaflet-tooltip-content {
+  margin: 0;
+}
+
+.swiper-wrapper {
+  height: 100%;
+}
+
 .os-theme-google-map.os-scrollbar {
   --os-size: 8px;
   --os-padding-perpendicular: 2px;
