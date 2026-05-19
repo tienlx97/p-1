@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./loadable-image.module.css";
 
 export function LoadableImage({ alt, className = "", src, ...props }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -13,10 +14,10 @@ export function LoadableImage({ alt, className = "", src, ...props }) {
 
   return (
     <>
-      {isLoaded ? null : <span className={cx("image-load-skeleton")} aria-hidden="true" />}
+      {isLoaded ? null : <span className={styles.skeleton} aria-hidden="true" />}
       <Image
         {...props}
-        className={cx(className, "loadable-image", isLoaded && "is-loaded")}
+        className={cx(className, styles.image, isLoaded && styles.isLoaded)}
         src={src}
         alt={alt}
         onLoad={() => setIsLoaded(true)}

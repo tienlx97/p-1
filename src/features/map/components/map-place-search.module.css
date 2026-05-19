@@ -1,4 +1,6 @@
 .root {
+  --search-height: 48px;
+
   position: absolute;
   top: max(14px, env(safe-area-inset-top));
   left: max(14px, env(safe-area-inset-left));
@@ -8,7 +10,8 @@
 
 .field {
   display: flex;
-  min-height: 38px;
+  height: var(--search-height);
+  min-height: var(--search-height);
   align-items: center;
   gap: 8px;
   border: 0;
@@ -272,13 +275,12 @@
 @media (max-width: 520px) {
   .root {
     top: max(10px, env(safe-area-inset-top));
-    right: max(10px, env(safe-area-inset-right));
+    right: calc(max(10px, env(safe-area-inset-right)) + 54px);
     left: max(10px, env(safe-area-inset-left));
     width: auto;
   }
 
   .field {
-    min-height: 36px;
     border-radius: 20px;
   }
 

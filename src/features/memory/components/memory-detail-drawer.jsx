@@ -6,13 +6,14 @@ import { FocusScope, mergeProps, useDialog, useOverlay } from 'react-aria'
 import { Button } from 'react-aria-components'
 import { MemoryDetailContent } from '@/features/memory/components/memory-detail-content'
 import { DRAWER_SCROLL_OPTIONS } from '@/features/memory/constants/memory-drawer-constants'
-import { cx } from '@/shared/lib/styles'
+import { cx } from '@/shared/lib/cx'
+import styles from './memory-detail-drawer.module.css'
 
 export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
   const drawerRef = useRef(null)
   const titleRef = useRef(null)
   const title = checkin?.title ?? 'Thông tin kỷ niệm'
-  const { overlayProps } = useOverlay(
+  const { overlayProps, underlayProps } = useOverlay(
     {
       isDismissable: false,
       isKeyboardDismissDisabled: false,
@@ -31,25 +32,26 @@ export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
 
   return (
     <FocusScope restoreFocus>
-      {/* <div {...underlayProps} className={cx("drawer-backdrop")} role="presentation" /> */}
-      <aside {...drawerProps} ref={drawerRef} className={cx('map-drawer memory-drawer')}>
-        <div className={cx('drawer-head memory-drawer-head')}>
-          <h2 {...titleProps} ref={titleRef} className={cx('sr-only')}>
+      <div {...underlayProps} className={styles.backdrop} role="presentation" />
+      <aside {...drawerProps} ref={drawerRef} className={cx(styles.drawer, styles.memoryDrawer)}>
+        <span className={styles.handle} aria-hidden="true" />
+        <div className={styles.head}>
+          <h2 {...titleProps} ref={titleRef} className={styles.srOnly}>
             {title}
           </h2>
           <Button
             aria-label="Đóng drawer"
-            className={cx('icon-btn')}
+            className={styles.iconButton}
             type="button"
             onPress={onClose}
           >
             <span aria-hidden="true">×</span>
-            <span className={cx('sr-only')}>Đóng</span>
+            <span className={styles.srOnly}>Đóng</span>
           </Button>
         </div>
 
         <OverlayScrollbarsComponent
-          className={cx('drawer-scroll')}
+          className={styles.scroll}
           defer
           options={DRAWER_SCROLL_OPTIONS}
         >

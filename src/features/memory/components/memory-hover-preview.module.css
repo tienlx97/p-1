@@ -1,0 +1,175 @@
+.card {
+  display: grid;
+  width: 248px;
+  overflow: hidden;
+  border: 1px solid rgba(218, 220, 224, 0.96);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow:
+    0 2px 6px rgba(60, 64, 67, 0.16),
+    0 8px 24px rgba(60, 64, 67, 0.18);
+  color: #202124;
+  cursor: pointer;
+  transform-origin: 50% 100%;
+  animation: previewIn 140ms cubic-bezier(0.2, 0, 0, 1) both;
+  will-change: opacity, transform;
+}
+
+.card:focus-visible {
+  outline: 3px solid rgba(11, 132, 255, 0.35);
+  outline-offset: 3px;
+}
+
+.slider {
+  position: relative;
+  overflow: hidden;
+  height: 136px;
+  background: #dfe4ea;
+}
+
+.swiper,
+.slide {
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 58%, rgba(10, 14, 20, 0.22) 100%);
+  pointer-events: none;
+}
+
+.body {
+  display: grid;
+  gap: 4px;
+  padding: 11px 12px 12px;
+}
+
+.card h3 {
+  overflow: hidden;
+  margin: 0;
+  color: #202124;
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.22;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card p {
+  overflow: hidden;
+  margin: 0;
+  color: #5f6368;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slideButton {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  display: grid;
+  width: 28px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.02));
+  color: #fff;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 320;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.prev {
+  left: 0;
+}
+
+.next {
+  right: 0;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.02));
+}
+
+.slideButton:hover {
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.progress {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  left: 10px;
+  z-index: 4;
+  display: flex;
+  gap: 5px;
+}
+
+.progress span {
+  height: 2px;
+  flex: 1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+}
+
+.progress .active {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.24);
+  transform: translate(-50%, -50%);
+}
+
+.play span {
+  width: 0;
+  height: 0;
+  margin-left: 3px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 14px solid #1f2937;
+}
+
+@media (max-width: 520px) {
+  .card {
+    width: min(248px, calc(100vw - 42px));
+  }
+}
+
+@keyframes previewIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

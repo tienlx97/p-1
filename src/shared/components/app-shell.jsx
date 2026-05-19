@@ -1,8 +1,9 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { useEffect, useState } from "react";
-import { Button, Link } from "react-aria-components";
+import { Button, Link, Menu, MenuItem, MenuTrigger, Popover } from "react-aria-components";
 
 import { cx } from "@/shared/lib/cx";
 import styles from "./app-shell.module.css";
@@ -13,8 +14,16 @@ const navItems = [
 ];
 
 const ADD_MEMORY_EVENT = "photo-mem:open-add-memory";
+const PAGE_SCROLL_OPTIONS = {
+  overflow: { x: "hidden" },
+  scrollbars: {
+    autoHide: "leave",
+    autoHideDelay: 120,
+    theme: "os-theme-google-map"
+  }
+};
 
-export function AppShell({ children }) {
+export function AppShell({ children, currentUser, onSignOut }) {
   const pathname = usePathname();
   const router = useRouter();
   const [pendingHref, setPendingHref] = useState(null);
@@ -45,10 +54,16 @@ export function AppShell({ children }) {
 
   return (
     <div className={styles.root}>
-      <main className={cx(styles.mainPanel, isHomeRoute && styles.homeMainPanel)} aria-busy={isRouteLoading}>
+      <OverlayScrollbarsComponent
+        element="main"
+        className={cx(styles.mainPanel, isHomeRoute && styles.homeMainPanel)}
+        aria-busy={isRouteLoading}
+        defer
+        options={PAGE_SCROLL_OPTIONS}
+      >
         {isRouteLoading ? <RouteSkeleton /> : null}
         {children}
-      </main>
+      </OverlayScrollbarsComponent>
 
       <nav className={styles.bottomNav} aria-label="Điều hướng chính">
         {navItems.slice(0, 1).map((item) => {
@@ -111,6 +126,34 @@ export function AppShell({ children }) {
           );
         })}
       </nav>
+
+      {currentUser ? (
+        <div className={styles.userMenu}>
+          <MenuTrigger>
+            <Button
+              className={styles.userMenuButton}
+              type="button"
+              aria-label={`Tài khoản ${currentUser.shortName}`}
+              style={{ "--user-accent": currentUser.accent }}
+            >
+              <span className={styles.userAvatar} aria-hidden="true">
+                {currentUser.initials}
+              </span>
+            </Button>
+            <Popover className={styles.userMenuPopover} placement="bottom end">
+              <Menu className={styles.userMenuList} aria-label="Tài khoản">
+                <MenuItem
+                  className={styles.userMenuItem}
+                  textValue="Đăng xuất"
+                  onAction={onSignOut}
+                >
+                  Đăng xuất
+                </MenuItem>
+              </Menu>
+            </Popover>
+          </MenuTrigger>
+        </div>
+      ) : null}
     </div>
   );
 }

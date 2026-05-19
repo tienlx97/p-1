@@ -6,8 +6,8 @@ import 'swiper/css/free-mode'
 import './globals.css'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
+import { AuthGate, AuthSessionProvider } from '@/features/auth'
 import { AriaProviders } from '@/shared/components/aria-providers'
-import { AppShell } from '@/shared/components/app-shell'
 
 export const metadata = {
   title: 'Our Memory Map',
@@ -37,7 +37,9 @@ export default function RootLayout({ children }) {
       />
       <body>
         <AriaProviders>
-          <AppShell>{children}</AppShell>
+          <AuthSessionProvider>
+            <AuthGate>{children}</AuthGate>
+          </AuthSessionProvider>
         </AriaProviders>
       </body>
     </html>

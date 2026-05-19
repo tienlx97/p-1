@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { Marker, Tooltip, useMap } from 'react-leaflet'
 
 import { createCheckinLabelAnchorIcon } from '@/features/map/utils/map.utils'
-import { cx } from '@/shared/lib/styles'
+import styles from './map-place-labels.module.css'
 
 const LABEL_COLLISION_GAP = 4
 const LABEL_TOOLTIP_OFFSET = [0, 8]
@@ -20,7 +20,7 @@ function doRectsCollide(first, second, gap = LABEL_COLLISION_GAP) {
 
 function applyPlaceLabelCollisions(map) {
   const mapContainer = map.getContainer()
-  const tooltipElements = [...mapContainer.querySelectorAll('.google-map-tooltip')]
+  const tooltipElements = [...mapContainer.querySelectorAll(`.${styles.tooltip}`)]
   const labelItems = tooltipElements
     .map((tooltipElement, index) => {
       const labelElement = tooltipElement.querySelector('[data-map-place-label]')
@@ -119,14 +119,14 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
       zIndexOffset={-20}
     >
       <Tooltip
-        className={cx('google-map-tooltip')}
+        className={styles.tooltip}
         direction="bottom"
         offset={LABEL_TOOLTIP_OFFSET}
         opacity={1}
         permanent
       >
         <div
-          className={cx('google-map-label')}
+          className={styles.label}
           data-label-priority={new Date(checkin.checkinTime).getTime()}
           data-map-place-label
         >

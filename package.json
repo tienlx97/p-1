@@ -11,8 +11,9 @@
     "type-check": "node -e \"console.log('JavaScript MVP: no TypeScript check configured')\""
   },
   "dependencies": {
+    "@react-leaflet/core": "3.0.0",
     "@stylexjs/stylex": "^0.18.3",
-    "@tanstack/react-query": "^5.90.21",
+    "@tanstack/react-query": "5.100.11",
     "blurhash": "^2.0.5",
     "clsx": "^2.1.1",
     "geist": "^1.7.0",

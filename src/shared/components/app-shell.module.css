@@ -1,15 +1,22 @@
 .root {
-  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 .mainPanel {
+  height: 100dvh;
   min-width: 0;
+  overflow: auto;
   padding: 28px 28px 104px;
 }
 
 .homeMainPanel {
-  min-height: 100dvh;
+  height: 100dvh;
   padding: 0;
+}
+
+.homeMainPanel :global([data-overlayscrollbars-contents]) {
+  height: 100%;
 }
 
 .bottomNav {
@@ -181,6 +188,104 @@
   transform: translateY(-33px);
 }
 
+.userMenu {
+  --search-height: 48px;
+  --user-menu-size: 42px;
+
+  position: fixed;
+  top: calc(max(14px, env(safe-area-inset-top)) + (var(--search-height) - var(--user-menu-size)) / 2);
+  right: max(14px, env(safe-area-inset-right));
+  z-index: 1100;
+  display: block;
+}
+
+:global(.media-viewer-open) .userMenu {
+  display: none;
+}
+
+.userMenuButton {
+  display: grid;
+  width: var(--user-menu-size);
+  height: var(--user-menu-size);
+  place-items: center;
+  border: 1px solid rgba(218, 220, 224, 0.82);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    0 1px 2px rgba(60, 64, 67, 0.16),
+    0 8px 24px rgba(60, 64, 67, 0.12);
+  color: #202124;
+  cursor: pointer;
+  padding: 5px;
+  backdrop-filter: blur(18px) saturate(1.08);
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.userMenuButton:hover,
+.userMenuButton[data-pressed] {
+  border-color: rgba(189, 193, 198, 0.95);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 1px 3px rgba(60, 64, 67, 0.2),
+    0 10px 28px rgba(60, 64, 67, 0.16);
+  transform: translateY(-1px);
+}
+
+.userMenuButton[data-focus-visible] {
+  outline: 3px solid rgba(26, 115, 232, 0.22);
+  outline-offset: 3px;
+}
+
+.userAvatar {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--user-accent, #2867c8) 14%, #fff);
+  color: var(--user-accent, #2867c8);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.userMenuPopover {
+  z-index: 1400;
+  min-width: 132px;
+  overflow: hidden;
+  border: 1px solid rgba(218, 220, 224, 0.9);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 1px 3px rgba(60, 64, 67, 0.14),
+    0 18px 48px rgba(31, 41, 55, 0.16);
+}
+
+.userMenuList {
+  display: grid;
+  padding: 6px;
+  outline: none;
+}
+
+.userMenuItem {
+  border-radius: 10px;
+  color: #202124;
+  cursor: pointer;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 800;
+  outline: none;
+}
+
+.userMenuItem[data-hovered],
+.userMenuItem[data-focused] {
+  background: #f2f6fd;
+  color: #174ea6;
+}
+
 .routeSkeleton {
   position: fixed;
   inset: 0;
@@ -247,11 +352,6 @@
 }
 
 @media (min-width: 960px) {
-  .bottomNav {
-    right: 18px;
-    left: auto;
-  }
-
   .mainPanel:not(.homeMainPanel) {
     padding-bottom: 120px;
   }
@@ -293,6 +393,23 @@
   .routeSkeletonBody span:first-child {
     grid-row: auto;
   }
+
+  .userMenu {
+    --user-menu-size: 38px;
+
+    top: calc(max(10px, env(safe-area-inset-top)) + (var(--search-height) - var(--user-menu-size)) / 2);
+    right: max(10px, env(safe-area-inset-right));
+  }
+
+  .userMenuButton {
+    padding: 4px;
+  }
+
+  .userAvatar {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -310,4 +427,5 @@
     left: max(8px, env(safe-area-inset-left));
     width: min(260px, calc(100vw - 16px));
   }
+
 }

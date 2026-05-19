@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import MarkerClusterGroup from 'react-leaflet-markercluster'
-import { MapContainer, TileLayer } from 'react-leaflet'
+import { TileLayer } from 'react-leaflet'
 
 import { CheckinMarkers } from '@/features/map/components/checkin-markers'
+import { LeafletMapContainer } from '@/features/map/components/leaflet-map-container'
 import { MapControls } from '@/features/map/components/map-controls'
 import {
   DEFAULT_CENTER,
@@ -78,7 +79,7 @@ export function CheckinMap() {
       <div className={styles.body}>
         <div className={styles.shell}>
           {totalCheckinCount > 0 ? (
-            <MapContainer
+            <LeafletMapContainer
               center={DEFAULT_CENTER}
               zoom={initialZoom}
               minZoom={4}
@@ -127,7 +128,7 @@ export function CheckinMap() {
               )}
               <CheckinMarkers checkins={standalonePlaces} {...markerProps} />
               <AdaptivePlaceLabels places={mapPlaces} visible={showPlaceLabels} />
-            </MapContainer>
+            </LeafletMapContainer>
           ) : (
             <div className={styles.emptyState}>
               <h2>Chưa có kỷ niệm phù hợp</h2>

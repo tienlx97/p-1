@@ -1,0 +1,59 @@
+.labelAnchorIcon {
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.svgIcon {
+  border: 0;
+  background: transparent;
+}
+
+.cluster {
+  border: 0;
+  background: transparent;
+}
+
+.clusterRing {
+  position: relative;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, 0.42), transparent 30%),
+    linear-gradient(145deg, #57a8ef, #1f75d1 72%);
+  box-shadow:
+    0 2px 7px rgba(30, 40, 54, 0.22),
+    0 9px 24px rgba(31, 117, 209, 0.28);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 760;
+  line-height: 1;
+}
+
+.clusterRing::after {
+  position: absolute;
+  inset: -7px;
+  z-index: -1;
+  border-radius: 50%;
+  background: rgba(31, 117, 209, 0.14);
+  content: "";
+}
+
+.cluster.medium .clusterRing {
+  font-size: 13px;
+}
+
+.cluster.large .clusterRing {
+  font-size: 12px;
+}
+
+.clusterCount {
+  position: relative;
+  z-index: 1;
+  min-width: 16px;
+  text-align: center;
+}

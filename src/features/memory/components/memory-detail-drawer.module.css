@@ -1,0 +1,216 @@
+.backdrop {
+  display: none;
+}
+
+.drawer {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 500;
+  display: grid;
+  width: min(390px, 92%);
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: auto;
+  border: 1px solid var(--map-panel-border);
+  border-radius: 22px;
+  background: var(--map-panel-strong);
+  box-shadow: var(--map-shadow);
+  color: var(--map-text);
+  backdrop-filter: blur(44px) saturate(1.18);
+  animation: panelIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.memoryDrawer {
+  top: 0;
+  right: auto;
+  bottom: 0;
+  left: 0;
+  width: min(430px, calc(100% - 32px));
+  max-height: none;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: auto;
+  border-width: 0 1px 0 0;
+  border-radius: 22px 0 0 22px;
+  background: #fff;
+  box-shadow:
+    0 2px 6px rgba(60, 64, 67, 0.18),
+    0 8px 24px rgba(60, 64, 67, 0.22);
+  color: #202124;
+  backdrop-filter: none;
+  animation-name: panelFromLeft;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: none;
+}
+
+.memoryDrawer:hover {
+  scrollbar-color: rgba(95, 99, 104, 0.58) transparent;
+  scrollbar-width: thin;
+}
+
+.memoryDrawer::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.memoryDrawer:hover::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.memoryDrawer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.memoryDrawer::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  background-clip: content-box;
+}
+
+.memoryDrawer:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(95, 99, 104, 0.58);
+}
+
+.head {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 4;
+  display: block;
+  border: 0;
+  padding: 0;
+}
+
+.iconButton {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(218, 220, 224, 0.96);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 1px 4px rgba(60, 64, 67, 0.24);
+  color: #3c4043;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.iconButton:hover {
+  background: rgba(241, 243, 244, 0.72);
+}
+
+.handle {
+  display: none;
+}
+
+.scroll {
+  min-height: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 820px) {
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 1140;
+    display: block;
+    border: 0;
+    background: rgba(15, 23, 42, 0.12);
+    cursor: default;
+    backdrop-filter: blur(3px);
+    animation: backdropIn 180ms ease-out both;
+  }
+
+  .memoryDrawer {
+    top: max(72px, env(safe-area-inset-top));
+    right: env(safe-area-inset-right);
+    bottom: env(safe-area-inset-bottom);
+    left: env(safe-area-inset-left);
+    z-index: 1200;
+    width: auto;
+    height: auto;
+    max-height: none;
+    grid-template-rows: minmax(0, 1fr);
+    overflow: hidden;
+    border-width: 1px;
+    border-radius: 10px;
+    box-shadow: 0 -24px 70px rgba(31, 41, 55, 0.2);
+    animation-name: sheetIn;
+  }
+
+  .handle {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    z-index: 5;
+    display: block;
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(102, 113, 127, 0.4);
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 520px) {
+  .memoryDrawer {
+    top: max(56px, env(safe-area-inset-top));
+  }
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateX(28px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes panelFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

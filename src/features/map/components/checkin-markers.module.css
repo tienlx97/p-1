@@ -1,0 +1,11 @@
+.hoverTooltip {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  pointer-events: auto;
+}
+
+.hoverTooltip::before {
+  display: none;
+}

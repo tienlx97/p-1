@@ -5,7 +5,7 @@ import { Button } from "react-aria-components";
 import { useMap } from "react-leaflet";
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/constants/map.constants";
 import { fitMapToCheckins } from "@/features/map/utils/map.utils";
-import { cx } from "@/shared/lib/styles";
+import styles from "./map-controls.module.css";
 
 export function MapControls({ activeCheckin, visibleCheckins }) {
   const map = useMap();
@@ -50,8 +50,8 @@ export function MapControls({ activeCheckin, visibleCheckins }) {
   }
 
   return (
-    <div className={cx("explory-map-controls")} aria-label="Điều khiển bản đồ">
-      <div className={cx("explory-control-group")}>
+    <div className={styles.root} aria-label="Điều khiển bản đồ">
+      <div className={styles.group}>
         <Button
           type="button"
           title="Phóng to"
@@ -71,19 +71,19 @@ export function MapControls({ activeCheckin, visibleCheckins }) {
         </Button>
       </div>
 
-      <div className={cx("explory-control-button")}>
+      <div className={styles.controlButton}>
         <Button type="button" title="Đưa về hành trình" aria-label="Đưa về hành trình" onPress={resetView}>
-          <span className={cx("control-compass")} aria-hidden="true" />
+          <span className={styles.compassIcon} aria-hidden="true" />
         </Button>
       </div>
 
-      <div className={cx("explory-control-button")}>
+      <div className={styles.controlButton}>
         <Button type="button" title="Vị trí hiện tại" aria-label="Vị trí hiện tại" onPress={locateUser}>
-          <span className={cx("control-location")} aria-hidden="true" />
+          <span className={styles.locationIcon} aria-hidden="true" />
         </Button>
       </div>
 
-      {locationStatus ? <p className={cx("explory-location-status")}>{locationStatus}</p> : null}
+      {locationStatus ? <p className={styles.locationStatus}>{locationStatus}</p> : null}
     </div>
   );
 }

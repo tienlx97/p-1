@@ -5,7 +5,8 @@ import { Button, Pressable } from "react-aria-components";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { MediaPreview } from "@/features/memory/components/media-preview";
 import { formatDate, getMemoryMedia } from "@/entities/memory";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./memory-hover-preview.module.css";
 
 export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPress }) {
   const media = getMemoryMedia(checkin);
@@ -29,14 +30,14 @@ export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPres
   return (
     <Pressable onPress={() => onPress(activeSlide?.type === "video" ? activeSlideIndex : null)}>
       <article
-        className={cx("memory-place-card hover")}
+        className={styles.card}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         aria-label={`Xem chi tiết ${checkin.title}`}
       >
-        <div className={cx("memory-place-slider")}>
+        <div className={styles.slider}>
           <Swiper
-            className={cx("memory-place-swiper")}
+            className={styles.swiper}
             loop={media.length > 1}
             slidesPerView={1}
             preventClicks
@@ -45,19 +46,19 @@ export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPres
             onSwiper={setHoverSwiper}
           >
             {media.map((item) => (
-              <SwiperSlide className={cx("memory-place-slide")} key={item.id}>
+              <SwiperSlide className={styles.slide} key={item.id}>
                 <MediaPreview
-                  className={cx("memory-place-card-photo")}
+                  className={styles.photo}
                   item={item}
                   alt={item.alt ?? checkin.title}
                 />
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className={cx("memory-place-scrim")} aria-hidden="true" />
+          <div className={styles.scrim} aria-hidden="true" />
 
           {activeSlide?.type === "video" ? (
-            <span className={cx("memory-place-play")} aria-label="Video">
+            <span className={styles.play} aria-label="Video">
               <span aria-hidden="true" />
             </span>
           ) : null}
@@ -65,7 +66,7 @@ export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPres
           {media.length > 1 ? (
             <>
               <Button
-                className={cx("memory-slide-button prev")}
+                className={cx(styles.slideButton, styles.prev)}
                 type="button"
                 aria-label="Media trước"
                 onPress={() => moveSlide(-1)}
@@ -73,7 +74,7 @@ export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPres
                 ‹
               </Button>
               <Button
-                className={cx("memory-slide-button next")}
+                className={cx(styles.slideButton, styles.next)}
                 type="button"
                 aria-label="Media tiếp theo"
                 onPress={() => moveSlide(1)}
@@ -84,10 +85,10 @@ export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPres
           ) : null}
 
           {media.length > 1 ? (
-            <div className={cx("memory-slide-progress")} aria-label={`${activeSlideIndex + 1} / ${media.length}`}>
+            <div className={styles.progress} aria-label={`${activeSlideIndex + 1} / ${media.length}`}>
               {media.map((item, index) => (
                 <span
-                  className={index === activeSlideIndex ? cx("active") : cx("")}
+                  className={index === activeSlideIndex ? styles.active : undefined}
                   key={item.id}
                   aria-hidden="true"
                 />
@@ -96,7 +97,7 @@ export function MemoryHoverPreview({ checkin, onMouseEnter, onMouseLeave, onPres
           ) : null}
         </div>
 
-        <div className={cx("memory-place-body")}>
+        <div className={styles.body}>
           <h3>{checkin.title}</h3>
           <p>{formatDate(checkin.checkinTime)}</p>
         </div>

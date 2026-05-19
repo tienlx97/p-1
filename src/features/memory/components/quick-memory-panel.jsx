@@ -5,7 +5,8 @@ import { Button, Input } from "react-aria-components";
 import { moods } from "@/entities/memory";
 import { Field, SelectField, SelectItem, TextAreaField } from "@/shared/components/ui";
 
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./quick-memory-panel.module.css";
 
 export function QuickMemoryPanel({ embedded = false }) {
   const [saved, setSaved] = useState(false);
@@ -83,7 +84,7 @@ export function QuickMemoryPanel({ embedded = false }) {
 
   return (
     <form
-      className={cx("quick-memory-panel")}
+      className={styles.root}
       onSubmit={(event) => {
         event.preventDefault();
         if (!canSave) {
@@ -93,9 +94,9 @@ export function QuickMemoryPanel({ embedded = false }) {
       }}
     >
       {embedded ? null : (
-        <div className={cx("panel-heading")}>
+        <div className={styles.heading}>
           <div>
-            <p className={cx("eyebrow")}>Thêm nhanh</p>
+            <p className={styles.eyebrow}>Thêm nhanh</p>
             <h2>Kỷ niệm mới</h2>
           </div>
         </div>
@@ -103,16 +104,24 @@ export function QuickMemoryPanel({ embedded = false }) {
 
       <Field
         isRequired
+        className={styles.field}
         label="Tiêu đề *"
         value={title}
         onChange={setTitle}
         placeholder="Ví dụ: Xem hoàng hôn ở cầu Mống"
       />
 
-      <div className={cx("field-grid compact")}>
-        <Field isRequired label="Ngày *" type="date" value={memoryDate} onChange={setMemoryDate} />
+      <div className={cx(styles.fieldGrid, styles.compact)}>
+        <Field
+          isRequired
+          className={styles.field}
+          label="Ngày *"
+          type="date"
+          value={memoryDate}
+          onChange={setMemoryDate}
+        />
 
-        <SelectField label="Cảm xúc" defaultSelectedKey="memorable">
+        <SelectField className={cx(styles.field, styles.selectField)} label="Cảm xúc" defaultSelectedKey="memorable">
           {moods.map((mood) => (
             <SelectItem id={mood.id} key={mood.id}>
               {mood.name}
@@ -122,14 +131,16 @@ export function QuickMemoryPanel({ embedded = false }) {
       </div>
 
       <Field
+        className={styles.field}
         label="Địa điểm"
         value={locationName}
         onChange={setLocationName}
         placeholder="Tên quán, cây cầu, công viên..."
       />
 
-      <div className={cx("field-grid compact location-detail-grid")}>
+      <div className={cx(styles.fieldGrid, styles.compact, styles.locationDetailGrid)}>
         <Field
+          className={styles.field}
           label="Tọa độ"
           value={coordinates}
           onChange={setCoordinates}
@@ -137,6 +148,7 @@ export function QuickMemoryPanel({ embedded = false }) {
           description="Nhập theo dạng vĩ độ, kinh độ hoặc bấm Vị trí hiện tại."
         />
         <Field
+          className={styles.field}
           label="URL Google Maps"
           type="url"
           value={googleMapsUrl}
@@ -147,13 +159,14 @@ export function QuickMemoryPanel({ embedded = false }) {
       </div>
 
       <TextAreaField
+        className={styles.field}
         label="Ghi chú"
         rows={4}
         placeholder="Viết vài dòng để sau này đọc lại vẫn nhớ cảm giác hôm đó."
       />
 
-      <section className={cx("quick-media-section")} aria-label="Thêm ảnh hoặc video">
-        <div className={cx("quick-media-section-head")}>
+      <section className={styles.mediaSection} aria-label="Thêm ảnh hoặc video">
+        <div className={styles.mediaSectionHead}>
           <div>
             <strong>Ảnh và video</strong>
             <small>Thêm media sau khi đã nhập thông tin chính.</small>
@@ -161,7 +174,7 @@ export function QuickMemoryPanel({ embedded = false }) {
           {mediaItems.length > 0 ? <span>{mediaItems.length} file</span> : null}
         </div>
 
-        <label className={cx("quick-upload")} htmlFor="quick-photos">
+        <label className={styles.upload} htmlFor="quick-photos">
           <Input id="quick-photos" type="file" accept="image/*,video/*" multiple onChange={addMediaItems} />
           <span aria-hidden="true">+</span>
           <strong>Thêm ảnh hoặc video</strong>
@@ -169,9 +182,9 @@ export function QuickMemoryPanel({ embedded = false }) {
         </label>
 
         {mediaItems.length > 0 ? (
-          <div className={cx("quick-media-preview")} aria-label="Ảnh và video đã chọn">
+          <div className={styles.mediaPreview} aria-label="Ảnh và video đã chọn">
             {mediaItems.map((item) => (
-              <figure className={cx("quick-media-item")} key={item.id}>
+              <figure className={styles.mediaItem} key={item.id}>
                 {item.type === "video" ? (
                   <video src={item.url} muted playsInline preload="metadata" />
                 ) : (
@@ -183,7 +196,7 @@ export function QuickMemoryPanel({ embedded = false }) {
                 </figcaption>
                 <Button
                   aria-label={`Xóa ${item.name}`}
-                  className={cx("quick-media-remove")}
+                  className={styles.mediaRemove}
                   type="button"
                   onPress={() => removeMediaItem(item.id)}
                 >
@@ -195,18 +208,18 @@ export function QuickMemoryPanel({ embedded = false }) {
         ) : null}
       </section>
 
-      <div className={cx("quick-actions")}>
-        <Button className={cx("btn btn-primary")} type="submit" isDisabled={!canSave}>
+      <div className={styles.actions}>
+        <Button className={cx(styles.button, styles.primaryButton)} type="submit" isDisabled={!canSave}>
           <span aria-hidden="true">+</span>
           Lưu kỷ niệm
         </Button>
-        <Button className={cx("btn btn-secondary")} type="button" onPress={useCurrentLocation}>
+        <Button className={cx(styles.button, styles.secondaryButton)} type="button" onPress={useCurrentLocation}>
           <span aria-hidden="true">⌖</span>
           Vị trí hiện tại
         </Button>
       </div>
 
-      {saved ? <p className={cx("save-state")}>Đã lưu bản nháp trên màn hình.</p> : null}
+      {saved ? <p className={styles.saveState}>Đã lưu bản nháp trên màn hình.</p> : null}
     </form>
   );
 }

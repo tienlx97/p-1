@@ -4,7 +4,8 @@ import markerIconUrl from "leaflet/dist/images/marker-icon.png";
 import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
 import { REACTION_MARKER_ICON_VERSION } from "@/features/map/constants/map.constants";
 import { getCategory, getMood } from "@/entities/memory";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./map-marker-icons.module.css";
 
 const getLeafletAssetUrl = (asset) => asset?.src ?? asset;
 
@@ -17,7 +18,7 @@ L.Icon.Default.mergeOptions({
 
 const moodMarkerIconsV1 = {
   chill: `
-    <svg class="${cx("reaction-icon reaction-smile")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-smile" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#f7b928" />
       <circle cx="8.5" cy="10.2" r="1.1" fill="#4b2f13" />
       <circle cx="15.5" cy="10.2" r="1.1" fill="#4b2f13" />
@@ -25,7 +26,7 @@ const moodMarkerIconsV1 = {
     </svg>
   `,
   explore: `
-    <svg class="${cx("reaction-icon reaction-wow")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-wow" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#f7b928" />
       <circle cx="8.5" cy="10" r="1.4" fill="#4b2f13" />
       <circle cx="15.5" cy="10" r="1.4" fill="#4b2f13" />
@@ -33,7 +34,7 @@ const moodMarkerIconsV1 = {
     </svg>
   `,
   happy: `
-    <svg class="${cx("reaction-icon reaction-haha")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-haha" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#f7b928" />
       <path d="M7.2 9.5c1.1.9 2.1.9 3.2 0M13.6 9.5c1.1.9 2.1.9 3.2 0" fill="none" stroke="#4b2f13" stroke-linecap="round" stroke-width="1.8" />
       <path d="M7.7 13.9c1.1 3.2 7.5 3.2 8.6 0Z" fill="#4b2f13" />
@@ -41,7 +42,7 @@ const moodMarkerIconsV1 = {
     </svg>
   `,
   memorable: `
-    <svg class="${cx("reaction-icon reaction-like")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-like" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#2f80ed" />
       <path d="M6.1 10.9h3v7h-3Z" fill="#d8eaff" opacity=".96" />
       <path d="M9.1 10.8c1.2-1.2 2-2.8 2.4-4.6.1-.5.5-.9 1-.9 1.2 0 2.1 1 1.9 2.2l-.3 1.8h3.7c1 0 1.7.9 1.5 1.8l-.9 4.9c-.2 1.1-1.1 1.9-2.2 1.9H9.1Z" fill="#fff" />
@@ -49,34 +50,34 @@ const moodMarkerIconsV1 = {
     </svg>
   `,
   peaceful: `
-    <svg class="${cx("reaction-icon reaction-sad")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-sad" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#f7b928" />
       <circle cx="8.4" cy="10.2" r="1.1" fill="#4b2f13" />
       <circle cx="15.6" cy="10.2" r="1.1" fill="#4b2f13" />
       <path d="M8.5 15.8c1.9-1.4 5.1-1.4 7 0" fill="none" stroke="#4b2f13" stroke-linecap="round" stroke-width="1.8" />
-      <path class="${cx("reaction-tear")}" d="M17.5 12.3c1.5 1.6 2.1 2.8 2.1 3.8a2.1 2.1 0 0 1-4.2 0c0-1 .6-2.2 2.1-3.8Z" fill="#4fc3f7" stroke="#1b75bb" stroke-linejoin="round" stroke-width=".8" />
+      <path class="reaction-tear" d="M17.5 12.3c1.5 1.6 2.1 2.8 2.1 3.8a2.1 2.1 0 0 1-4.2 0c0-1 .6-2.2 2.1-3.8Z" fill="#4fc3f7" stroke="#1b75bb" stroke-linejoin="round" stroke-width=".8" />
     </svg>
   `,
   romantic: `
-    <svg class="${cx("reaction-icon reaction-love")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-love" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#f33e58" />
       <path d="M12 18.5S6.1 14.9 6.1 10.7c0-1.9 1.3-3.2 3-3.2 1.1 0 2.1.6 2.9 1.6.8-1 1.8-1.6 2.9-1.6 1.7 0 3 1.3 3 3.2 0 4.2-5.9 7.8-5.9 7.8Z" fill="#fff" />
     </svg>
   `,
   sad: `
-    <svg class="${cx("reaction-icon reaction-sad")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-sad" viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#f7b928" />
       <circle cx="8.4" cy="10.2" r="1.1" fill="#4b2f13" />
       <circle cx="15.6" cy="10.2" r="1.1" fill="#4b2f13" />
       <path d="M8.5 15.8c1.9-1.4 5.1-1.4 7 0" fill="none" stroke="#4b2f13" stroke-linecap="round" stroke-width="1.8" />
-      <path class="${cx("reaction-tear")}" d="M17.5 12.3c1.5 1.6 2.1 2.8 2.1 3.8a2.1 2.1 0 0 1-4.2 0c0-1 .6-2.2 2.1-3.8Z" fill="#4fc3f7" stroke="#1b75bb" stroke-linejoin="round" stroke-width=".8" />
+      <path class="reaction-tear" d="M17.5 12.3c1.5 1.6 2.1 2.8 2.1 3.8a2.1 2.1 0 0 1-4.2 0c0-1 .6-2.2 2.1-3.8Z" fill="#4fc3f7" stroke="#1b75bb" stroke-linejoin="round" stroke-width=".8" />
     </svg>
   `
 };
 
 const moodMarkerIconsV2 = {
   chill: `
-    <svg class="${cx("reaction-icon reaction-smile")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-smile" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
         <radialGradient id="chillFace" cx="34%" cy="26%" r="76%">
           <stop stop-color="#fff7b3"/>
@@ -96,7 +97,7 @@ const moodMarkerIconsV2 = {
     </svg>
   `,
   explore: `
-    <svg class="${cx("reaction-icon reaction-wow")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-wow" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
         <radialGradient id="wowFace" cx="34%" cy="26%" r="76%">
           <stop stop-color="#fff4ad"/>
@@ -113,7 +114,7 @@ const moodMarkerIconsV2 = {
     </svg>
   `,
   happy: `
-    <svg class="${cx("reaction-icon reaction-haha")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-haha" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
         <radialGradient id="laughFace" cx="34%" cy="25%" r="77%">
           <stop stop-color="#fff3aa"/>
@@ -129,7 +130,7 @@ const moodMarkerIconsV2 = {
     </svg>
   `,
   memorable: `
-    <svg class="${cx("reaction-icon reaction-like")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-like" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
         <radialGradient id="likeBadge" cx="32%" cy="24%" r="78%">
           <stop stop-color="#7cc4ff"/>
@@ -145,7 +146,7 @@ const moodMarkerIconsV2 = {
     </svg>
   `,
   peaceful: `
-    <svg class="${cx("reaction-icon reaction-sad")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-sad" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
         <radialGradient id="peaceFace" cx="34%" cy="25%" r="77%">
           <stop stop-color="#fff1a8"/>
@@ -160,7 +161,7 @@ const moodMarkerIconsV2 = {
     </svg>
   `,
   romantic: `
-    <svg class="${cx("reaction-icon reaction-love")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-love" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
         <radialGradient id="loveBadge" cx="34%" cy="24%" r="78%">
           <stop stop-color="#ff8fac"/>
@@ -174,7 +175,7 @@ const moodMarkerIconsV2 = {
     </svg>
   `,
   sad: `
-    <svg class="${cx("reaction-icon reaction-sad")}" viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="reaction-icon reaction-sad" viewBox="0 0 24 24" aria-hidden="true">
       <defs>
         <radialGradient id="sadFace" cx="34%" cy="25%" r="77%">
           <stop stop-color="#fff1a8"/>
@@ -186,7 +187,7 @@ const moodMarkerIconsV2 = {
       <ellipse cx="8.5" cy="10.2" rx="1.12" ry="1.3" fill="#5a3711" />
       <ellipse cx="15.5" cy="10.2" rx="1.12" ry="1.3" fill="#5a3711" />
       <path d="M8.4 16.05c1.9-1.35 5.3-1.35 7.2 0" fill="none" stroke="#5a3711" stroke-linecap="round" stroke-width="1.8" />
-      <path class="${cx("reaction-tear")}" d="M17.55 12.5c1.28 1.43 1.82 2.46 1.82 3.35a1.82 1.82 0 0 1-3.64 0c0-.89.54-1.92 1.82-3.35Z" fill="#72d7ff" stroke="#2196d3" stroke-width=".62" />
+      <path class="reaction-tear" d="M17.55 12.5c1.28 1.43 1.82 2.46 1.82 3.35a1.82 1.82 0 0 1-3.64 0c0-.89.54-1.92 1.82-3.35Z" fill="#72d7ff" stroke="#2196d3" stroke-width=".62" />
       <ellipse cx="8.1" cy="6.8" rx="2.15" ry=".78" fill="#fff8d6" opacity=".5" transform="rotate(-24 8.1 6.8)" />
     </svg>
   `
@@ -196,9 +197,9 @@ const moodMarkerIcons =
   REACTION_MARKER_ICON_VERSION === 2 ? moodMarkerIconsV2 : moodMarkerIconsV1;
 
 const homeMarkerIcon = `
-  <svg class="${cx("home-heart-icon")}" viewBox="0 0 24 24" aria-hidden="true">
-    <path class="${cx("home-heart-icon-main")}" d="M8.3 17.7S3.7 14.9 3.7 11.5c0-1.7 1.2-2.9 2.7-2.9.9 0 1.7.4 2.2 1.2.5-.8 1.3-1.2 2.2-1.2 1.5 0 2.7 1.2 2.7 2.9 0 3.4-5.2 6.2-5.2 6.2Z" fill="#ff5c8a" stroke="#b5164f" stroke-linejoin="round" stroke-width="1" />
-    <path class="${cx("home-heart-icon-secondary")}" d="M15.6 14.8s-4.3-2.6-4.3-5.8c0-1.5 1.1-2.7 2.5-2.7.8 0 1.6.4 2.1 1.1.5-.7 1.3-1.1 2.1-1.1 1.4 0 2.5 1.2 2.5 2.7 0 3.2-4.9 5.8-4.9 5.8Z" fill="#ff8fb0" stroke="#b5164f" stroke-linejoin="round" stroke-width="1" />
+  <svg class="home-heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <path class="home-heart-icon-main" d="M8.3 17.7S3.7 14.9 3.7 11.5c0-1.7 1.2-2.9 2.7-2.9.9 0 1.7.4 2.2 1.2.5-.8 1.3-1.2 2.2-1.2 1.5 0 2.7 1.2 2.7 2.9 0 3.4-5.2 6.2-5.2 6.2Z" fill="#ff5c8a" stroke="#b5164f" stroke-linejoin="round" stroke-width="1" />
+    <path class="home-heart-icon-secondary" d="M15.6 14.8s-4.3-2.6-4.3-5.8c0-1.5 1.1-2.7 2.5-2.7.8 0 1.6.4 2.1 1.1.5-.7 1.3-1.1 2.1-1.1 1.4 0 2.5 1.2 2.5 2.7 0 3.2-4.9 5.8-4.9 5.8Z" fill="#ff8fb0" stroke="#b5164f" stroke-linejoin="round" stroke-width="1" />
   </svg>
 `;
 
@@ -220,7 +221,7 @@ const HOME_MARKER_ACTIVE_STROKE = "#b5164f";
 const checkinIconCache = new Map();
 const checkinClusterIconCache = new Map();
 const labelAnchorIcon = L.divIcon({
-  className: cx("checkin-place-label-anchor-icon"),
+  className: styles.labelAnchorIcon,
   html: "",
   iconSize: [1, 1],
   iconAnchor: [0, 0]
@@ -468,7 +469,7 @@ export function createCheckinIcon(checkin, isActive) {
     iconAnchor: [MARKER_ICON_WIDTH / 2, MARKER_TIP_Y],
     popupAnchor: [0, -MARKER_TIP_Y],
     tooltipAnchor: [0, -(MARKER_TIP_Y + 8)],
-    className: cx("checkin-leaflet-svg-icon")
+    className: styles.svgIcon
   });
 
   checkinIconCache.set(cacheKey, icon);
@@ -486,16 +487,16 @@ export function createCheckinClusterIcon(cluster) {
 
   const sizeClass =
     childCount >= 100
-      ? "is-large"
+      ? styles.large
       : childCount >= 10
-        ? "is-medium"
-        : "is-small";
+        ? styles.medium
+        : styles.small;
 
   const icon = L.divIcon({
-    className: cx("explory-marker-cluster", sizeClass),
+    className: cx(styles.cluster, sizeClass),
     html: `
-      <span class="${cx("explory-marker-cluster-ring")}">
-        <span class="${cx("explory-marker-cluster-count")}">${childCount}</span>
+      <span class="${styles.clusterRing}">
+        <span class="${styles.clusterCount}">${childCount}</span>
       </span>
     `,
     iconSize: [CLUSTER_ICON_SIZE, CLUSTER_ICON_SIZE],

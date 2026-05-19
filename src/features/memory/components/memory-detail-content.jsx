@@ -11,7 +11,8 @@ import {
   getCoverImage,
   getMemoryMedia
 } from "@/entities/memory";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./memory-detail-content.module.css";
 
 export function MemoryDetailContent({ checkin, initialMediaIndex }) {
   const media = getMemoryMedia(checkin);
@@ -43,9 +44,9 @@ export function MemoryDetailContent({ checkin, initialMediaIndex }) {
   }
 
   return (
-    <article className={cx("drawer-memory")}>
+    <article className={styles.root}>
       <Button
-        className={cx("google-place-hero media-open-button")}
+        className={cx(styles.hero, styles.mediaOpenButton)}
         type="button"
         aria-label={`Mở ảnh ${checkin.title}`}
         onPress={() => openMedia(checkin, 0)}
@@ -58,22 +59,22 @@ export function MemoryDetailContent({ checkin, initialMediaIndex }) {
         />
       </Button>
 
-      <div className={cx("google-place-summary")}>
+      <div className={styles.summary}>
         <h2>{checkin.title}</h2>
       </div>
 
-      <Tabs className={cx("drawer-detail-tabs")} defaultSelectedKey="overview">
-        <TabList className={cx("drawer-detail-tab-list")} aria-label="Thông tin kỷ niệm">
+      <Tabs className={styles.tabs} defaultSelectedKey="overview">
+        <TabList className={styles.tabList} aria-label="Thông tin kỷ niệm">
           <Tab id="overview">Overview</Tab>
           <Tab id="review">Review</Tab>
         </TabList>
 
-        <TabPanel className={cx("drawer-detail-tab-panel")} id="overview">
-          <p className={cx("journal-text")}>{checkin.caption}</p>
+        <TabPanel className={styles.tabPanel} id="overview">
+          <p className={styles.journalText}>{checkin.caption}</p>
 
-          <dl className={cx("google-place-facts drawer-meta")}>
+          <dl className={styles.facts}>
             <div>
-              <span className={cx("google-place-fact-icon")} aria-hidden="true">
+              <span className={styles.factIcon} aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
                   <path d="M12 21s6.5-5.52 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5.48 6.5 11 6.5 11Z" />
                   <circle cx="12" cy="10" r="2.4" />
@@ -84,7 +85,7 @@ export function MemoryDetailContent({ checkin, initialMediaIndex }) {
                 {checkin.locationName}
                 {checkin.googleMapsUrl ? (
                   <Link
-                    className={cx("google-place-map-link")}
+                    className={styles.mapLink}
                     href={checkin.googleMapsUrl}
                     target="_blank"
                     rel="noreferrer"
@@ -99,8 +100,8 @@ export function MemoryDetailContent({ checkin, initialMediaIndex }) {
           <PlaceVisitTimeline visits={placeVisits} onOpenMedia={openMedia} />
         </TabPanel>
 
-        <TabPanel className={cx("drawer-detail-tab-panel")} id="review">
-          <section className={cx("drawer-review-panel")} aria-label="Review kỷ niệm">
+        <TabPanel className={styles.tabPanel} id="review">
+          <section className={styles.reviewPanel} aria-label="Review kỷ niệm">
             <div>
               <strong>{checkin.createdBy}</strong>
               <span>{formatDate(checkin.checkinTime)}</span>

@@ -9,6 +9,17 @@ Instructions for AI coding agents working in this repository.
 - Source folders live under `src/`.
 - The project follows a feature-based structure. Read `feature-based-structure.md` before creating, moving, or refactoring code.
 - Read `style.md` before creating or changing UI styles, React Aria controls, Tailwind utilities, CSS Modules, or global CSS.
+- Product/domain note: treat this as the main banking product context ("ngan hang chinh") when making wording, UX, data, or architecture decisions unless a task explicitly says otherwise.
+
+## Project Libraries
+
+- Framework/runtime: Next.js App Router, React, and React DOM.
+- Styling: Tailwind CSS, CSS Modules, Geist fonts, `clsx`, `tailwind-merge`, and legacy StyleX support while migration remains.
+- Accessible UI: React Aria Components and React Aria hooks. Use these for buttons, inputs, textareas, selects, tabs, dialogs, overlays, and other interactive primitives.
+- Maps: Leaflet, React Leaflet, React Leaflet MarkerCluster, `leaflet.markercluster`, and `@react-leaflet/core`. Keep map container, marker, cluster, label, and Leaflet-specific logic in the map feature unless shared ownership is clear.
+- Scroll/media UI: `overlayscrollbars` and `overlayscrollbars-react` for app, drawer, and custom scroll containers; `swiper` for media carousels, thumbnail rails, and touch sliders; `blurhash` for image placeholders.
+- State/data utilities: TanStack Query for server/cache data, Zustand for app-wide client state, Zod for validation, usehooks-ts for common hooks, Sonner for toasts, Motion for animation, and React Error Boundary for recoverable UI errors.
+- Build/tooling: ESLint, Next ESLint config, StyleX Babel/ESLint/PostCSS/SWC tooling, PostCSS, Autoprefixer, and Tailwind CSS.
 
 ## Styling
 

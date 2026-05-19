@@ -6,7 +6,7 @@ import { Marker, Tooltip } from 'react-leaflet'
 import { USE_DEFAULT_LEAFLET_MARKERS } from '@/features/map/constants/map.constants'
 import { createCheckinIcon } from '@/features/map/utils/map.utils'
 import { MemoryHoverPreview } from '@/features/memory'
-import { cx } from '@/shared/lib/styles'
+import styles from './checkin-markers.module.css'
 
 const CheckinMarker = memo(function CheckinMarker({
   checkin,
@@ -38,7 +38,7 @@ const CheckinMarker = memo(function CheckinMarker({
     >
       {isPreviewOpen ? (
         <Tooltip
-          className={cx('memory-hover-tooltip')}
+          className={styles.hoverTooltip}
           direction="top"
           interactive
           offset={[0, 0]}

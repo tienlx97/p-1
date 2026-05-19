@@ -9,7 +9,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { LoadableImage } from "@/features/memory/components/loadable-image";
 import { MediaPreview } from "@/features/memory/components/media-preview";
 import { formatDate } from "@/entities/memory";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./memory-media-viewer.module.css";
 
 export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSelect, preserveDrawer = false }) {
   const activeItem = media[activeIndex] ?? media[0];
@@ -61,14 +62,14 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
 
   const viewer = (
     <div
-      className={preserveDrawer ? cx("memory-media-viewer drawer-stage-viewer") : cx("memory-media-viewer")}
+      className={cx(styles.viewer, preserveDrawer && styles.drawerStageViewer)}
       role="dialog"
       aria-modal="true"
       aria-label="Xem ảnh và video"
     >
       {preserveDrawer ? null : (
         <>
-          <nav className={cx("media-viewer-mini-nav")} aria-label="Điều hướng media">
+          <nav className={styles.miniNav} aria-label="Điều hướng media">
             <Button type="button" aria-label="Menu">
               ☰
             </Button>
@@ -80,14 +81,14 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
               <i aria-hidden="true">◷</i>
               Recents
             </span>
-            <span className={cx("active")}>
+            <span className={styles.active}>
               <i aria-hidden="true">▣</i>
               Media
             </span>
           </nav>
 
-          <aside className={cx("media-viewer-rail")} aria-label="Danh sách media">
-            <div className={cx("media-viewer-search")}>
+          <aside className={styles.rail} aria-label="Danh sách media">
+            <div className={styles.search}>
               <Button type="button" aria-label="Đóng trình xem" onPress={onClose}>
                 ←
               </Button>
@@ -101,7 +102,7 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
               aria-label="Bộ lọc media"
               onSelectionChange={(key) => setMediaFilter(String(key))}
             >
-              <TabList className={cx("media-viewer-tabs")}>
+              <TabList className={styles.tabs}>
                 <Tab id="all">Tất cả</Tab>
                 <Tab id="latest">Mới nhất</Tab>
                 <Tab id="video">Video</Tab>
@@ -109,7 +110,7 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
               </TabList>
             </Tabs>
             <Swiper
-              className={cx("media-viewer-thumbs")}
+              className={styles.thumbs}
               direction="vertical"
               freeMode
               modules={[FreeMode]}
@@ -128,9 +129,9 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
               }}
             >
               {media.map((item, index) => (
-                <SwiperSlide className={cx("media-viewer-thumb-slide")} key={item.id}>
+                <SwiperSlide className={styles.thumbSlide} key={item.id}>
                   <Button
-                    className={index === activeIndex ? cx("active") : cx("")}
+                    className={index === activeIndex ? styles.active : undefined}
                     type="button"
                     aria-label={`Chọn ${item.type === "video" ? "video" : "ảnh"} ${index + 1}`}
                     onPress={() => onSelect(index)}
@@ -145,14 +146,14 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
         </>
       )}
 
-      <section className={cx("media-viewer-stage")}>
-        <div className={cx("media-viewer-topcard")}>
+      <section className={styles.stage}>
+        <div className={styles.topcard}>
           <strong>{checkin.title}</strong>
           <span>{checkin.createdBy} · {formatDate(checkin.checkinTime)}</span>
           <small>{activeItem?.type === "video" ? "Video" : "Photo"} · {activeIndex + 1}/{media.length}</small>
         </div>
 
-        <div className={cx("media-viewer-actions")}>
+        <div className={styles.actions}>
           <Button type="button">
             <span aria-hidden="true">↗</span>
             Chia sẻ
@@ -165,7 +166,7 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
         {media.length > 1 ? (
           <>
             <Button
-              className={cx("media-viewer-nav prev")}
+              className={cx(styles.navButton, styles.prev)}
               type="button"
               aria-label="Media trước"
               onPress={() => move(-1)}
@@ -173,7 +174,7 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
               ‹
             </Button>
             <Button
-              className={cx("media-viewer-nav next")}
+              className={cx(styles.navButton, styles.next)}
               type="button"
               aria-label="Media tiếp theo"
               onPress={() => move(1)}
@@ -184,7 +185,7 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
         ) : null}
 
         <Swiper
-          className={cx("media-viewer-main")}
+          className={styles.main}
           initialSlide={activeIndex}
           keyboard={{ enabled: true }}
           modules={[Keyboard]}
@@ -193,11 +194,11 @@ export function MemoryMediaViewer({ activeIndex, checkin, media, onClose, onSele
           onSwiper={setMainSwiper}
         >
           {media.map((item) => (
-            <SwiperSlide className={cx("media-viewer-slide")} key={item.id}>
+            <SwiperSlide className={styles.slide} key={item.id}>
               {item.type === "video" ? (
                 <video key={item.id} controls preload="metadata" src={item.url} />
               ) : (
-                <div className={cx("media-viewer-image-frame")}>
+                <div className={styles.imageFrame}>
                   <LoadableImage
                     key={item.id}
                     src={item.url}

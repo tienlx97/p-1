@@ -6,7 +6,8 @@ import { FocusScope, mergeProps, useDialog, useModal, useOverlay, usePreventScro
 import { Button } from "react-aria-components";
 import { DRAWER_SCROLL_OPTIONS } from "@/features/memory/constants/memory-drawer-constants";
 import { QuickMemoryPanel } from "@/features/memory/components/quick-memory-panel";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./add-memory-drawer.module.css";
 
 export function AddMemoryDrawer({ onClose }) {
   const drawerRef = useRef(null);
@@ -29,29 +30,29 @@ export function AddMemoryDrawer({ onClose }) {
 
   return (
     <FocusScope autoFocus contain restoreFocus>
-      <div {...underlayProps} className={cx("drawer-backdrop")} role="presentation" />
-      <aside {...drawerProps} ref={drawerRef} className={cx("map-drawer add-drawer")}>
-        <span className={cx("drawer-handle")} aria-hidden="true" />
-        <div className={cx("drawer-head")}>
+      <div {...underlayProps} className={styles.backdrop} role="presentation" />
+      <aside {...drawerProps} ref={drawerRef} className={cx(styles.drawer, styles.addDrawer)}>
+        <span className={styles.handle} aria-hidden="true" />
+        <div className={styles.head}>
           <div>
-            <p className={cx("eyebrow")}>Thêm mới</p>
+            <p className={styles.eyebrow}>Thêm mới</p>
             <h2 {...titleProps} ref={titleRef}>
               Thêm kỷ niệm
             </h2>
           </div>
           <Button
             aria-label="Đóng drawer"
-            className={cx("icon-btn")}
+            className={styles.iconButton}
             type="button"
             onPress={onClose}
           >
             <span aria-hidden="true">×</span>
-            <span className={cx("sr-only")}>Đóng</span>
+            <span className={styles.srOnly}>Đóng</span>
           </Button>
         </div>
 
         <OverlayScrollbarsComponent
-          className={cx("add-drawer-scroll")}
+          className={styles.scroll}
           defer
           options={DRAWER_SCROLL_OPTIONS}
         >
