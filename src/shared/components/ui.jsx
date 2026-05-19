@@ -13,7 +13,8 @@ import {
   TextArea,
   TextField
 } from "react-aria-components";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./ui.module.css";
 
 /**
  * @typedef {object} PageHeaderProps
@@ -33,13 +34,13 @@ export function PageHeader({
   action
 }) {
   return (
-    <header className={cx("page-header")}>
+    <header className={cx(styles.pageHeader, "gap-4")}>
       <div>
-        {eyebrow ? <p className={cx("eyebrow")}>{eyebrow}</p> : null}
-        <h1>{title}</h1>
-        {description ? <p>{description}</p> : null}
+        {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
+        <h1 className={styles.pageTitle}>{title}</h1>
+        {description ? <p className={styles.pageDescription}>{description}</p> : null}
       </div>
-      {action ? <div className={cx("header-action")}>{action}</div> : null}
+      {action ? <div className={cx(styles.headerAction, "shrink-0")}>{action}</div> : null}
     </header>
   );
 }
@@ -49,7 +50,7 @@ export function PageHeader({
  */
 export function PrimaryLink({ href, children }) {
   return (
-    <Link href={href} className={cx("btn btn-primary")}>
+    <Link href={href} className={cx(styles.button, styles.primaryButton, "gap-2")}>
       <span aria-hidden="true">+</span>
       {children}
     </Link>
@@ -61,7 +62,7 @@ export function PrimaryLink({ href, children }) {
  */
 export function SecondaryLink({ href, children }) {
   return (
-    <Link href={href} className={cx("btn btn-secondary")}>
+    <Link href={href} className={cx(styles.button, styles.secondaryButton)}>
       {children}
     </Link>
   );
@@ -87,7 +88,7 @@ export function SecondaryLink({ href, children }) {
  */
 export function Field({
   "aria-label": ariaLabel,
-  className = cx("field"),
+  className = cx(styles.field, "gap-2"),
   defaultValue,
   description,
   inputClassName,
@@ -113,7 +114,7 @@ export function Field({
         placeholder={placeholder}
         type={type}
       />
-      {description ? <p className={cx("field-hint")}>{description}</p> : null}
+      {description ? <p className={styles.fieldHint}>{description}</p> : null}
     </TextField>
   );
 }
@@ -137,7 +138,7 @@ export function Field({
  */
 export function TextAreaField({
   "aria-label": ariaLabel,
-  className = cx("field"),
+  className = cx(styles.field, "gap-2"),
   defaultValue,
   description,
   isRequired,
@@ -157,7 +158,7 @@ export function TextAreaField({
     >
       {label ? <Label>{label}</Label> : null}
       <TextArea aria-label={ariaLabel} placeholder={placeholder} rows={rows} />
-      {description ? <p className={cx("field-hint")}>{description}</p> : null}
+      {description ? <p className={styles.fieldHint}>{description}</p> : null}
     </TextField>
   );
 }
@@ -177,7 +178,7 @@ export function TextAreaField({
  */
 export function SelectField({
   children,
-  className = cx("field aria-select"),
+  className = cx(styles.field, styles.selectField, "min-w-0 gap-2"),
   defaultSelectedKey,
   label,
   onSelectionChange,
@@ -191,12 +192,12 @@ export function SelectField({
       selectedKey={selectedKey}
     >
       {label ? <Label>{label}</Label> : null}
-      <Button className={cx("aria-select-trigger")}>
+      <Button className={cx(styles.selectTrigger, "min-h-[42px] w-full gap-2")}>
         <SelectValue />
-        <span className={cx("aria-select-icon")} aria-hidden="true">⌄</span>
+        <span className={cx(styles.selectIcon, "size-[18px] shrink-0")} aria-hidden="true">⌄</span>
       </Button>
-      <Popover className={cx("aria-popover")}>
-        <ListBox className={cx("aria-listbox")}>{children}</ListBox>
+      <Popover className={styles.popover}>
+        <ListBox className={styles.listbox}>{children}</ListBox>
       </Popover>
     </Select>
   );
@@ -207,7 +208,7 @@ export function SelectField({
  */
 export function SelectItem({ children, id, textValue }) {
   return (
-    <ListBoxItem className={cx("aria-listbox-item")} id={id} textValue={textValue ?? String(children)}>
+    <ListBoxItem className={styles.listboxItem} id={id} textValue={textValue ?? String(children)}>
       {children}
     </ListBoxItem>
   );
@@ -222,7 +223,7 @@ export function StatCard({
   accent
 }) {
   return (
-    <div className={cx("stat-card")} style={accent ? { borderColor: accent } : undefined}>
+    <div className={cx(styles.statCard, "min-h-[94px] p-4")} style={accent ? { borderColor: accent } : undefined}>
       <strong>{value}</strong>
       <span>{label}</span>
     </div>

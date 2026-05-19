@@ -114,7 +114,7 @@ export function QuickMemoryPanel({ embedded = false }) {
         placeholder="Ví dụ: Xem hoàng hôn ở cầu Mống"
       />
 
-      <div className={cx(styles.fieldGrid, styles.compact)}>
+      <div className={cx(styles.fieldGrid, "gap-2")}>
         <Field
           isRequired
           className={styles.field}
@@ -141,7 +141,7 @@ export function QuickMemoryPanel({ embedded = false }) {
         placeholder="Tên quán, cây cầu, công viên..."
       />
 
-      <div className={cx(styles.fieldGrid, styles.compact, styles.locationDetailGrid)}>
+      <div className={cx(styles.fieldGrid, styles.locationDetailGrid, "gap-2")}>
         <Field
           className={styles.field}
           label="Tọa độ"
@@ -211,7 +211,7 @@ export function QuickMemoryPanel({ embedded = false }) {
         ) : null}
       </section>
 
-      <div className={styles.actions}>
+      <div className={cx(styles.actions, "gap-2")}>
         <Button className={cx(styles.button, styles.primaryButton)} type="submit" isDisabled={!canSave}>
           <span aria-hidden="true">+</span>
           Lưu kỷ niệm

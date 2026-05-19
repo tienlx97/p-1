@@ -106,7 +106,7 @@ export function CheckinMap() {
               />
               <MapZoomWatcher onPlaceLabelVisibilityChange={setShowPlaceLabels} />
               <MapPreviewDismissWatcher onDismissPreview={closeHoverPreview} />
-              {/* <MapControls activeCheckin={activeCheckin} visibleCheckins={mapPlaces} /> */}
+              <MapControls activeCheckin={activeCheckin} visibleCheckins={mapPlaces} />
               <MapPlaceSearch places={mapPlaces} onShowHoverPreview={showHoverPreview} />
 
               {USE_MARKER_CLUSTERING ? (
