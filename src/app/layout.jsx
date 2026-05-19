@@ -1,5 +1,4 @@
-import 'leaflet/dist/leaflet.css'
-import 'react-leaflet-markercluster/styles'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import 'overlayscrollbars/overlayscrollbars.css'
 import 'swiper/css'
 import 'swiper/css/free-mode'

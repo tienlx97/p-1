@@ -1,12 +1,16 @@
 'use client'
 
 import { memo, useMemo } from 'react'
-import { Marker, Tooltip } from 'react-leaflet'
+import { Button } from 'react-aria-components'
+import { Marker } from 'react-map-gl/maplibre'
 
-import { USE_DEFAULT_LEAFLET_MARKERS } from '@/features/map/constants/map.constants'
-import { createCheckinIcon } from '@/features/map/utils/map.utils'
+import { createCheckinMarkerImage, getCheckinLngLat } from '@/features/map/utils/map.utils'
 import { MemoryHoverPreview } from '@/features/memory'
 import styles from './checkin-markers.module.css'
+
+function stopMapInteraction(event) {
+  event.stopPropagation()
+}
 
 /**
  * @typedef {object} CheckinMarkerProps
@@ -31,41 +35,50 @@ const CheckinMarker = memo(function CheckinMarker({
   onScheduleCloseHoverPreview,
   onKeepPreviewOpen,
 }) {
-  const icon = useMemo(
-    () => (USE_DEFAULT_LEAFLET_MARKERS ? null : createCheckinIcon(checkin, isActive)),
-    [checkin, isActive]
-  )
-  const eventHandlers = useMemo(
-    () => ({
-      click: () => onOpenMemoryDetail(checkin.id),
-      mouseover: () => onShowHoverPreview(checkin.id),
-      mouseout: onScheduleCloseHoverPreview,
-    }),
-    [checkin.id, onOpenMemoryDetail, onScheduleCloseHoverPreview, onShowHoverPreview]
-  )
+  const markerImage = useMemo(() => createCheckinMarkerImage(checkin, isActive), [checkin, isActive])
+  const [longitude, latitude] = getCheckinLngLat(checkin)
 
   return (
     <Marker
-      position={[checkin.latitude, checkin.longitude]}
-      {...(icon ? { icon } : {})}
-      eventHandlers={eventHandlers}
+      anchor="bottom"
+      latitude={latitude}
+      longitude={longitude}
+      style={{
+        zIndex: isPreviewOpen ? 120 : isActive ? 80 : 30,
+      }}
     >
+      <Button
+        type="button"
+        className={styles.markerButton}
+        aria-label={`Mở kỷ niệm ${checkin.title}`}
+        onClick={stopMapInteraction}
+        onPointerDown={stopMapInteraction}
+        onMouseEnter={() => onShowHoverPreview(checkin.id)}
+        onMouseLeave={onScheduleCloseHoverPreview}
+        onPress={() => onOpenMemoryDetail(checkin.id)}
+      >
+        <img
+          className={styles.markerImage}
+          src={markerImage.src}
+          width={markerImage.width}
+          height={markerImage.height}
+          alt=""
+          aria-hidden="true"
+        />
+      </Button>
       {isPreviewOpen ? (
-        <Tooltip
+        <div
           className={styles.hoverTooltip}
-          direction="top"
-          interactive
-          offset={[0, 0]}
-          opacity={1}
-          permanent
+          onClick={stopMapInteraction}
+          onPointerDown={stopMapInteraction}
+          onMouseEnter={onKeepPreviewOpen}
+          onMouseLeave={onScheduleCloseHoverPreview}
         >
           <MemoryHoverPreview
             checkin={checkin}
-            onMouseEnter={onKeepPreviewOpen}
-            onMouseLeave={onScheduleCloseHoverPreview}
             onPress={(mediaIndex) => onOpenMemoryDetail(checkin.id, mediaIndex)}
           />
-        </Tooltip>
+        </div>
       ) : null}
     </Marker>
   )

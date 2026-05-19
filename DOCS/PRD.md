@@ -4,7 +4,7 @@
 
 Photo Memory Map is a private memory map for two people. It helps a couple save shared memories with photos, videos, notes, dates, moods, categories, and locations, then revisit them through a map-first interface, a photo library, and a shared profile space. It can also support optional live location sharing so each person can see where the other person is on the same private map when sharing is enabled.
 
-The current project is a Next.js App Router prototype using JavaScript/JSX, Leaflet, React Aria, StyleX/CSS, and mock memory data. The product direction should stay close to what the app already does:
+The current project is a Next.js App Router prototype using JavaScript/JSX, MapLibre GL, `react-map-gl`, React Aria, CSS Modules, StyleX/CSS legacy support, and mock memory data. The product direction should stay close to what the app already does:
 
 > Open the private map, browse memories by place, filter them, preview media, open details, add a new memory, and optionally see each other live on the map when location sharing is turned on.
 
@@ -122,8 +122,8 @@ The MVP should focus on the experience already being built:
 
 | Feature | Status | Notes |
 | --- | --- | --- |
-| Map-first home page | Implemented prototype | Leaflet map with memory markers |
-| Marker clustering | Implemented prototype | Uses marker cluster behavior |
+| Map-first home page | Implemented prototype | MapLibre map with memory markers |
+| Marker clustering | Future enhancement | Not enabled in the current MapLibre implementation |
 | Category filtering on map | Implemented prototype | Filter by memory category |
 | Hover preview on map marker | Implemented prototype | Opens memory preview tooltip |
 | Detail drawer from map | Implemented prototype | Opens selected memory without leaving map |
@@ -176,8 +176,8 @@ Requirements:
 
 Current implementation notes:
 
-- Uses Leaflet/OpenStreetMap tiles.
-- Uses `react-leaflet` and marker clustering.
+- Uses MapLibre GL with OpenStreetMap raster tiles.
+- Uses `react-map-gl` for map, marker, and overlay rendering.
 - Uses category filtering from mock memory data.
 
 ### 7.2. LOCATION-001 - Live Location Sharing
@@ -443,7 +443,7 @@ Current stack:
 
 - Next.js 16
 - React 19
-- Leaflet / React Leaflet
+- MapLibre GL / react-map-gl
 - React Aria / React Aria Components
 - OverlayScrollbars
 - StyleX and CSS partials
@@ -497,7 +497,7 @@ Security requirements:
 
 The current prototype is acceptable when:
 
-1. `/` loads the map without server-side Leaflet errors.
+1. `/` loads the map without server-side map runtime errors.
 2. Memory markers render from mock data.
 3. Category filtering updates visible markers.
 4. Marker hover shows a memory preview.

@@ -701,14 +701,14 @@
   }
 }
 
-.leaflet-map-shell,
-.checkin-leaflet-map,
+.map-shell,
+.checkin-map,
 .map-loading,
 .map-empty-state {
   min-height: 540px;
 }
 
-.checkin-leaflet-map {
+.checkin-map {
   z-index: 1;
   width: 100%;
   background: #dff5ee;

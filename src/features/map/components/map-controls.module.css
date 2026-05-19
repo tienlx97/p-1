@@ -3,7 +3,7 @@
   right: max(16px, env(safe-area-inset-right));
   bottom: calc(max(16px, env(safe-area-inset-bottom)) + 132px);
   left: auto;
-  z-index: 900;
+  z-index: 90;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -45,6 +45,12 @@
 .group button:hover,
 .controlButton button:hover {
   background: rgba(241, 243, 244, 0.72);
+}
+
+.group button[data-disabled],
+.controlButton button[data-disabled] {
+  cursor: default;
+  opacity: 0.48;
 }
 
 .group button:active,

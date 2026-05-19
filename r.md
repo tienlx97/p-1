@@ -1,4 +1,4 @@
-Có. Trang map hiện tại đã khá ổn về nền tảng: Leaflet được load client-only, marker có ảnh, hover preview, drawer chi tiết/thêm kỷ niệm, mobile full-screen. Nhưng mình nghĩ có vài điểm đáng tối ưu/thêm, theo thứ tự ưu tiên:
+Có. Trang map hiện tại đã chuyển sang MapLibre GL + react-map-gl, marker có ảnh, hover preview, drawer chi tiết/thêm kỷ niệm, mobile full-screen. Nhưng mình nghĩ có vài điểm đáng tối ưu/thêm, theo thứ tự ưu tiên:
 
 Fit map theo dữ liệu ngay khi vào trang
 Hiện map luôn mở ở DEFAULT_CENTER Sài Gòn trong map.constants.js, trong khi dữ liệu có Đà Lạt, Hội An, Nha Trang, Tây Ninh. Nên gọi fitMapToCheckins sau khi map mount để thấy toàn bộ hành trình ngay từ đầu.
@@ -9,8 +9,8 @@ Trong checkin-map.jsx, mapPlaces đang chỉ lấy checkin mới nhất theo loc
 Search địa điểm/kỷ niệm
 Một ô search compact trên map sẽ hữu ích khi số checkin tăng. Search theo title, locationName, city, rồi fly tới marker.
 
-Tối ưu tạo icon marker
-createCheckinIcon(checkin, isActive) đang tạo L.divIcon mỗi lần render marker trong map.utils.js. Với dữ liệu ít không sao, nhưng khi nhiều marker nên memo/cache icon theo checkin.id + active để giảm churn.
+Tối ưu tạo marker image
+createCheckinMarkerImage(checkin, isActive) đang cache SVG data URL theo checkin.id + active. Khi dữ liệu tăng, nên cân nhắc sprite/layer-based marker để giảm số DOM marker.
 
 Mobile: hover preview không hữu dụng lắm
 Hover tooltip rất đẹp trên desktop, nhưng mobile không có hover thật. Nên mobile dùng tap lần một hiện preview mini, tap lần hai mở drawer, hoặc bỏ tooltip trên touch device để tránh trạng thái lửng.

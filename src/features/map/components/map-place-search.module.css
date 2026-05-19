@@ -4,7 +4,7 @@
   position: absolute;
   top: max(14px, env(safe-area-inset-top));
   left: max(14px, env(safe-area-inset-left));
-  z-index: 980;
+  z-index: 100;
   width: min(390px, calc(100vw - 36px));
 }
 

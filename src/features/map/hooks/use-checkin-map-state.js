@@ -33,7 +33,7 @@ function getLatestPlaceCheckins(sourceCheckins) {
  * @property {string} categoryFilter
  * @property {function(): void} closeDrawer
  * @property {function(): void} closeHoverPreview
- * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} clusterablePlaces
+ * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} memoryPlaces
  * @property {"add" | "memory" | null} drawerMode
  * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} filteredCheckins
  * @property {string | null} hoveredPreviewId
@@ -74,7 +74,7 @@ export function useCheckinMapState() {
 
   const mapPlaces = useMemo(() => getLatestPlaceCheckins(filteredCheckins), [filteredCheckins])
 
-  const clusterablePlaces = useMemo(
+  const memoryPlaces = useMemo(
     () => mapPlaces.filter((checkin) => checkin.categoryId !== 'home'),
     [mapPlaces]
   )
@@ -192,13 +192,13 @@ export function useCheckinMapState() {
     categoryFilter,
     closeDrawer,
     closeHoverPreview,
-    clusterablePlaces,
     drawerMode,
     filteredCheckins,
     hoveredPreviewId,
     initialMediaIndex,
     keepPreviewOpen,
     mapPlaces,
+    memoryPlaces,
     openMemoryDetail,
     scheduleCloseHoverPreview,
     setCategoryFilter,

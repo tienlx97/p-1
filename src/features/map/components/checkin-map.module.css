@@ -42,7 +42,3 @@
   text-align: center;
 }
 
-.showPlaceLabels :global(.explory-marker-label) {
-  opacity: 1;
-  visibility: visible;
-}

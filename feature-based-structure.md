@@ -38,7 +38,7 @@ export default function Page() {
 
 ## Ownership
 
-- `src/features/map`: map view, Leaflet markers, map controls, map-specific helpers/constants.
+- `src/features/map`: MapLibre map view, markers, labels, map controls, map filters, and map-specific helpers/constants.
 - `src/features/memory`: memory/checkin library, detail views, drawers, media viewer, add-memory UI.
 - `src/features/profile`: profile UI.
 - `src/entities/memory`: mock memory/checkin data and shared domain helpers.

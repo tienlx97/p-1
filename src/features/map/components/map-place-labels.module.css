@@ -1,12 +1,5 @@
 .tooltip {
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
-}
-
-.tooltip::before {
-  display: none;
+  pointer-events: none;
 }
 
 .label {

@@ -136,15 +136,15 @@
     justify-content: center;
   }
 
-.leaflet-map-shell,
-.checkin-leaflet-map,
+.map-shell,
+.checkin-map,
 .map-loading,
 .map-empty-state {
     min-height: 430px;
   }
 
-.overview-map-page .leaflet-map-shell,
-.overview-map-page .checkin-leaflet-map,
+.overview-map-page .map-shell,
+.overview-map-page .checkin-map,
 .overview-map-page .map-loading,
 .overview-map-page .map-empty-state {
     min-height: 0;
@@ -152,8 +152,8 @@
 
 .home-map-frame .map-workspace,
 .home-map-frame .map-body,
-.home-map-frame .leaflet-map-shell,
-.home-map-frame .checkin-leaflet-map,
+.home-map-frame .map-shell,
+.home-map-frame .checkin-map,
 .home-map-frame .map-loading,
 .home-map-frame .map-empty-state {
     min-height: 480px;

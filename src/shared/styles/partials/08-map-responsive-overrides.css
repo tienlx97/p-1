@@ -75,8 +75,8 @@
 }
 
 .overview-map-page .map-body,
-.overview-map-page .leaflet-map-shell,
-.overview-map-page .checkin-leaflet-map,
+.overview-map-page .map-shell,
+.overview-map-page .checkin-map,
 .overview-map-page .map-loading,
 .overview-map-page .map-empty-state {
   height: 100%;

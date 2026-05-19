@@ -11,7 +11,7 @@
   top: calc(max(14px, env(safe-area-inset-top)) + (var(--search-height) - var(--filter-height)) / 2);
   left: calc(var(--map-edge) + var(--map-search-width));
   right: calc(var(--map-right-edge) + var(--map-avatar-space));
-  z-index: 860;
+  z-index: 80;
   display: flex;
   max-width: 880px;
   min-width: 0;

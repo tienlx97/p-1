@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { Button } from "react-aria-components";
-import { useMap } from "react-leaflet";
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from "@/features/map/constants/map.constants";
-import { fitMapToCheckins } from "@/features/map/utils/map.utils";
+import { fitMapToCheckins, latLngToLngLat } from "@/features/map/utils/map.utils";
 import styles from "./map-controls.module.css";
+
+function stopMapInteraction(event) {
+  event.stopPropagation();
+}
 
 /**
  * @typedef {object} MapControlsProps
+ * @property {import("maplibre-gl").Map | null} map
  * @property {import("@/entities/memory/mock-data").MemoryCheckin | null} activeCheckin
  * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} visibleCheckins
  */
@@ -16,13 +20,20 @@ import styles from "./map-controls.module.css";
 /**
  * @param {MapControlsProps} props
  */
-export function MapControls({ activeCheckin, visibleCheckins }) {
-  const map = useMap();
+export function MapControls({ map, activeCheckin, visibleCheckins }) {
   const [locationStatus, setLocationStatus] = useState("");
 
   function resetView() {
+    if (!map) {
+      return;
+    }
+
     if (activeCheckin) {
-      map.flyTo([activeCheckin.latitude, activeCheckin.longitude], 13, { duration: 0.55 });
+      map.flyTo({
+        center: [activeCheckin.longitude, activeCheckin.latitude],
+        duration: 550,
+        zoom: 13
+      });
       return;
     }
 
@@ -31,10 +42,18 @@ export function MapControls({ activeCheckin, visibleCheckins }) {
       return;
     }
 
-    map.flyTo(DEFAULT_CENTER, DEFAULT_ZOOM, { duration: 0.55 });
+    map.flyTo({
+      center: latLngToLngLat(DEFAULT_CENTER),
+      duration: 550,
+      zoom: DEFAULT_ZOOM
+    });
   }
 
   function locateUser() {
+    if (!map) {
+      return;
+    }
+
     if (!navigator.geolocation) {
       setLocationStatus("Trình duyệt không hỗ trợ vị trí");
       return;
@@ -44,7 +63,11 @@ export function MapControls({ activeCheckin, visibleCheckins }) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        map.flyTo([latitude, longitude], 14, { duration: 0.55 });
+        map.flyTo({
+          center: [longitude, latitude],
+          duration: 550,
+          zoom: 14
+        });
         setLocationStatus("Đã đến vị trí hiện tại");
       },
       () => {
@@ -59,13 +82,21 @@ export function MapControls({ activeCheckin, visibleCheckins }) {
   }
 
   return (
-    <div className={styles.root} aria-label="Điều khiển bản đồ">
+    <div
+      className={styles.root}
+      aria-label="Điều khiển bản đồ"
+      onClick={stopMapInteraction}
+      onDoubleClick={stopMapInteraction}
+      onPointerDown={stopMapInteraction}
+      onWheel={stopMapInteraction}
+    >
       <div className={styles.group}>
         <Button
           type="button"
           title="Phóng to"
           aria-label="Phóng to"
-          onPress={() => map.zoomIn()}
+          isDisabled={!map}
+          onPress={() => map?.zoomIn({ duration: 250 })}
         >
           +
         </Button>
@@ -74,20 +105,33 @@ export function MapControls({ activeCheckin, visibleCheckins }) {
           type="button"
           title="Thu nhỏ"
           aria-label="Thu nhỏ"
-          onPress={() => map.zoomOut()}
+          isDisabled={!map}
+          onPress={() => map?.zoomOut({ duration: 250 })}
         >
           -
         </Button>
       </div>
 
       <div className={styles.controlButton}>
-        <Button type="button" title="Đưa về hành trình" aria-label="Đưa về hành trình" onPress={resetView}>
+        <Button
+          type="button"
+          title="Đưa về hành trình"
+          aria-label="Đưa về hành trình"
+          isDisabled={!map}
+          onPress={resetView}
+        >
           <span className={styles.compassIcon} aria-hidden="true" />
         </Button>
       </div>
 
       <div className={styles.controlButton}>
-        <Button type="button" title="Vị trí hiện tại" aria-label="Vị trí hiện tại" onPress={locateUser}>
+        <Button
+          type="button"
+          title="Vị trí hiện tại"
+          aria-label="Vị trí hiện tại"
+          isDisabled={!map}
+          onPress={locateUser}
+        >
           <span className={styles.locationIcon} aria-hidden="true" />
         </Button>
       </div>

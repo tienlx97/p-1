@@ -1,9 +1,10 @@
 'use client'
 
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
-import { Marker, Tooltip, useMap } from 'react-leaflet'
+import { memo, useCallback, useEffect, useRef } from 'react'
+import { Marker } from 'react-map-gl/maplibre'
 
-import { createCheckinLabelAnchorIcon } from '@/features/map/utils/map.utils'
+import { getCategory } from '@/entities/memory'
+import { getCheckinLngLat } from '@/features/map/utils/map.utils'
 import styles from './map-place-labels.module.css'
 
 const LABEL_COLLISION_GAP = 4
@@ -27,7 +28,7 @@ function doRectsCollide(first, second, gap = LABEL_COLLISION_GAP) {
 /**
  * Hides lower-priority permanent labels that overlap visible higher-priority labels.
  *
- * @param {import("leaflet").Map} map
+ * @param {import("maplibre-gl").Map} map
  * @returns {void}
  */
 function applyPlaceLabelCollisions(map) {
@@ -122,28 +123,17 @@ function splitTooltipTwoLines(text, maxLineLength = 14) {
 }
 
 const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
-  const labelIcon = useMemo(() => createCheckinLabelAnchorIcon(checkin), [checkin])
+  const category = getCategory(checkin.categoryId)
+  const [longitude, latitude] = getCheckinLngLat(checkin)
   const lines = splitTooltipTwoLines(checkin.locationName)
 
-  if (!labelIcon) {
+  if (category.id === 'home') {
     return null
   }
 
   return (
-    <Marker
-      position={[checkin.latitude, checkin.longitude]}
-      icon={labelIcon}
-      interactive={false}
-      keyboard={false}
-      zIndexOffset={-20}
-    >
-      <Tooltip
-        className={styles.tooltip}
-        direction="bottom"
-        offset={LABEL_TOOLTIP_OFFSET}
-        opacity={1}
-        permanent
-      >
+    <Marker anchor="top" latitude={latitude} longitude={longitude} offset={LABEL_TOOLTIP_OFFSET}>
+      <div className={styles.tooltip}>
         <div
           className={styles.label}
           data-label-priority={new Date(checkin.checkinTime).getTime()}
@@ -153,13 +143,14 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
             <div key={index}>{line}</div>
           ))}
         </div>
-      </Tooltip>
+      </div>
     </Marker>
   )
 })
 
 /**
  * @typedef {object} AdaptivePlaceLabelsProps
+ * @property {import("maplibre-gl").Map | null} map
  * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} places
  * @property {boolean} visible
  */
@@ -167,8 +158,7 @@ const CheckinPlaceLabel = memo(function CheckinPlaceLabel({ checkin }) {
 /**
  * @param {AdaptivePlaceLabelsProps} props
  */
-export function AdaptivePlaceLabels({ places, visible }) {
-  const map = useMap()
+export function AdaptivePlaceLabels({ map, places, visible }) {
   const rafIdsRef = useRef([])
 
   const cancelScheduledCollision = useCallback(() => {
@@ -182,7 +172,7 @@ export function AdaptivePlaceLabels({ places, visible }) {
   const scheduleCollisionUpdate = useCallback(() => {
     cancelScheduledCollision()
 
-    if (!visible) {
+    if (!map || !visible) {
       return
     }
 
@@ -199,10 +189,20 @@ export function AdaptivePlaceLabels({ places, visible }) {
   }, [cancelScheduledCollision, map, visible])
 
   useEffect(() => {
-    map.on('moveend zoomend resize', scheduleCollisionUpdate)
+    if (!map) {
+      return
+    }
+
+    const eventNames = ['moveend', 'zoomend', 'resize']
+
+    for (const eventName of eventNames) {
+      map.on(eventName, scheduleCollisionUpdate)
+    }
 
     return () => {
-      map.off('moveend zoomend resize', scheduleCollisionUpdate)
+      for (const eventName of eventNames) {
+        map.off(eventName, scheduleCollisionUpdate)
+      }
     }
   }, [map, scheduleCollisionUpdate])
 

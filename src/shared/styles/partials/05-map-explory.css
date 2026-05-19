@@ -12,12 +12,12 @@
   background: #eef3f1;
 }
 
-.leaflet-map-shell {
+.map-shell {
   position: relative;
   z-index: 1;
 }
 
-.checkin-leaflet-map {
+.checkin-map {
   background: #edf3f0;
 }
 
@@ -350,7 +350,7 @@
   backdrop-filter: blur(30px);
 }
 
-.checkin-leaflet-icon {
+.checkin-map-marker {
   position: relative;
   display: grid;
   border: 0;
@@ -684,7 +684,7 @@
   visibility: hidden;
 }
 
-.checkin-leaflet-map.show-place-labels .explory-marker-label {
+.checkin-map.show-place-labels .explory-marker-label {
   opacity: 1;
   visibility: visible;
 }

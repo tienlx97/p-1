@@ -1,11 +1,5 @@
-import L from "leaflet";
-import markerIcon2xUrl from "leaflet/dist/images/marker-icon-2x.png";
-import markerIconUrl from "leaflet/dist/images/marker-icon.png";
-import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
 import { REACTION_MARKER_ICON_VERSION } from "@/features/map/constants/map.constants";
 import { getCategory, getMood } from "@/entities/memory";
-import { cx } from "@/shared/lib/cx";
-import styles from "./map-marker-icons.module.css";
 
 /**
  * @typedef {object} FitMapOptions
@@ -13,15 +7,6 @@ import styles from "./map-marker-icons.module.css";
  * @property {number} [maxZoom]
  * @property {number} [zoom]
  */
-
-const getLeafletAssetUrl = (asset) => asset?.src ?? asset;
-
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: getLeafletAssetUrl(markerIcon2xUrl),
-  iconUrl: getLeafletAssetUrl(markerIconUrl),
-  shadowUrl: getLeafletAssetUrl(markerShadowUrl)
-});
 
 const moodMarkerIconsV1 = {
   chill: `
@@ -212,9 +197,7 @@ const homeMarkerIcon = `
 
 const MARKER_ICON_WIDTH = 44;
 const MARKER_ICON_HEIGHT = 54;
-const MARKER_TIP_Y = 52;
 const MARKER_VIEWBOX_TOP_PADDING = 8;
-const CLUSTER_ICON_SIZE = 48;
 const MARKER_GRADIENT_START = "#55a7f0";
 const MARKER_GRADIENT_END = "#2f80ed";
 const MARKER_ACTIVE_GRADIENT_START = "#6db9ff";
@@ -226,13 +209,6 @@ const HOME_MARKER_ACTIVE_GRADIENT_START = "#ff9fbd";
 const HOME_MARKER_ACTIVE_GRADIENT_END = "#d91f62";
 const HOME_MARKER_ACTIVE_STROKE = "#b5164f";
 const checkinIconCache = new Map();
-const checkinClusterIconCache = new Map();
-const labelAnchorIcon = L.divIcon({
-  className: styles.labelAnchorIcon,
-  html: "",
-  iconSize: [1, 1],
-  iconAnchor: [0, 0]
-});
 
 /**
  * @param {string} svg
@@ -445,9 +421,25 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
 }
 
 /**
- * Fits or flies the Leaflet map to the currently visible checkins.
+ * @param {import("@/entities/memory/mock-data").MemoryCheckin} checkin
+ * @returns {[number, number]}
+ */
+export function getCheckinLngLat(checkin) {
+  return [checkin.longitude, checkin.latitude];
+}
+
+/**
+ * @param {[number, number]} center
+ * @returns {[number, number]}
+ */
+export function latLngToLngLat(center) {
+  return [center[1], center[0]];
+}
+
+/**
+ * Fits or flies the MapLibre map to the currently visible checkins.
  *
- * @param {L.Map | null | undefined} map
+ * @param {import("maplibre-gl").Map | null | undefined} map
  * @param {import("@/entities/memory/mock-data").MemoryCheckin[]} visibleCheckins
  * @param {FitMapOptions} [options]
  * @returns {void}
@@ -459,34 +451,42 @@ export function fitMapToCheckins(map, visibleCheckins, options = {}) {
 
   if (visibleCheckins.length === 1) {
     const [checkin] = visibleCheckins;
-    map.flyTo([checkin.latitude, checkin.longitude], options.zoom ?? 13, {
-      duration: 0.55
+    map.flyTo({
+      center: getCheckinLngLat(checkin),
+      duration: 550,
+      zoom: options.zoom ?? 13
     });
     return;
   }
 
-  const bounds = visibleCheckins.map((checkin) => [checkin.latitude, checkin.longitude]);
+  const longitudes = visibleCheckins.map((checkin) => checkin.longitude);
+  const latitudes = visibleCheckins.map((checkin) => checkin.latitude);
+  const bounds = [
+    [Math.min(...longitudes), Math.min(...latitudes)],
+    [Math.max(...longitudes), Math.max(...latitudes)]
+  ];
+  const padding = Array.isArray(options.padding) ? options.padding[0] : options.padding;
 
   map.fitBounds(bounds, {
-    padding: options.padding ?? [58, 58],
+    duration: 550,
     maxZoom: options.maxZoom ?? 9,
-    animate: true
+    padding: padding ?? 58
   });
 }
 
 /**
- * Builds and caches the Leaflet marker icon for one checkin and active state.
+ * Builds and caches the marker image for one checkin and active state.
  *
  * @param {import("@/entities/memory/mock-data").MemoryCheckin} checkin
  * @param {boolean} isActive
- * @returns {L.Icon}
+ * @returns {{ src: string, width: number, height: number }}
  */
-export function createCheckinIcon(checkin, isActive) {
+export function createCheckinMarkerImage(checkin, isActive) {
   const cacheKey = `${checkin.id}:${checkin.categoryId}:${checkin.moodId}:${isActive ? "active" : "idle"}`;
-  const cachedIcon = checkinIconCache.get(cacheKey);
+  const cachedImage = checkinIconCache.get(cacheKey);
 
-  if (cachedIcon) {
-    return cachedIcon;
+  if (cachedImage) {
+    return cachedImage;
   }
 
   const category = getCategory(checkin.categoryId);
@@ -497,8 +497,8 @@ export function createCheckinIcon(checkin, isActive) {
   const markerSvg = createMarkerSvg({
     moodIcon,
     moodId,
-        isActive,
-        pinColors: isHomeMarker
+    isActive,
+    pinColors: isHomeMarker
       ? {
           start: HOME_MARKER_GRADIENT_START,
           end: HOME_MARKER_GRADIENT_END,
@@ -509,65 +509,13 @@ export function createCheckinIcon(checkin, isActive) {
       : undefined
   });
 
-  const icon = L.icon({
-    iconUrl: svgToDataUrl(markerSvg),
-    iconSize: [MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT],
-    iconAnchor: [MARKER_ICON_WIDTH / 2, MARKER_TIP_Y],
-    popupAnchor: [0, -MARKER_TIP_Y],
-    tooltipAnchor: [0, -(MARKER_TIP_Y + 8)],
-    className: styles.svgIcon
-  });
+  const markerImage = {
+    height: MARKER_ICON_HEIGHT,
+    src: svgToDataUrl(markerSvg),
+    width: MARKER_ICON_WIDTH
+  };
 
-  checkinIconCache.set(cacheKey, icon);
+  checkinIconCache.set(cacheKey, markerImage);
 
-  return icon;
-}
-
-/**
- * @param {{ getChildCount: function(): number }} cluster
- * @returns {L.DivIcon}
- */
-export function createCheckinClusterIcon(cluster) {
-  const childCount = cluster.getChildCount();
-  const cachedIcon = checkinClusterIconCache.get(childCount);
-
-  if (cachedIcon) {
-    return cachedIcon;
-  }
-
-  const sizeClass =
-    childCount >= 100
-      ? styles.large
-      : childCount >= 10
-        ? styles.medium
-        : styles.small;
-
-  const icon = L.divIcon({
-    className: cx(styles.cluster, sizeClass),
-    html: `
-      <span class="${styles.clusterRing}">
-        <span class="${styles.clusterCount}">${childCount}</span>
-      </span>
-    `,
-    iconSize: [CLUSTER_ICON_SIZE, CLUSTER_ICON_SIZE],
-    iconAnchor: [CLUSTER_ICON_SIZE / 2, CLUSTER_ICON_SIZE / 2]
-  });
-
-  checkinClusterIconCache.set(childCount, icon);
-
-  return icon;
-}
-
-/**
- * @param {import("@/entities/memory/mock-data").MemoryCheckin} checkin
- * @returns {L.DivIcon | null}
- */
-export function createCheckinLabelAnchorIcon(checkin) {
-  const category = getCategory(checkin.categoryId);
-
-  if (category.id === "home") {
-    return null;
-  }
-
-  return labelAnchorIcon;
+  return markerImage;
 }

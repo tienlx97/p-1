@@ -1,36 +1,25 @@
 'use client'
 
-import { useState } from 'react'
-import MarkerClusterGroup from 'react-leaflet-markercluster'
-import { TileLayer } from 'react-leaflet'
+import { useCallback, useRef, useState } from 'react'
+import maplibregl from 'maplibre-gl'
+import MaplibreMap, { AttributionControl } from 'react-map-gl/maplibre'
 
 import { CheckinMarkers } from '@/features/map/components/checkin-markers'
-import { LeafletMapContainer } from '@/features/map/components/leaflet-map-container'
 import { MapControls } from '@/features/map/components/map-controls'
 import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
+  MAP_STYLE,
   MAP_TILE_ATTRIBUTION,
-  MAP_TILE_KEEP_BUFFER,
-  MAP_TILE_MAX_ZOOM,
-  MAP_TILE_UPDATE_WHEN_IDLE,
-  MAP_TILE_UPDATE_WHEN_ZOOMING,
-  MAP_TILE_URL,
-  MARKER_CLUSTER_DISABLE_AT_ZOOM,
   MOBILE_HO_CHI_MINH_ZOOM,
   MOBILE_MAP_MEDIA_QUERY,
-  SHOW_CLUSTER_LOCATIONS_ON_CLICK,
-  USE_MARKER_CLUSTERING,
-  ZOOM_TO_CLUSTER_BOUNDS_ON_CLICK,
+  PLACE_LABEL_MIN_ZOOM,
 } from '@/features/map/constants/map.constants'
-import { MapPreviewDismissWatcher, MapZoomWatcher } from '@/features/map/components/map-events'
 import { MapFilterPanel } from '@/features/map/components/map-filter-panel'
 import { AdaptivePlaceLabels } from '@/features/map/components/map-place-labels'
 import { MapPlaceSearch } from '@/features/map/components/map-place-search'
-import { createCheckinClusterIcon } from '@/features/map/utils/map.utils'
 import { useCheckinMapState } from '@/features/map/hooks/use-checkin-map-state'
 import { AddMemoryDrawer, MemoryDetailDrawer } from '@/features/memory'
-import { cx } from '@/shared/lib/cx'
 import styles from './checkin-map.module.css'
 
 function getInitialMapZoom() {
@@ -41,19 +30,21 @@ function getInitialMapZoom() {
 
 export function CheckinMap() {
   const [initialZoom] = useState(getInitialMapZoom)
+  const [map, setMap] = useState(null)
+  const mapRef = useRef(null)
   const {
     activeCheckin,
     activeId,
     categoryFilter,
     closeDrawer,
     closeHoverPreview,
-    clusterablePlaces,
     drawerMode,
     filteredCheckins,
     hoveredPreviewId,
     initialMediaIndex,
     keepPreviewOpen,
     mapPlaces,
+    memoryPlaces,
     openMemoryDetail,
     scheduleCloseHoverPreview,
     setCategoryFilter,
@@ -73,62 +64,76 @@ export function CheckinMap() {
     onScheduleCloseHoverPreview: scheduleCloseHoverPreview,
     onShowHoverPreview: showHoverPreview,
   }
+  const syncPlaceLabelVisibility = useCallback(
+    (mapInstance) => {
+      onMapZoomChange(mapInstance, setShowPlaceLabels)
+    },
+    [setShowPlaceLabels]
+  )
+
+  const handleMapLoad = useCallback(
+    (event) => {
+      setMap(event.target)
+      syncPlaceLabelVisibility(event.target)
+    },
+    [syncPlaceLabelVisibility]
+  )
+
+  const handleZoomEnd = useCallback(
+    (event) => {
+      syncPlaceLabelVisibility(event.target)
+    },
+    [syncPlaceLabelVisibility]
+  )
 
   return (
     <section className={styles.workspace}>
       <div className={styles.body}>
         <div className={styles.shell}>
           {totalCheckinCount > 0 ? (
-            <LeafletMapContainer
-              center={DEFAULT_CENTER}
-              zoom={initialZoom}
+            <MaplibreMap
+              ref={mapRef}
+              mapLib={maplibregl}
+              initialViewState={{
+                latitude: DEFAULT_CENTER[0],
+                longitude: DEFAULT_CENTER[1],
+                zoom: initialZoom,
+              }}
+              mapStyle={MAP_STYLE}
               minZoom={4}
               maxZoom={18}
               attributionControl={false}
-              zoomControl={false}
-              scrollWheelZoom
-              className={cx(styles.map, showPlaceLabels && styles.showPlaceLabels)}
+              dragRotate={false}
+              pitchWithRotate={false}
+              touchPitch={false}
+              className={styles.map}
+              onClick={closeHoverPreview}
+              onDragStart={closeHoverPreview}
+              onLoad={handleMapLoad}
+              onZoomEnd={handleZoomEnd}
+              reuseMaps
             >
+              <AttributionControl
+                compact
+                customAttribution={MAP_TILE_ATTRIBUTION}
+                position="bottom-left"
+              />
               <MapFilterPanel
                 categoryId={categoryFilter}
                 totalCount={totalCheckinCount}
                 visibleCount={filteredCheckins.length}
                 onCategoryChange={setCategoryFilter}
               />
-              <TileLayer
-                maxZoom={MAP_TILE_MAX_ZOOM}
-                attribution={MAP_TILE_ATTRIBUTION}
-                detectRetina
-                keepBuffer={MAP_TILE_KEEP_BUFFER}
-                updateWhenIdle={MAP_TILE_UPDATE_WHEN_IDLE}
-                updateWhenZooming={MAP_TILE_UPDATE_WHEN_ZOOMING}
-                url={MAP_TILE_URL}
+              <MapControls map={map} activeCheckin={activeCheckin} visibleCheckins={mapPlaces} />
+              <MapPlaceSearch
+                map={map}
+                places={mapPlaces}
+                onShowHoverPreview={showHoverPreview}
               />
-              <MapZoomWatcher onPlaceLabelVisibilityChange={setShowPlaceLabels} />
-              <MapPreviewDismissWatcher onDismissPreview={closeHoverPreview} />
-              <MapControls activeCheckin={activeCheckin} visibleCheckins={mapPlaces} />
-              <MapPlaceSearch places={mapPlaces} onShowHoverPreview={showHoverPreview} />
-
-              {USE_MARKER_CLUSTERING ? (
-                <MarkerClusterGroup
-                  chunkedLoading
-                  disableClusteringAtZoom={MARKER_CLUSTER_DISABLE_AT_ZOOM}
-                  iconCreateFunction={createCheckinClusterIcon}
-                  removeOutsideVisibleBounds
-                  showCoverageOnHover={false}
-                  spiderfyOnEveryZoom={false}
-                  spiderfyOnMaxZoom={SHOW_CLUSTER_LOCATIONS_ON_CLICK}
-                  zoomToBoundsOnClick={ZOOM_TO_CLUSTER_BOUNDS_ON_CLICK}
-                  maxClusterRadius={54}
-                >
-                  <CheckinMarkers checkins={clusterablePlaces} {...markerProps} />
-                </MarkerClusterGroup>
-              ) : (
-                <CheckinMarkers checkins={clusterablePlaces} {...markerProps} />
-              )}
+              <CheckinMarkers checkins={memoryPlaces} {...markerProps} />
               <CheckinMarkers checkins={standalonePlaces} {...markerProps} />
-              <AdaptivePlaceLabels places={mapPlaces} visible={showPlaceLabels} />
-            </LeafletMapContainer>
+              <AdaptivePlaceLabels map={map} places={mapPlaces} visible={showPlaceLabels} />
+            </MaplibreMap>
           ) : (
             <div className={styles.emptyState}>
               <h2>Chưa có kỷ niệm phù hợp</h2>
@@ -148,4 +153,17 @@ export function CheckinMap() {
       </div>
     </section>
   )
+}
+
+/**
+ * @param {import("maplibre-gl").Map | null} map
+ * @param {function(boolean): void} onPlaceLabelVisibilityChange
+ * @returns {void}
+ */
+function onMapZoomChange(map, onPlaceLabelVisibilityChange) {
+  if (!map) {
+    return
+  }
+
+  onPlaceLabelVisibilityChange(map.getZoom() >= PLACE_LABEL_MIN_ZOOM)
 }

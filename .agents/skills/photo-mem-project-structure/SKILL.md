@@ -42,7 +42,7 @@ Use JSDoc when type clarity is useful. Do not use TypeScript syntax in JavaScrip
 Choose the narrowest clear owner:
 
 - `src/app`: thin route files that compose features.
-- `src/features/map`: map view, Leaflet containers, markers, clusters, labels, map controls, map filters, and map-specific state/helpers.
+- `src/features/map`: MapLibre map view, markers, labels, map controls, map filters, and map-specific state/helpers.
 - `src/features/memory`: memory/checkin library, detail views, drawers, media viewer, add-memory UI, and memory workflows.
 - `src/features/auth`: login, auth gate, auth session UI/hooks, and account constants.
 - `src/features/profile`: profile UI and profile-specific behavior.

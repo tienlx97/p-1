@@ -100,15 +100,15 @@ Keep `src/app/globals.css` minimal. It may contain:
 - CSS variables/design tokens
 - base reset rules
 - `html`, `body`, and root app defaults
-- external library selectors such as `.leaflet-*`, `.swiper-*`, and `.os-*`
+- external library selectors such as `.maplibregl-*`, `.swiper-*`, and `.os-*`
 
 Do not put feature or component styles in `globals.css`.
 
 External library selectors belong in global CSS when the class is produced by the library:
 
 ```css
-.leaflet-tooltip-content {
-  margin: 0;
+.maplibregl-map {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 .swiper-wrapper {

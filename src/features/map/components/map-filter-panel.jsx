@@ -54,6 +54,7 @@ export function MapFilterPanel({ categoryId, onCategoryChange, totalCount, visib
     <section
       className={styles.root}
       aria-label="Lọc nhanh bản đồ"
+      onClick={stopMapInteraction}
       onDoubleClick={stopMapInteraction}
       onPointerDown={stopMapInteraction}
       onWheel={stopMapInteraction}

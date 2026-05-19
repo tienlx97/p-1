@@ -2,7 +2,6 @@
 
 import { useMemo, useRef, useState } from "react";
 import { Button, Input, SearchField as AriaSearchField } from "react-aria-components";
-import { useMap } from "react-leaflet";
 
 import { getCategory, getMood } from "@/entities/memory";
 import { cx } from "@/shared/lib/cx";
@@ -76,6 +75,7 @@ function SearchResultReactionIcon({ place }) {
 
 /**
  * @typedef {object} MapPlaceSearchProps
+ * @property {import("maplibre-gl").Map | null} map
  * @property {import("@/entities/memory/mock-data").MemoryCheckin[]} places
  * @property {function(string): void} onShowHoverPreview
  */
@@ -83,8 +83,7 @@ function SearchResultReactionIcon({ place }) {
 /**
  * @param {MapPlaceSearchProps} props
  */
-export function MapPlaceSearch({ places, onShowHoverPreview }) {
-  const map = useMap();
+export function MapPlaceSearch({ map, places, onShowHoverPreview }) {
   const [query, setQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const blurTimerRef = useRef(null);
@@ -109,8 +108,14 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
   const showResults = isFocused && normalizedQuery.length > 0;
 
   function jumpToPlace(place) {
-    map.flyTo([place.latitude, place.longitude], Math.max(map.getZoom(), SEARCH_ZOOM), {
-      duration: 0.55
+    if (!map) {
+      return;
+    }
+
+    map.flyTo({
+      center: [place.longitude, place.latitude],
+      duration: 550,
+      zoom: Math.max(map.getZoom(), SEARCH_ZOOM)
     });
     onShowHoverPreview(place.id);
     setQuery(place.locationName);
@@ -141,6 +146,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
       className={cx(styles.root, "pointer-events-auto")}
       role="search"
       aria-label="Tìm địa điểm kỷ niệm"
+      onClick={stopMapInteraction}
       onDoubleClick={stopMapInteraction}
       onPointerDown={stopMapInteraction}
       onSubmit={handleSubmit}
@@ -189,7 +195,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
           type="submit"
           className={styles.submitButton}
           aria-label="Tìm kiếm"
-          isDisabled={results.length === 0}
+          isDisabled={!map || results.length === 0}
         >
           <span className={styles.icon} aria-hidden="true" />
         </Button>
