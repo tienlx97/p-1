@@ -20,8 +20,8 @@ Live location sharing is not a public tracking feature. It is an explicit, opt-i
 
 | Route | Current purpose |
 | --- | --- |
-| `/` | Map-first home experience using `features/map` |
-| `/checkins` | Memory library/gallery using `features/memory` |
+| `/` | Map-first home experience using `src/features/map` |
+| `/checkins` | Memory library/gallery using `src/features/memory` |
 | `/checkins/[id]` | Full memory detail page |
 | `/profile` | Couple space/profile overview |
 
@@ -29,16 +29,16 @@ Live location sharing is not a public tracking feature. It is an explicit, opt-i
 
 | Area | Owner |
 | --- | --- |
-| Map, markers, clustering, map controls, category filter | `features/map` |
-| Memory library, cards, detail drawer/page, media viewer, add-memory drawer/form | `features/memory` |
-| Couple profile and stats | `features/profile` |
-| Live location sharing UI and map presence | Future `features/location-sharing` or `features/map` integration |
-| Mock couple space, categories, moods, checkins, formatters | `entities/memory` |
-| Generic layout, UI primitives, styles, helper utilities | `shared` |
+| Map, markers, clustering, map controls, category filter | `src/features/map` |
+| Memory library, cards, detail drawer/page, media viewer, add-memory drawer/form | `src/features/memory` |
+| Couple profile and stats | `src/features/profile` |
+| Live location sharing UI and map presence | Future `src/features/location-sharing` or `src/features/map` integration |
+| Mock couple space, categories, moods, checkins, formatters | `src/entities/memory` |
+| Generic layout, UI primitives, styles, helper utilities | `src/shared` |
 
 ### 2.3. Current Data State
 
-The app currently uses mock data from `entities/memory/mock-data.js`.
+The app currently uses mock data from `src/entities/memory/mock-data.js`.
 
 There is no production backend, database persistence, authentication, real upload storage, or API layer yet. Forms and drawers should be treated as prototype UI unless persistence is added.
 
@@ -132,7 +132,7 @@ The MVP should focus on the experience already being built:
 | Memory detail page | Implemented prototype | Media gallery, metadata, related memories |
 | Photo/video media viewer | Implemented prototype | Media support exists in mock data/UI |
 | Couple profile page | Implemented prototype | Couple info, stats, milestones |
-| Mock data model | Implemented prototype | Stored in `entities/memory` |
+| Mock data model | Implemented prototype | Stored in `src/entities/memory` |
 | Live location marker for each person | Planned | Needed for iOS/native phase or realtime backend phase |
 | Moving location state | Planned | Needed for live sharing experience |
 
@@ -431,12 +431,11 @@ The implementation must follow the repository architecture:
 
 - Next.js App Router.
 - JavaScript/JSX only unless a migration is explicitly requested.
-- No `src/` directory.
 - Feature-based structure:
-  - `app/` for thin routes.
-  - `features/` for business feature UI/logic.
-  - `entities/` for shared domain data/helpers.
-  - `shared/` for generic UI/helpers/styles.
+  - `src/app/` for thin routes.
+  - `src/features/` for business feature UI/logic.
+  - `src/entities/` for shared domain data/helpers.
+  - `src/shared/` for generic UI/helpers/styles.
 - Cross-feature imports must go through feature public APIs.
 - Route files should compose feature page components only.
 

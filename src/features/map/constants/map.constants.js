@@ -1,0 +1,17 @@
+export const DEFAULT_CENTER = [10.7757, 106.7004]
+export const DEFAULT_ZOOM = 11
+export const MOBILE_HO_CHI_MINH_ZOOM = 13
+export const MOBILE_MAP_MEDIA_QUERY = '(max-width: 820px)'
+export const PLACE_LABEL_MIN_ZOOM = 18
+export const USE_MARKER_CLUSTERING = false
+export const ZOOM_TO_CLUSTER_BOUNDS_ON_CLICK = true
+export const SHOW_CLUSTER_LOCATIONS_ON_CLICK = false
+export const MARKER_CLUSTER_DISABLE_AT_ZOOM = PLACE_LABEL_MIN_ZOOM
+export const USE_DEFAULT_LEAFLET_MARKERS = false
+export const REACTION_MARKER_ICON_VERSION = 1
+export const MAP_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+export const MAP_TILE_ATTRIBUTION = '&copy; OpenStreetMap contributors'
+export const MAP_TILE_MAX_ZOOM = 19
+export const MAP_TILE_KEEP_BUFFER = 4
+export const MAP_TILE_UPDATE_WHEN_IDLE = true
+export const MAP_TILE_UPDATE_WHEN_ZOOMING = false

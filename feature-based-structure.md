@@ -4,24 +4,24 @@ Compact structure guide for AI coding agents working in this Next.js App Router 
 
 ## Project Shape
 
-Source folders live at the repository root, not under `src/`.
+Application source folders live under `src/`.
 
 ```txt
-app/       routes, layouts, framework files, global CSS entry
-features/  business feature UI and behavior
-entities/  shared domain data, models, and pure helpers
-shared/    generic UI, helpers, and styles with no business meaning
-public/    static assets
-DOCS/      supporting documentation
+src/app/       routes, layouts, framework files, global CSS entry
+src/features/  business feature UI and behavior
+src/entities/  shared domain data, models, and pure helpers
+src/shared/    generic UI, helpers, and styles with no business meaning
+public/        static assets
+DOCS/          supporting documentation
 ```
 
-Path alias: `@/* -> ./*`.
+Path alias: `@/* -> ./src/*`.
 
 ## Main Rules
 
 - Organize by feature/domain first, technical role second.
-- Keep `app/` route files thin. Pages should compose feature components.
-- Keep feature-specific state, workflows, map logic, filters, drawers, and forms out of `app/`.
+- Keep `src/app/` route files thin. Pages should compose feature components.
+- Keep feature-specific state, workflows, map logic, filters, drawers, and forms out of `src/app/`.
 - Do not create empty template folders.
 - Prefer feature-local code until reuse and ownership are clear.
 - Use JavaScript/JSX only unless a TypeScript migration is requested.
@@ -38,11 +38,11 @@ export default function Page() {
 
 ## Ownership
 
-- `features/map`: map view, Leaflet markers, map controls, map-specific helpers/constants.
-- `features/memory`: memory/checkin library, detail views, drawers, media viewer, add-memory UI.
-- `features/profile`: profile UI.
-- `entities/memory`: mock memory/checkin data and shared domain helpers.
-- `shared`: generic components, helpers, styles, and tokens only.
+- `src/features/map`: map view, Leaflet markers, map controls, map-specific helpers/constants.
+- `src/features/memory`: memory/checkin library, detail views, drawers, media viewer, add-memory UI.
+- `src/features/profile`: profile UI.
+- `src/entities/memory`: mock memory/checkin data and shared domain helpers.
+- `src/shared`: generic components, helpers, styles, and tokens only.
 
 If code serves one feature, keep it in that feature. If reused with business meaning, consider `entities/`. If reused with no business meaning, consider `shared/`.
 
@@ -98,7 +98,7 @@ Export route-level page components, reusable feature components, external hooks,
 Start minimal:
 
 ```txt
-features/example/
+src/features/example/
 ├── components/
 │   └── example-page.jsx
 └── index.js
@@ -131,13 +131,13 @@ Avoid vague folders like `helpers/` unless the repo already uses that name. Pref
 Current style locations:
 
 ```txt
-app/globals.css
-shared/styles/styles.module.css
-shared/styles/partials/*.css
-shared/styles/*.stylex.js
+src/app/globals.css
+src/shared/styles/styles.module.css
+src/shared/styles/partials/*.css
+src/shared/styles/*.stylex.js
 ```
 
-Keep broad reusable styles in `shared/styles`. Keep feature-specific class names clearly tied to the owning feature/UI area. Do not move one-off feature styling into `shared`.
+Keep broad reusable styles in `src/shared/styles`. Keep feature-specific class names clearly tied to the owning feature/UI area. Do not move one-off feature styling into `shared`.
 
 ## State And Data
 

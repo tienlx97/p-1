@@ -22,7 +22,7 @@ module.exports = {
         enableInlinedConditionalMerge: true,
         treeshakeCompensation: true,
         aliases: {
-          '@/*': [path.join(__dirname, '*')],
+          '@/*': [path.join(__dirname, 'src', '*')],
         },
         unstable_moduleResolution: {
           type: 'commonJS',
