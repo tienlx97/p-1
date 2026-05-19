@@ -1,0 +1,7 @@
+interface:
+  display_name: "Photo Mem Structure"
+  short_description: "Feature ownership and import boundaries"
+  default_prompt: "Use $photo-mem-project-structure when editing project structure, routes, feature ownership, imports, or public exports in photo-mem."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Photo Mem Styling"
+  short_description: "Repo styling and UI ownership rules"
+  default_prompt: "Use $photo-mem-styling when changing UI styles, CSS Modules, Tailwind, React Aria controls, StyleX, or global CSS in photo-mem."
