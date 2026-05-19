@@ -11,34 +11,9 @@ export const MOBILE_HO_CHI_MINH_ZOOM = 13
 export const MOBILE_MAP_MEDIA_QUERY = '(max-width: 820px)'
 
 /** Minimum zoom at which individual place labels can be shown without clutter. */
-export const PLACE_LABEL_MIN_ZOOM = 18
+export const PLACE_LABEL_MIN_ZOOM = 15
 
 /** Bump this when marker SVG internals change and cached browser assets need a new key. */
 export const REACTION_MARKER_ICON_VERSION = 1
 
-export const MAP_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-export const MAP_TILE_ATTRIBUTION = '&copy; OpenStreetMap contributors'
-export const MAP_TILE_MAX_ZOOM = 19
-export const MAP_TILE_KEEP_BUFFER = 4
-export const MAP_TILE_UPDATE_WHEN_IDLE = true
-export const MAP_TILE_UPDATE_WHEN_ZOOMING = false
-
-export const MAP_STYLE = {
-  version: 8,
-  sources: {
-    openStreetMap: {
-      type: 'raster',
-      tiles: [MAP_TILE_URL],
-      tileSize: 256,
-      attribution: MAP_TILE_ATTRIBUTION,
-      maxzoom: MAP_TILE_MAX_ZOOM,
-    },
-  },
-  layers: [
-    {
-      id: 'open-street-map',
-      type: 'raster',
-      source: 'openStreetMap',
-    },
-  ],
-}
+export const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'

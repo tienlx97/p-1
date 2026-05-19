@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
-import MaplibreMap, { AttributionControl } from 'react-map-gl/maplibre'
+import MaplibreMap from 'react-map-gl/maplibre'
 
 import { CheckinMarkers } from '@/features/map/components/checkin-markers'
 import { MapControls } from '@/features/map/components/map-controls'
@@ -10,7 +10,6 @@ import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
   MAP_STYLE,
-  MAP_TILE_ATTRIBUTION,
   MOBILE_HO_CHI_MINH_ZOOM,
   MOBILE_MAP_MEDIA_QUERY,
   PLACE_LABEL_MIN_ZOOM,
@@ -113,11 +112,6 @@ export function CheckinMap() {
               onZoomEnd={handleZoomEnd}
               reuseMaps
             >
-              <AttributionControl
-                compact
-                customAttribution={MAP_TILE_ATTRIBUTION}
-                position="bottom-left"
-              />
               <MapFilterPanel
                 categoryId={categoryFilter}
                 totalCount={totalCheckinCount}
@@ -125,11 +119,7 @@ export function CheckinMap() {
                 onCategoryChange={setCategoryFilter}
               />
               <MapControls map={map} activeCheckin={activeCheckin} visibleCheckins={mapPlaces} />
-              <MapPlaceSearch
-                map={map}
-                places={mapPlaces}
-                onShowHoverPreview={showHoverPreview}
-              />
+              <MapPlaceSearch map={map} places={mapPlaces} onShowHoverPreview={showHoverPreview} />
               <CheckinMarkers checkins={memoryPlaces} {...markerProps} />
               <CheckinMarkers checkins={standalonePlaces} {...markerProps} />
               <AdaptivePlaceLabels map={map} places={mapPlaces} visible={showPlaceLabels} />

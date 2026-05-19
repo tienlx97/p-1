@@ -1,5 +1,5 @@
-import { REACTION_MARKER_ICON_VERSION } from "@/features/map/constants/map.constants";
-import { getCategory, getMood } from "@/entities/memory";
+import { REACTION_MARKER_ICON_VERSION } from '@/features/map/constants/map.constants'
+import { getCategory, getMood } from '@/entities/memory'
 
 /**
  * @typedef {object} FitMapOptions
@@ -64,8 +64,8 @@ const moodMarkerIconsV1 = {
       <path d="M8.5 15.8c1.9-1.4 5.1-1.4 7 0" fill="none" stroke="#4b2f13" stroke-linecap="round" stroke-width="1.8" />
       <path class="reaction-tear" d="M17.5 12.3c1.5 1.6 2.1 2.8 2.1 3.8a2.1 2.1 0 0 1-4.2 0c0-1 .6-2.2 2.1-3.8Z" fill="#4fc3f7" stroke="#1b75bb" stroke-linejoin="round" stroke-width=".8" />
     </svg>
-  `
-};
+  `,
+}
 
 const moodMarkerIconsV2 = {
   chill: `
@@ -182,40 +182,39 @@ const moodMarkerIconsV2 = {
       <path class="reaction-tear" d="M17.55 12.5c1.28 1.43 1.82 2.46 1.82 3.35a1.82 1.82 0 0 1-3.64 0c0-.89.54-1.92 1.82-3.35Z" fill="#72d7ff" stroke="#2196d3" stroke-width=".62" />
       <ellipse cx="8.1" cy="6.8" rx="2.15" ry=".78" fill="#fff8d6" opacity=".5" transform="rotate(-24 8.1 6.8)" />
     </svg>
-  `
-};
+  `,
+}
 
-const moodMarkerIcons =
-  REACTION_MARKER_ICON_VERSION === 2 ? moodMarkerIconsV2 : moodMarkerIconsV1;
+const moodMarkerIcons = REACTION_MARKER_ICON_VERSION === 2 ? moodMarkerIconsV2 : moodMarkerIconsV1
 
 const homeMarkerIcon = `
   <svg class="home-heart-icon" viewBox="0 0 24 24" aria-hidden="true">
     <path class="home-heart-icon-main" d="M8.3 17.7S3.7 14.9 3.7 11.5c0-1.7 1.2-2.9 2.7-2.9.9 0 1.7.4 2.2 1.2.5-.8 1.3-1.2 2.2-1.2 1.5 0 2.7 1.2 2.7 2.9 0 3.4-5.2 6.2-5.2 6.2Z" fill="#ff5c8a" stroke="#b5164f" stroke-linejoin="round" stroke-width="1" />
     <path class="home-heart-icon-secondary" d="M15.6 14.8s-4.3-2.6-4.3-5.8c0-1.5 1.1-2.7 2.5-2.7.8 0 1.6.4 2.1 1.1.5-.7 1.3-1.1 2.1-1.1 1.4 0 2.5 1.2 2.5 2.7 0 3.2-4.9 5.8-4.9 5.8Z" fill="#ff8fb0" stroke="#b5164f" stroke-linejoin="round" stroke-width="1" />
   </svg>
-`;
+`
 
-const MARKER_ICON_WIDTH = 44;
-const MARKER_ICON_HEIGHT = 54;
-const MARKER_VIEWBOX_TOP_PADDING = 8;
-const MARKER_GRADIENT_START = "#55a7f0";
-const MARKER_GRADIENT_END = "#2f80ed";
-const MARKER_ACTIVE_GRADIENT_START = "#6db9ff";
-const MARKER_ACTIVE_GRADIENT_END = "#176bd8";
-const MARKER_ACTIVE_STROKE = "#1f6fca";
-const HOME_MARKER_GRADIENT_START = "#ff8fb0";
-const HOME_MARKER_GRADIENT_END = "#e83f72";
-const HOME_MARKER_ACTIVE_GRADIENT_START = "#ff9fbd";
-const HOME_MARKER_ACTIVE_GRADIENT_END = "#d91f62";
-const HOME_MARKER_ACTIVE_STROKE = "#b5164f";
-const checkinIconCache = new Map();
+const MARKER_ICON_WIDTH = 44
+const MARKER_ICON_HEIGHT = 70
+const MARKER_VIEWBOX_TOP_PADDING = 16
+const MARKER_GRADIENT_START = '#a78bfa'
+const MARKER_GRADIENT_END = '#6d28d9'
+const MARKER_ACTIVE_GRADIENT_START = '#c4b5fd'
+const MARKER_ACTIVE_GRADIENT_END = '#5b21b6'
+const MARKER_ACTIVE_STROKE = '#4c1d95'
+const HOME_MARKER_GRADIENT_START = '#ff8fb0'
+const HOME_MARKER_GRADIENT_END = '#e83f72'
+const HOME_MARKER_ACTIVE_GRADIENT_START = '#ff9fbd'
+const HOME_MARKER_ACTIVE_GRADIENT_END = '#d91f62'
+const HOME_MARKER_ACTIVE_STROKE = '#b5164f'
+const checkinIconCache = new Map()
 
 /**
  * @param {string} svg
  * @returns {string}
  */
 function svgToDataUrl(svg) {
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
 }
 
 /**
@@ -223,9 +222,9 @@ function svgToDataUrl(svg) {
  * @returns {string}
  */
 function getSvgContent(svg) {
-  const match = svg.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
+  const match = svg.match(/<svg[^>]*>([\s\S]*?)<\/svg>/)
 
-  return match ? match[1] : svg;
+  return match ? match[1] : svg
 }
 
 /**
@@ -234,11 +233,11 @@ function getSvgContent(svg) {
  */
 function escapeHtml(value) {
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
 }
 
 /**
@@ -246,27 +245,27 @@ function escapeHtml(value) {
  * @returns {string}
  */
 function getReactionAnimationClass(moodId) {
-  if (moodId === "happy") {
-    return "reaction-motion reaction-happy";
+  if (moodId === 'happy') {
+    return 'reaction-motion reaction-happy'
   }
 
-  if (moodId === "romantic" || moodId === "home") {
-    return "reaction-motion reaction-love-beat";
+  if (moodId === 'romantic' || moodId === 'home') {
+    return 'reaction-motion reaction-love-beat'
   }
 
-  if (moodId === "explore") {
-    return "reaction-motion reaction-pop";
+  if (moodId === 'explore') {
+    return 'reaction-motion reaction-pop'
   }
 
-  if (moodId === "memorable") {
-    return "reaction-motion reaction-bounce";
+  if (moodId === 'memorable') {
+    return 'reaction-motion reaction-bounce'
   }
 
-  if (moodId === "peaceful" || moodId === "sad") {
-    return "reaction-motion reaction-sway";
+  if (moodId === 'peaceful' || moodId === 'sad') {
+    return 'reaction-motion reaction-sway'
   }
 
-  return "reaction-motion reaction-bob";
+  return 'reaction-motion reaction-bob'
 }
 
 /**
@@ -282,24 +281,24 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
     isActive
       ? (pinColors?.activeStart ?? MARKER_ACTIVE_GRADIENT_START)
       : (pinColors?.start ?? MARKER_GRADIENT_START)
-  );
+  )
   const pinGradientEnd = escapeHtml(
     isActive
       ? (pinColors?.activeEnd ?? MARKER_ACTIVE_GRADIENT_END)
       : (pinColors?.end ?? MARKER_GRADIENT_END)
-  );
-  const activeStroke = pinColors?.activeStroke ?? MARKER_ACTIVE_STROKE;
-  const pinStroke = escapeHtml(isActive ? activeStroke : "#ffffff");
-  const activeShadowColor = escapeHtml(activeStroke);
-  const reactionSvg = getSvgContent(moodIcon);
-  const reactionAnimationClass = getReactionAnimationClass(moodId);
-  const pinAnimationClass = isActive ? "pin-art pin-art-active" : "pin-art";
+  )
+  const activeStroke = pinColors?.activeStroke ?? MARKER_ACTIVE_STROKE
+  const pinStroke = escapeHtml(isActive ? activeStroke : '#ffffff')
+  const activeShadowColor = escapeHtml(activeStroke)
+  const reactionSvg = getSvgContent(moodIcon)
+  const reactionAnimationClass = getReactionAnimationClass(moodId)
+  const pinAnimationClass = isActive ? 'pin-art pin-art-active' : 'pin-art'
   const activeDropShadow = isActive
     ? `<feDropShadow dx="0" dy="5" stdDeviation="3.2" flood-color="${activeShadowColor}" flood-opacity="0.36"/>`
-    : "";
+    : ''
 
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 -${MARKER_VIEWBOX_TOP_PADDING} ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT + MARKER_VIEWBOX_TOP_PADDING}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="${MARKER_ICON_WIDTH}" height="${MARKER_ICON_HEIGHT}" viewBox="0 -${MARKER_VIEWBOX_TOP_PADDING} ${MARKER_ICON_WIDTH} ${MARKER_ICON_HEIGHT}">
       <defs>
         <filter id="pinShadow" x="-25%" y="-18%" width="150%" height="145%" color-interpolation-filters="sRGB">
           <feDropShadow dx="0" dy="3" stdDeviation="2.2" flood-color="#3c4043" flood-opacity="0.28"/>
@@ -367,7 +366,7 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
 
         @keyframes pin-lift {
           from { transform: translateY(0) scale(1); }
-          to { transform: translateY(-5px) scale(1.08); }
+          to { transform: translateY(-7px) scale(1.13); }
         }
 
         @keyframes reaction-happy {
@@ -417,7 +416,7 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
         </g>
       </g>
     </svg>
-  `;
+  `
 }
 
 /**
@@ -425,7 +424,7 @@ function createMarkerSvg({ moodIcon, moodId, isActive, pinColors }) {
  * @returns {[number, number]}
  */
 export function getCheckinLngLat(checkin) {
-  return [checkin.longitude, checkin.latitude];
+  return [checkin.longitude, checkin.latitude]
 }
 
 /**
@@ -433,7 +432,7 @@ export function getCheckinLngLat(checkin) {
  * @returns {[number, number]}
  */
 export function latLngToLngLat(center) {
-  return [center[1], center[0]];
+  return [center[1], center[0]]
 }
 
 /**
@@ -446,32 +445,32 @@ export function latLngToLngLat(center) {
  */
 export function fitMapToCheckins(map, visibleCheckins, options = {}) {
   if (!map || visibleCheckins.length === 0) {
-    return;
+    return
   }
 
   if (visibleCheckins.length === 1) {
-    const [checkin] = visibleCheckins;
+    const [checkin] = visibleCheckins
     map.flyTo({
       center: getCheckinLngLat(checkin),
       duration: 550,
-      zoom: options.zoom ?? 13
-    });
-    return;
+      zoom: options.zoom ?? 13,
+    })
+    return
   }
 
-  const longitudes = visibleCheckins.map((checkin) => checkin.longitude);
-  const latitudes = visibleCheckins.map((checkin) => checkin.latitude);
+  const longitudes = visibleCheckins.map((checkin) => checkin.longitude)
+  const latitudes = visibleCheckins.map((checkin) => checkin.latitude)
   const bounds = [
     [Math.min(...longitudes), Math.min(...latitudes)],
-    [Math.max(...longitudes), Math.max(...latitudes)]
-  ];
-  const padding = Array.isArray(options.padding) ? options.padding[0] : options.padding;
+    [Math.max(...longitudes), Math.max(...latitudes)],
+  ]
+  const padding = Array.isArray(options.padding) ? options.padding[0] : options.padding
 
   map.fitBounds(bounds, {
     duration: 550,
     maxZoom: options.maxZoom ?? 9,
-    padding: padding ?? 58
-  });
+    padding: padding ?? 58,
+  })
 }
 
 /**
@@ -482,18 +481,19 @@ export function fitMapToCheckins(map, visibleCheckins, options = {}) {
  * @returns {{ src: string, width: number, height: number }}
  */
 export function createCheckinMarkerImage(checkin, isActive) {
-  const cacheKey = `${checkin.id}:${checkin.categoryId}:${checkin.moodId}:${isActive ? "active" : "idle"}`;
-  const cachedImage = checkinIconCache.get(cacheKey);
+  const cacheKey = `${checkin.id}:${checkin.categoryId}:${checkin.moodId}:${isActive ? 'active' : 'idle'}`
+  const cachedImage = checkinIconCache.get(cacheKey)
 
   if (cachedImage) {
-    return cachedImage;
+    return cachedImage
   }
 
-  const category = getCategory(checkin.categoryId);
-  const mood = getMood(checkin.moodId);
-  const isHomeMarker = category.id === "home";
-  const moodIcon = category.id === "home" ? homeMarkerIcon : moodMarkerIcons[mood.id] ?? moodMarkerIcons.happy;
-  const moodId = category.id === "home" ? "home" : mood.id;
+  const category = getCategory(checkin.categoryId)
+  const mood = getMood(checkin.moodId)
+  const isHomeMarker = category.id === 'home'
+  const moodIcon =
+    category.id === 'home' ? homeMarkerIcon : (moodMarkerIcons[mood.id] ?? moodMarkerIcons.happy)
+  const moodId = category.id === 'home' ? 'home' : mood.id
   const markerSvg = createMarkerSvg({
     moodIcon,
     moodId,
@@ -504,18 +504,18 @@ export function createCheckinMarkerImage(checkin, isActive) {
           end: HOME_MARKER_GRADIENT_END,
           activeStart: HOME_MARKER_ACTIVE_GRADIENT_START,
           activeEnd: HOME_MARKER_ACTIVE_GRADIENT_END,
-          activeStroke: HOME_MARKER_ACTIVE_STROKE
+          activeStroke: HOME_MARKER_ACTIVE_STROKE,
         }
-      : undefined
-  });
+      : undefined,
+  })
 
   const markerImage = {
     height: MARKER_ICON_HEIGHT,
     src: svgToDataUrl(markerSvg),
-    width: MARKER_ICON_WIDTH
-  };
+    width: MARKER_ICON_WIDTH,
+  }
 
-  checkinIconCache.set(cacheKey, markerImage);
+  checkinIconCache.set(cacheKey, markerImage)
 
-  return markerImage;
+  return markerImage
 }

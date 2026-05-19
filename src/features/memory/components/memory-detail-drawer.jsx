@@ -9,7 +9,7 @@ import { DRAWER_SCROLL_OPTIONS } from '@/features/memory/constants/memory-drawer
 import { cx } from '@/shared/lib/cx'
 import styles from './memory-detail-drawer.module.css'
 
-const DRAWER_OPEN_CLASS = 'memory-drawer-open'
+const DRAWER_OPEN_CLASS = 'memory-detail-drawer-open'
 
 /**
  * @typedef {object} MemoryDetailDrawerProps
@@ -72,11 +72,7 @@ export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
           </Button>
         </div>
 
-        <OverlayScrollbarsComponent
-          className={styles.scroll}
-          defer
-          options={DRAWER_SCROLL_OPTIONS}
-        >
+        <OverlayScrollbarsComponent className={styles.scroll} defer options={DRAWER_SCROLL_OPTIONS}>
           <MemoryDetailContent checkin={checkin} initialMediaIndex={initialMediaIndex} />
         </OverlayScrollbarsComponent>
       </aside>

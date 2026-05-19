@@ -176,7 +176,7 @@ Requirements:
 
 Current implementation notes:
 
-- Uses MapLibre GL with OpenStreetMap raster tiles.
+- Uses MapLibre GL with OpenFreeMap styles/tiles.
 - Uses `react-map-gl` for map, marker, and overlay rendering.
 - Uses category filtering from mock memory data.
 

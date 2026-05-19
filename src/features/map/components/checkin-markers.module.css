@@ -2,18 +2,19 @@
   position: relative;
   display: grid;
   width: 44px;
-  height: 54px;
+  height: 70px;
   place-items: center;
   border: 0;
   background: transparent;
   cursor: pointer;
+  overflow: visible;
   padding: 0;
   touch-action: manipulation;
 }
 
 .markerButton[data-hovered] .markerImage,
 .markerButton[data-focused] .markerImage {
-  transform: translateY(-2px) scale(1.04);
+  transform: translateY(-4px) scale(1.08);
 }
 
 .markerButton[data-pressed] .markerImage {
@@ -22,7 +23,7 @@
 
 .markerImage {
   width: 44px;
-  height: 54px;
+  height: 70px;
   pointer-events: none;
   transition:
     filter 150ms ease,
