@@ -486,7 +486,7 @@ export function CheckinMap() {
                   visibleCount={filteredCheckins.length}
                   onCategoryChange={setCategoryFilter}
                 />
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <TileLayer detectRetina url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MapZoomWatcher onPlaceLabelVisibilityChange={setShowPlaceLabels} />
                 <MapPreviewDismissWatcher onDismissPreview={closeHoverPreview} />
                 <MapControls

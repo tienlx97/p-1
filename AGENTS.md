@@ -1,31 +1,19 @@
 # AGENTS.md
 
-These instructions are for AI coding agents when creating, editing, or refactoring code in this repository.
+Instructions for AI coding agents working in this repository.
 
-This repo uses Next.js App Router with JavaScript/JSX. Source folders live at the repository root; there is no `src/` directory.
+## Project Basics
 
-Before coding, also read the detailed structure guidelines in:
+- This is a React project built with Next.js App Router.
+- The codebase uses JavaScript/JSX. Do not add TypeScript or `.tsx` files unless a TypeScript migration is explicitly requested.
+- Source folders live at the repository root; there is no `src/` directory.
+- The project follows a feature-based structure. Read `feature-based-structure.md` before creating, moving, or refactoring code.
 
-```txt
-feature-based-structure.md
-```
+## Architecture
 
-## Core Principles
+Keep routes in `app/` thin. Route files should import and compose feature-level components instead of owning business logic, workflows, filters, drawer state, map behavior, or large data transformations.
 
-Code must follow a feature-based structure:
-
-```txt
-app/       Next.js routes, layout, and global framework files
-features/  UI and logic grouped by business feature
-entities/  shared domain data, models, and helpers used across features
-shared/    generic UI, helpers, and styles with no business meaning
-public/    static assets
-DOCS/      documentation
-```
-
-Keep routes in `app/` thin. Pages should only import and compose components from `features/`.
-
-Correct example:
+Preferred route shape:
 
 ```jsx
 import { MemoryLibraryPage } from '@/features/memory'
@@ -35,7 +23,16 @@ export default function Page() {
 }
 ```
 
-Do not put business logic, form workflows, drawer state, map behavior, filter logic, or large data transformations directly in `app/page.jsx`.
+Use the established ownership model:
+
+```txt
+app/       Next.js routes, layout, and framework files
+features/  business feature UI and behavior
+entities/  shared domain data, models, and pure helpers
+shared/    generic UI, helpers, and styles with no business meaning
+public/    static assets
+DOCS/      documentation
+```
 
 ## Import Boundaries
 
@@ -60,127 +57,40 @@ entities -> app
 features/a/components -> features/b/components
 ```
 
-When code from another feature is needed, import it through that feature's public API:
+When code from another feature is needed, import through that feature's public API:
 
 ```javascript
 import { MemoryHoverPreview } from '@/features/memory'
 ```
 
-Avoid deep imports from another feature's internal folders:
+Avoid deep imports from another feature's internals:
 
 ```javascript
 import { MemoryHoverPreview } from '@/features/memory/components/memory-hover-preview'
 ```
 
-## When Creating A New Feature
+## Styling
 
-Create the minimal feature shape:
-
-```txt
-features/[feature-name]/
-├── components/
-│   └── [feature-page].jsx
-└── index.js
-```
-
-Only add these folders once they contain real files that are needed:
-
-```txt
-hooks/
-api/
-services/
-schemas/
-utils/
-constants/
-tests/
-```
-
-Do not create empty template folders.
-
-After creating a public component, export it from `features/[feature-name]/index.js`:
-
-```javascript
-export { ExamplePage } from './components/example-page'
-```
-
-## When Adding Code To An Existing Feature
-
-Choose the correct owner:
-
-- Map, markers, Leaflet, and map controls: `features/map`
-- Memory/checkin library, detail views, drawers, and media viewer: `features/memory`
-- Profile UI: `features/profile`
-- Mock memory/checkin data or shared domain helpers: `entities/memory`
-- Generic UI/helpers with no business-specific meaning: `shared`
-
-If code only serves one feature, keep it inside that feature.
-
-If code is used by multiple features and has business meaning, consider moving it to `entities/`.
-
-If code is generic and does not depend on the business domain, move it to `shared/`.
+- Use CSS Modules for component and feature styles unless an existing file clearly uses another established local pattern.
+- Keep global resets and framework-level imports in `app/globals.css`.
+- Keep generic shared styles in `shared/styles`.
+- Keep feature-specific styles with the owning feature or use class names that clearly identify the feature/UI area.
+- Do not move one-off feature styles into `shared` unless they are truly reusable and business-agnostic.
 
 ## Naming
 
-This repo currently uses:
-
-```txt
-.js / .jsx
-kebab-case file names
-PascalCase React components
-camelCase functions/hooks
-UPPER_SNAKE_CASE constants
-```
-
-Examples:
-
-```txt
-memory-detail-page.jsx
-map-section.jsx
-map.utils.js
-map.constants.js
-```
-
-Do not add `.tsx` files or TypeScript syntax unless a TypeScript migration is explicitly requested.
-
-## Styling
-
-Styling currently lives in:
-
-```txt
-app/globals.css
-shared/styles/styles.module.css
-shared/styles/partials/*.css
-shared/styles/*.stylex.js
-```
-
-Keep generic styles in `shared/styles`.
-
-Styles with business meaning, or styles used by only one feature, should use class names that clearly match the feature or UI area. Do not turn `shared` into a dumping ground for everything.
+- Files: `.js` / `.jsx`
+- File names: kebab-case
+- React components: PascalCase
+- Functions and hooks: camelCase
+- Constants: UPPER_SNAKE_CASE
 
 ## Checklist Before Responding
 
-Before the final response, agents should:
-
-- Read the relevant files and the feature's `index.js`.
+- Read the relevant files and the owning feature's `index.js`.
 - Keep changes small and in the correct owner.
-- Do not revert existing user changes in the working tree.
+- Preserve existing user changes in the working tree.
 - Do not create empty folders.
-- Update the public export when adding a public component or hook.
-- Run checks when appropriate:
-
-```txt
-pnpm lint
-pnpm type-check
-```
-
-For larger changes related to routes, builds, or Next.js runtime behavior, also run:
-
-```txt
-pnpm build
-```
-
-## Final Rule
-
-Feature-based structure is for easier file discovery and clear ownership, not for creating many folders.
-
-When you are unsure where code belongs, keep it in the feature that owns the behavior first. Move it to `entities/` or `shared/` only when reuse is truly clear.
+- Update public exports when adding public components or hooks.
+- Run `pnpm lint` and `pnpm type-check` when appropriate.
+- Run `pnpm build` for larger route, build, or Next.js runtime changes.
