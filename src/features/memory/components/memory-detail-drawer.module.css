@@ -135,7 +135,8 @@
   .memoryDrawer {
     top: max(72px, env(safe-area-inset-top));
     right: env(safe-area-inset-right);
-    bottom: env(safe-area-inset-bottom);
+    /* bottom: env(safe-area-inset-bottom); */
+    bottom: 0px;
     left: env(safe-area-inset-left);
     z-index: 1200;
     width: auto;

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react'
 import { FocusScope, mergeProps, useDialog, useOverlay } from 'react-aria'
 import { Button } from 'react-aria-components'
@@ -8,6 +8,8 @@ import { MemoryDetailContent } from '@/features/memory/components/memory-detail-
 import { DRAWER_SCROLL_OPTIONS } from '@/features/memory/constants/memory-drawer-constants'
 import { cx } from '@/shared/lib/cx'
 import styles from './memory-detail-drawer.module.css'
+
+const DRAWER_OPEN_CLASS = 'memory-drawer-open'
 
 export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
   const drawerRef = useRef(null)
@@ -25,6 +27,16 @@ export function MemoryDetailDrawer({ checkin, initialMediaIndex, onClose }) {
   )
   const { dialogProps, titleProps } = useDialog({}, drawerRef)
   const drawerProps = mergeProps(overlayProps, dialogProps)
+
+  useEffect(() => {
+    if (checkin) {
+      document.body.classList.add(DRAWER_OPEN_CLASS)
+
+      return () => {
+        document.body.classList.remove(DRAWER_OPEN_CLASS)
+      }
+    }
+  }, [checkin])
 
   if (!checkin) {
     return null

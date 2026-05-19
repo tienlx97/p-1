@@ -26,15 +26,16 @@ export const metadata = {
 
 export const viewport = {
   themeColor: '#ffffff',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="vi" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-      />
       <body>
         <AriaProviders>
           <AuthSessionProvider>
