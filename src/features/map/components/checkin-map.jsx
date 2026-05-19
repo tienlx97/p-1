@@ -29,7 +29,8 @@ import { MapPlaceSearch } from '@/features/map/components/map-place-search'
 import { createCheckinClusterIcon } from '@/features/map/utils/map.utils'
 import { useCheckinMapState } from '@/features/map/hooks/use-checkin-map-state'
 import { AddMemoryDrawer, MemoryDetailDrawer } from '@/features/memory'
-import { cx } from '@/shared/lib/styles'
+import { cx } from '@/shared/lib/cx'
+import styles from './checkin-map.module.css'
 
 function getInitialMapZoom() {
   return globalThis.matchMedia?.(MOBILE_MAP_MEDIA_QUERY).matches
@@ -73,9 +74,9 @@ export function CheckinMap() {
   }
 
   return (
-    <section className={cx('map-workspace')}>
-      <div className={cx('map-body')}>
-        <div className={cx('leaflet-map-shell')}>
+    <section className={styles.workspace}>
+      <div className={styles.body}>
+        <div className={styles.shell}>
           {totalCheckinCount > 0 ? (
             <MapContainer
               center={DEFAULT_CENTER}
@@ -85,7 +86,7 @@ export function CheckinMap() {
               attributionControl={false}
               zoomControl={false}
               scrollWheelZoom
-              className={cx('checkin-leaflet-map', showPlaceLabels && 'show-place-labels')}
+              className={cx(styles.map, showPlaceLabels && styles.showPlaceLabels)}
             >
               <MapFilterPanel
                 categoryId={categoryFilter}
@@ -128,7 +129,7 @@ export function CheckinMap() {
               <AdaptivePlaceLabels places={mapPlaces} visible={showPlaceLabels} />
             </MapContainer>
           ) : (
-            <div className={cx('map-empty-state')}>
+            <div className={styles.emptyState}>
               <h2>Chưa có kỷ niệm phù hợp</h2>
               <p>Thử đổi bộ lọc nhóm hoặc cảm xúc.</p>
             </div>

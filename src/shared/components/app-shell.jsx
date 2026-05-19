@@ -4,7 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Link } from "react-aria-components";
 
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./app-shell.module.css";
 
 const navItems = [
   { href: "/", label: "Bản đồ", icon: "map" },
@@ -29,6 +30,7 @@ export function AppShell({ children }) {
   }, [pathname]);
 
   const isRouteLoading = Boolean(pendingHref);
+  const isHomeRoute = pathname === "/";
 
   function openAddMemory() {
     if (pathname !== "/") {
@@ -42,13 +44,13 @@ export function AppShell({ children }) {
   }
 
   return (
-    <div className={cx("app-shell")}>
-      <main className={cx("main-panel")} aria-busy={isRouteLoading}>
+    <div className={styles.root}>
+      <main className={cx(styles.mainPanel, isHomeRoute && styles.homeMainPanel)} aria-busy={isRouteLoading}>
         {isRouteLoading ? <RouteSkeleton /> : null}
         {children}
       </main>
 
-      <nav className={cx("bottom-nav")} aria-label="Điều hướng chính">
+      <nav className={styles.bottomNav} aria-label="Điều hướng chính">
         {navItems.slice(0, 1).map((item) => {
           const isActive =
             item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
@@ -58,27 +60,27 @@ export function AppShell({ children }) {
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={isActive ? cx("bottom-nav-item active") : cx("bottom-nav-item")}
+              className={cx(styles.bottomNavItem, isActive && styles.active)}
               onPress={() => {
                 if (!isActive) {
                   setPendingHref(item.href);
                 }
               }}
             >
-              <span className={cx("bottom-nav-icon")} aria-hidden="true">
+              <span className={styles.bottomNavIcon} aria-hidden="true">
                 <NavIcon name={item.icon} />
               </span>
-              <small className={cx("bottom-nav-label")}>{item.label}</small>
+              <small className={styles.bottomNavLabel}>{item.label}</small>
             </Link>
           );
         })}
         <Button
-          className={cx("bottom-nav-add")}
+          className={styles.bottomNavAdd}
           type="button"
           aria-label="Thêm kỷ niệm"
           onPress={openAddMemory}
         >
-          <span className={cx("bottom-nav-add-icon")} aria-hidden="true">
+          <span className={styles.bottomNavAddIcon} aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
               <path d="M12 6.5v11" />
               <path d="M6.5 12h11" />
@@ -94,17 +96,17 @@ export function AppShell({ children }) {
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={isActive ? cx("bottom-nav-item active") : cx("bottom-nav-item")}
+              className={cx(styles.bottomNavItem, isActive && styles.active)}
               onPress={() => {
                 if (!isActive) {
                   setPendingHref(item.href);
                 }
               }}
             >
-              <span className={cx("bottom-nav-icon")} aria-hidden="true">
+              <span className={styles.bottomNavIcon} aria-hidden="true">
                 <NavIcon name={item.icon} />
               </span>
-              <small className={cx("bottom-nav-label")}>{item.label}</small>
+              <small className={styles.bottomNavLabel}>{item.label}</small>
             </Link>
           );
         })}
@@ -144,12 +146,12 @@ function NavIcon({ name }) {
 
 function RouteSkeleton() {
   return (
-    <div className={cx("route-skeleton")} role="status" aria-live="polite" aria-label="Đang chuyển tab">
-      <div className={cx("route-skeleton-top")}>
+    <div className={styles.routeSkeleton} role="status" aria-live="polite" aria-label="Đang chuyển tab">
+      <div className={styles.routeSkeletonTop}>
         <span />
         <span />
       </div>
-      <div className={cx("route-skeleton-body")}>
+      <div className={styles.routeSkeletonBody}>
         <span />
         <span />
         <span />

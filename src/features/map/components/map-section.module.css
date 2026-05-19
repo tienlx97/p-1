@@ -1,0 +1,33 @@
+.root {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #dfe8ef;
+}
+
+.fallbackWorkspace {
+  display: block;
+  overflow: hidden;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: #eef3f1;
+  box-shadow: none;
+}
+
+.loading {
+  display: grid;
+  height: 100%;
+  min-height: 100%;
+  place-items: center;
+  background: #eef3f1;
+  padding: 24px;
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  .root {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+}

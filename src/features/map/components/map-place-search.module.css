@@ -38,6 +38,14 @@
     0 4px 12px rgba(60, 64, 67, 0.12);
 }
 
+.searchField {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 6px;
+}
+
 .input {
   min-width: 0;
   flex: 1 1 auto;

@@ -2,15 +2,15 @@
 
 import dynamic from 'next/dynamic'
 
-import { cx } from '@/shared/lib/styles'
+import styles from './map-section.module.css'
 
 const CheckinMap = dynamic(
   () => import('@/features/map/components/checkin-map').then((module) => module.CheckinMap),
   {
     ssr: false,
     loading: () => (
-      <section className={cx('map-workspace')}>
-        <div className={cx('map-loading')}>Đang tải bản đồ kỷ niệm...</div>
+      <section className={styles.fallbackWorkspace}>
+        <div className={styles.loading}>Đang tải bản đồ kỷ niệm...</div>
       </section>
     ),
   }
@@ -18,7 +18,7 @@ const CheckinMap = dynamic(
 
 export function MapSection() {
   return (
-    <div className={cx('overview-map-page')}>
+    <div className={styles.root}>
       <CheckinMap />
     </div>
   )

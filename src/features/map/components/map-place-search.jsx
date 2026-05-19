@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Button, Input } from "react-aria-components";
+import { Button, Input, SearchField as AriaSearchField } from "react-aria-components";
 import { useMap } from "react-leaflet";
 
 import { getCategory, getMood } from "@/entities/memory";
@@ -99,12 +99,15 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
     searchRef.current?.blur();
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-
+  function submitSearch() {
     if (results[0]) {
       jumpToPlace(results[0]);
     }
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    submitSearch();
   }
 
   function clearBlurTimer() {
@@ -125,16 +128,13 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
       onWheel={stopMapInteraction}
     >
       <div className={cx(styles.field, showResults && styles.hasResults)}>
-        <Input
-          ref={searchRef}
-          className={styles.input}
-          type="search"
+        <AriaSearchField
+          className={styles.searchField}
           value={query}
-          placeholder="Tìm kỷ niệm hoặc địa điểm"
-          autoComplete="off"
           aria-label="Tìm địa điểm"
           aria-expanded={showResults}
           aria-controls="map-place-search-results"
+          autoComplete="off"
           onBlur={() => {
             clearBlurTimer();
             blurTimerRef.current = globalThis.setTimeout(() => {
@@ -142,27 +142,29 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
               blurTimerRef.current = null;
             }, 120);
           }}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={setQuery}
+          onClear={() => {
+            clearBlurTimer();
+            setQuery("");
+            setIsFocused(true);
+            searchRef.current?.focus();
+          }}
           onFocus={() => {
             clearBlurTimer();
             setIsFocused(true);
           }}
-        />
-        {query ? (
-          <Button
-            type="button"
-            className={styles.clearButton}
-            aria-label="Xóa tìm kiếm"
-            onPress={() => {
-              clearBlurTimer();
-              setQuery("");
-              setIsFocused(true);
-              searchRef.current?.focus();
-            }}
-          >
-            ×
-          </Button>
-        ) : null}
+        >
+          <Input
+            ref={searchRef}
+            className={styles.input}
+            placeholder="Tìm kỷ niệm hoặc địa điểm"
+          />
+          {query ? (
+            <Button type="button" className={styles.clearButton} aria-label="Xóa tìm kiếm">
+              ×
+            </Button>
+          ) : null}
+        </AriaSearchField>
         <span className={styles.divider} aria-hidden="true" />
         <Button
           type="submit"
