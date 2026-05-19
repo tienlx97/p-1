@@ -8,14 +8,17 @@ Instructions for AI coding agents working in this repository.
 - The codebase uses JavaScript/JSX. Do not add TypeScript or `.tsx` files unless a TypeScript migration is explicitly requested.
 - Source folders live under `src/`.
 - The project follows a feature-based structure. Read `feature-based-structure.md` before creating, moving, or refactoring code.
+- Read `style.md` before creating or changing UI styles, React Aria controls, Tailwind utilities, CSS Modules, or global CSS.
 
 ## Styling
 
-- Use CSS Modules for component and feature styles unless an existing file clearly uses another established local pattern.
-- Keep global resets and framework-level imports in `src/app/globals.css`.
-- Keep generic shared styles in `src/shared/styles`.
-- Keep feature-specific styles with the owning feature or use class names that clearly identify the feature/UI area.
-- Do not move one-off feature styles into `shared` unless they are truly reusable and business-agnostic.
+- Follow `style.md`.
+- Use React Aria Components for interactive controls.
+- Use colocated CSS Modules for custom component and feature styles.
+- Use Tailwind utilities for small local layout/utility classes.
+- Keep `src/app/globals.css` minimal: Tailwind import, StyleX directive if still required, CSS variables, base reset rules, and external library selectors.
+- Do not add new feature-specific styles to `src/shared/styles`; migrate touched components toward local `*.module.css` files.
+- Use `@/shared/lib/cx` for class merging in new or migrated code. Do not use `@/shared/lib/styles` in new code.
 
 ## Naming
 

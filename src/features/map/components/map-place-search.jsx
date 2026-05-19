@@ -5,7 +5,8 @@ import { Button, Input } from "react-aria-components";
 import { useMap } from "react-leaflet";
 
 import { getCategory, getMood } from "@/entities/memory";
-import { cx } from "@/shared/lib/styles";
+import { cx } from "@/shared/lib/cx";
+import styles from "./map-place-search.module.css";
 
 const MAX_RESULTS = 6;
 const SEARCH_ZOOM = 15;
@@ -54,7 +55,7 @@ function SearchResultReactionIcon({ place }) {
 
   return (
     <span
-      className={cx("map-place-search-result-icon", isHome && "home")}
+      className={cx(styles.resultIcon, isHome && styles.homeIcon)}
       style={{ "--result-reaction-color": category.color }}
       aria-hidden="true"
     >
@@ -115,7 +116,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
 
   return (
     <form
-      className={cx("map-place-search")}
+      className={cx(styles.root, "pointer-events-auto")}
       role="search"
       aria-label="Tìm địa điểm kỷ niệm"
       onDoubleClick={stopMapInteraction}
@@ -123,9 +124,10 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
       onSubmit={handleSubmit}
       onWheel={stopMapInteraction}
     >
-      <div className={cx("map-place-search-field", showResults && "has-results")}>
+      <div className={cx(styles.field, showResults && styles.hasResults)}>
         <Input
           ref={searchRef}
+          className={styles.input}
           type="search"
           value={query}
           placeholder="Tìm kỷ niệm hoặc địa điểm"
@@ -149,7 +151,7 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
         {query ? (
           <Button
             type="button"
-            className={cx("map-place-search-clear")}
+            className={styles.clearButton}
             aria-label="Xóa tìm kiếm"
             onPress={() => {
               clearBlurTimer();
@@ -161,37 +163,37 @@ export function MapPlaceSearch({ places, onShowHoverPreview }) {
             ×
           </Button>
         ) : null}
-        <span className={cx("map-place-search-divider")} aria-hidden="true" />
+        <span className={styles.divider} aria-hidden="true" />
         <Button
           type="submit"
-          className={cx("map-place-search-submit")}
+          className={styles.submitButton}
           aria-label="Tìm kiếm"
           isDisabled={results.length === 0}
         >
-          <span className={cx("map-place-search-icon")} aria-hidden="true" />
+          <span className={styles.icon} aria-hidden="true" />
         </Button>
       </div>
 
       {showResults ? (
-        <div id="map-place-search-results" className={cx("map-place-search-results")}>
+        <div id="map-place-search-results" className={styles.results}>
           {results.length > 0 ? (
             results.map((place) => (
               <Button
                 key={place.id}
                 type="button"
-                className={cx("map-place-search-result")}
+                className={styles.result}
                 onPress={() => jumpToPlace(place)}
               >
                 <SearchResultReactionIcon place={place} />
-                <span>
-                  <strong>{place.locationName}</strong>
-                  <small>{place.title}</small>
+                <span className={styles.resultText}>
+                  <strong className={styles.resultTitle}>{place.locationName}</strong>
+                  <small className={styles.resultSubtitle}>{place.title}</small>
                 </span>
-                <em>{place.city}</em>
+                <em className={styles.cityPill}>{place.city}</em>
               </Button>
             ))
           ) : (
-            <p className={cx("map-place-search-empty")}>Không tìm thấy địa điểm phù hợp</p>
+            <p className={styles.empty}>Không tìm thấy địa điểm phù hợp</p>
           )}
         </div>
       ) : null}

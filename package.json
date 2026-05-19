@@ -42,11 +42,14 @@
     "@stylexjs/eslint-plugin": "^0.18.3",
     "@stylexjs/postcss-plugin": "^0.18.3",
     "@stylexswc/nextjs-plugin": "^0.16.0",
+    "@tailwindcss/postcss": "^4.3.0",
     "autoprefixer": "10.5.0",
     "eslint": "10.4.0",
     "eslint-config-next": "16.2.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unicorn": "^64.0.0",
-    "globals": "^17.6.0"
+    "globals": "^17.6.0",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^4.3.0"
   }
 }
