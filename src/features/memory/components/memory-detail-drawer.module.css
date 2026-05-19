@@ -26,6 +26,7 @@
   right: auto;
   bottom: 0;
   left: 0;
+  z-index: 1200;
   width: min(430px, calc(100% - 32px));
   max-height: none;
   grid-template-rows: minmax(0, 1fr);
@@ -138,7 +139,6 @@
     /* bottom: env(safe-area-inset-bottom); */
     bottom: 0px;
     left: env(safe-area-inset-left);
-    z-index: 1200;
     width: auto;
     height: auto;
     max-height: none;

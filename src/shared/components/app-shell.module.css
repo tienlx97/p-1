@@ -20,43 +20,45 @@
 }
 
 .bottomNav {
+  --bottom-nav-edge: max(18px, env(safe-area-inset-left));
+  --bottom-nav-width: min(260px, calc(100vw - 36px));
+  --memory-detail-drawer-width: min(430px, calc(100vw - 32px));
+
   position: fixed;
-  right: max(18px, env(safe-area-inset-right));
+  right: auto;
   bottom: max(14px, env(safe-area-inset-bottom));
-  left: max(18px, env(safe-area-inset-left));
+  left: var(--bottom-nav-edge);
   z-index: 1000;
   isolation: isolate;
   display: grid;
-  width: min(260px, calc(100vw - 36px));
+  width: var(--bottom-nav-width);
   max-width: 260px;
   min-height: 62px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
   align-items: center;
-  margin: 0 auto;
+  margin: 0;
   border: 0;
   border-radius: 24px;
   background: transparent;
   padding: 6px 10px;
+  transition: left 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 :global(.media-viewer-open) .bottomNav {
   display: none;
 }
 
-/* @media (max-width: 820px) { */
 :global(.memory-drawer-open) .bottomNav {
   display: none;
   pointer-events: none;
 }
 
-/* } */
-
-@media (max-width: 820px) {
-  :global(.memory-detail-drawer-open) .bottomNav {
-    display: none;
-    pointer-events: none;
-  }
+:global(.memory-detail-drawer-open) .bottomNav {
+  left: min(
+    calc(var(--memory-detail-drawer-width) + var(--bottom-nav-edge)),
+    calc(100vw - var(--bottom-nav-edge) - var(--bottom-nav-width))
+  );
 }
 
 .bottomNav::before {
@@ -380,6 +382,17 @@
     padding: 0;
   }
 
+  .bottomNav {
+    right: max(18px, env(safe-area-inset-right));
+    left: max(18px, env(safe-area-inset-left));
+    margin: 0 auto;
+  }
+
+  :global(.memory-detail-drawer-open) .bottomNav {
+    display: none;
+    pointer-events: none;
+  }
+
   .routeSkeleton {
     gap: 10px;
     padding: max(12px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) calc(94px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
@@ -435,10 +448,13 @@
   }
 
   .bottomNav {
+    --bottom-nav-edge: max(8px, env(safe-area-inset-left));
+    --bottom-nav-width: min(260px, calc(100vw - 16px));
+
     right: max(8px, env(safe-area-inset-right));
     bottom: max(8px, env(safe-area-inset-bottom));
-    left: max(8px, env(safe-area-inset-left));
-    width: min(260px, calc(100vw - 16px));
+    left: var(--bottom-nav-edge);
+    width: var(--bottom-nav-width);
   }
 
 }
